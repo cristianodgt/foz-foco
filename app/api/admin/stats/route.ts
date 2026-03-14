@@ -31,7 +31,7 @@ export async function GET() {
       prisma.post.findMany({
         orderBy: { createdAt: 'desc' },
         take: 5,
-        select: { id: true, title: true, status: true, createdAt: true, slug: true },
+        select: { id: true, title: true, status: true, createdAt: true, slug: true, coverImage: true },
       }),
     ])
 

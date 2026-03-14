@@ -111,5 +111,5 @@ export interface DashboardStats {
   viewsToday: number
   activeAds: number
   topPosts: Pick<Post, 'id' | 'title' | 'views' | 'slug'>[]
-  recentPosts: Pick<Post, 'id' | 'title' | 'status' | 'createdAt' | 'slug'>[]
+  recentPosts: Pick<Post, 'id' | 'title' | 'status' | 'createdAt' | 'slug' | 'coverImage'>[]
 }
