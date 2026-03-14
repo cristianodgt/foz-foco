@@ -80,7 +80,7 @@ export function PostEditor({ content, onChange }: PostEditorProps) {
 
   function setLink() {
     const url = prompt('URL do link:')
-    if (url) {
+    if (url && editor) {
       editor.chain().focus().setLink({ href: url }).run()
     }
   }
