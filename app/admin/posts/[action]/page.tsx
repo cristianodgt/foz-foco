@@ -127,7 +127,7 @@ export default function PostFormPage() {
     setSaving(true)
     try {
       const body = { ...form, status }
-      const url = isNew ? '/api/posts' : `/api/posts/${action}`
+      const url = isNew ? '/api/admin/posts' : `/api/admin/posts/${action}`
       const method = isNew ? 'POST' : 'PUT'
 
       const res = await fetch(url, {
