@@ -77,16 +77,27 @@ export default async function PostPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="min-h-screen bg-white">
-        {/* Cover image */}
+        {/* Cover media (image or video) */}
         <div className="relative h-[50vh] bg-gray-900">
           {post.coverImage && (
-            <Image
-              src={post.coverImage}
-              alt={post.title}
-              fill
-              className="object-cover opacity-80"
-              priority
-            />
+            /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage) ? (
+              <video
+                src={post.coverImage}
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
+              />
+            ) : (
+              <Image
+                src={post.coverImage}
+                alt={post.title}
+                fill
+                className="object-cover opacity-80"
+                priority
+              />
+            )
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 

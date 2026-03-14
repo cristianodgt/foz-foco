@@ -82,7 +82,8 @@ export default function PostFormPage() {
             tags: post.tags?.map((t: { name: string }) => t.name) || [],
           })
           if (post.coverImage) {
-            setMediaFiles([{ url: post.coverImage, type: 'image', name: 'capa' }])
+            const isVideo = /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage)
+            setMediaFiles([{ url: post.coverImage, type: isVideo ? 'video' : 'image', name: 'capa' }])
           }
         })
         .finally(() => setLoading(false))
@@ -119,8 +120,8 @@ export default function PostFormPage() {
       const successful = results.filter(Boolean) as { url: string; type: 'image' | 'video'; name: string }[]
       setMediaFiles(prev => {
         const updated = [...prev, ...successful]
-        // First item becomes the cover
-        if (updated.length > 0 && updated[0].type === 'image') {
+        // First item becomes the cover (image or video)
+        if (updated.length > 0) {
           setForm(f => ({ ...f, coverImage: updated[0].url }))
         }
         return updated

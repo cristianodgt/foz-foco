@@ -18,16 +18,27 @@ export function FeedCard({ post, index }: FeedCardProps) {
 
   return (
     <div ref={cardRef} className="feed-item relative overflow-hidden bg-black">
-      {/* Background image */}
+      {/* Background media (image or video) */}
       {post.coverImage ? (
-        <Image
-          src={post.coverImage}
-          alt={post.title}
-          fill
-          className="object-cover"
-          priority={index < 2}
-          sizes="(max-width: 480px) 100vw, 480px"
-        />
+        /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage) ? (
+          <video
+            src={post.coverImage}
+            autoPlay
+            muted
+            loop
+            playsInline
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          <Image
+            src={post.coverImage}
+            alt={post.title}
+            fill
+            className="object-cover"
+            priority={index < 2}
+            sizes="(max-width: 480px) 100vw, 480px"
+          />
+        )
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900 to-slate-900" />
       )}
