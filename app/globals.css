@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Feed scroll snap */
+.feed-container {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100dvh;
+}
+
+.feed-item {
+  scroll-snap-align: start;
+  height: 100dvh;
+}
+
+/* Hide scrollbar but keep functionality */
+.feed-container::-webkit-scrollbar {
+  display: none;
+}
+.feed-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* TipTap Editor styles */
+.tiptap {
+  outline: none;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.prose-content h2 {
+  @apply text-2xl font-bold mt-6 mb-3 text-gray-800;
+}
+
+.prose-content h3 {
+  @apply text-xl font-semibold mt-5 mb-2 text-gray-800;
+}
+
+.prose-content p {
+  @apply mb-4 leading-relaxed text-gray-700;
+}
+
+.prose-content ul, .prose-content ol {
+  @apply mb-4 pl-6;
+}
+
+.prose-content li {
+  @apply mb-1;
+}
+
+.prose-content a {
+  @apply text-primary-600 underline;
+}
+
+.prose-content img {
+  @apply rounded-lg my-4 max-w-full;
+}
+
+.prose-content blockquote {
+  @apply border-l-4 border-primary-500 pl-4 italic text-gray-600 my-4;
+}
