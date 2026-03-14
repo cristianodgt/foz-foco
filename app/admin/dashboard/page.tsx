@@ -43,7 +43,7 @@ export default function DashboardPage() {
       {/* Stat cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '24px' }}>
         {STAT_CARDS.map((card) => {
-          const value = stats ? (stats as Record<string, number>)[card.key] ?? 0 : 0
+          const value = stats ? ((stats as unknown as Record<string, number>)[card.key] ?? 0) : 0
           return (
             <div key={card.key} className="adm-stat-card" style={{ borderTopColor: card.border }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
