@@ -68,7 +68,7 @@ export function PostEditor({ content, onChange }: PostEditorProps) {
       try {
         const res = await fetch('/api/upload', { method: 'POST', body: formData })
         const data = await res.json()
-        if (data.url) {
+        if (data.url && editor) {
           editor.chain().focus().setImage({ src: data.url }).run()
         }
       } catch {
