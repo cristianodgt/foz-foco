@@ -2,17 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import {
-  Plus, Edit2, Trash2, Loader2, Eye, MousePointer, ToggleLeft, ToggleRight
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
-import { useToast } from '@/hooks/use-toast'
+import { Plus, Edit2, Trash2, Loader2, Eye, MousePointer, ToggleLeft, ToggleRight, X } from 'lucide-react'
 import { calculateCTR, formatNumber, formatDateShort } from '@/lib/utils'
 import type { Ad } from '@/types'
 
@@ -23,6 +13,14 @@ const emptyForm = {
   endsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
 }
 
+const AD_POSITION_LABELS: Record<string, string> = {
+  FEED_BETWEEN: 'Entre Posts', FEED_TOP: 'Topo do Feed',
+  POST_DETAIL: 'Detalhe do Post', SIDEBAR: 'Sidebar'
+}
+const AD_TYPE_LABELS: Record<string, string> = {
+  BANNER: 'Banner', NATIVE: 'Nativo', INTERSTITIAL: 'Interstitial'
+}
+
 export default function CampaignsPage() {
   const [ads, setAds] = useState<Ad[]>([])
   const [loading, setLoading] = useState(true)
@@ -31,7 +29,13 @@ export default function CampaignsPage() {
   const [form, setForm] = useState({ ...emptyForm })
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const { toast } = useToast()
+  const [toast, setToast] = useState<{ msg: string; err?: boolean } | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+
+  function showToast(msg: string, err = false) {
+    setToast({ msg, err })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   const fetchAds = async () => {
     setLoading(true)
@@ -82,7 +86,7 @@ export default function CampaignsPage() {
 
   async function handleSave() {
     if (!form.title || !form.imageUrl || !form.targetUrl) {
-      toast({ title: 'Preencha todos os campos obrigatórios', variant: 'destructive' })
+      showToast('Preencha todos os campos obrigatórios', true)
       return
     }
     setSaving(true)
@@ -95,7 +99,7 @@ export default function CampaignsPage() {
         body: JSON.stringify(form),
       })
       if (res.ok) {
-        toast({ title: editing ? 'Anúncio atualizado' : 'Anúncio criado!' })
+        showToast(editing ? 'Anúncio atualizado' : 'Anúncio criado!')
         setDialogOpen(false)
         fetchAds()
       }
@@ -113,101 +117,120 @@ export default function CampaignsPage() {
     fetchAds()
   }
 
-  async function deleteAd(id: string) {
-    if (!confirm('Deletar este anúncio?')) return
+  async function confirmDelete(id: string) {
     await fetch(`/api/ads/${id}`, { method: 'DELETE' })
     setAds((prev) => prev.filter((a) => a.id !== id))
-    toast({ title: 'Anúncio deletado' })
-  }
-
-  const AD_POSITION_LABELS: Record<string, string> = {
-    FEED_BETWEEN: 'Entre Posts', FEED_TOP: 'Topo do Feed',
-    POST_DETAIL: 'Detalhe do Post', SIDEBAR: 'Sidebar'
-  }
-  const AD_TYPE_LABELS: Record<string, string> = {
-    BANNER: 'Banner', NATIVE: 'Nativo', INTERSTITIAL: 'Interstitial'
+    setDeleteConfirm(null)
+    showToast('Anúncio deletado')
   }
 
   return (
-    <div className="space-y-5 max-w-6xl">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Anúncios</h1>
-        <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Novo Anúncio</Button>
+    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: 'fixed', top: '20px', right: '20px', zIndex: 9999,
+          background: toast.err ? '#FF3B3020' : '#34C75920',
+          border: `1px solid ${toast.err ? '#FF3B30' : '#34C759'}`,
+          color: toast.err ? '#FF3B30' : '#34C759',
+          padding: '10px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 600,
+        }}>
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
+        <div>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--adm-text)', margin: 0 }}>Anúncios</h1>
+          <p style={{ fontSize: '12px', color: 'var(--adm-muted)', marginTop: '2px' }}>{ads.length} campanha(s) cadastrada(s)</p>
+        </div>
+        <button className="adm-btn-primary" onClick={openNew}>
+          <Plus size={14} style={{ marginRight: '6px' }} /> Novo Anúncio
+        </button>
       </div>
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+      {/* Table panel */}
+      <div className="adm-panel" style={{ padding: 0, overflow: 'hidden' }}>
         {loading ? (
-          <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-gray-400" /></div>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
+            <Loader2 size={28} className="animate-spin" style={{ color: 'var(--adm-muted)' }} />
+          </div>
         ) : ads.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">Nenhum anúncio cadastrado</div>
+          <div style={{ textAlign: 'center', padding: '60px', color: 'var(--adm-muted)', fontSize: '14px' }}>
+            Nenhum anúncio cadastrado
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
+          <div style={{ overflowX: 'auto' }}>
+            <table className="adm-table">
+              <thead>
                 <tr>
                   {['Anúncio', 'Tipo/Posição', 'Impressões', 'Cliques', 'CTR', 'Período', 'Status', ''].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody>
                 {ads.map((ad) => (
-                  <tr key={ad.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
+                  <tr key={ad.id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         {ad.imageUrl && (
-                          <div className="relative w-12 h-10 rounded overflow-hidden flex-shrink-0">
-                            <Image src={ad.imageUrl} alt={ad.title} fill className="object-cover" />
+                          <div style={{ position: 'relative', width: '48px', height: '36px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0 }}>
+                            <Image src={ad.imageUrl} alt={ad.title} fill style={{ objectFit: 'cover' }} />
                           </div>
                         )}
                         <div>
-                          <p className="font-medium text-sm text-gray-900 line-clamp-1">{ad.title}</p>
-                          <p className="text-xs text-gray-500">{ad.client}</p>
+                          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--adm-text)' }}>{ad.title}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--adm-muted)' }}>{ad.client}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-xs space-y-0.5">
-                        <p className="font-medium text-gray-700">{AD_TYPE_LABELS[ad.type]}</p>
-                        <p className="text-gray-400">{AD_POSITION_LABELS[ad.position]}</p>
-                      </div>
+                    <td>
+                      <div style={{ fontSize: '12px', color: 'var(--adm-text)' }}>{AD_TYPE_LABELS[ad.type]}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--adm-muted)' }}>{AD_POSITION_LABELS[ad.position]}</div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm flex items-center gap-1 text-gray-600">
-                        <Eye className="w-3.5 h-3.5" /> {formatNumber(ad.impressions)}
+                    <td>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: 'var(--adm-muted)' }}>
+                        <Eye size={13} /> {formatNumber(ad.impressions)}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm flex items-center gap-1 text-gray-600">
-                        <MousePointer className="w-3.5 h-3.5" /> {formatNumber(ad.clicks)}
+                    <td>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: 'var(--adm-muted)' }}>
+                        <MousePointer size={13} /> {formatNumber(ad.clicks)}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-blue-600">
+                    <td>
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#0A84FF' }}>
                         {calculateCTR(ad.clicks, ad.impressions)}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-xs text-gray-500">
-                        <p>{formatDateShort(ad.startsAt)}</p>
-                        <p>{formatDateShort(ad.endsAt)}</p>
+                    <td>
+                      <div style={{ fontSize: '11px', color: 'var(--adm-muted)' }}>
+                        <div>{formatDateShort(ad.startsAt)}</div>
+                        <div>{formatDateShort(ad.endsAt)}</div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={ad.active ? 'success' : 'secondary'}>
+                    <td>
+                      <span className="adm-badge" style={{
+                        background: ad.active ? '#34C75920' : '#66666620',
+                        color: ad.active ? '#34C759' : 'var(--adm-muted)',
+                      }}>
                         {ad.active ? 'Ativo' : 'Inativo'}
-                      </Badge>
+                      </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <button onClick={() => toggleActive(ad)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Ativar/Desativar">
-                          {ad.active ? <ToggleRight className="w-4 h-4 text-green-600" /> : <ToggleLeft className="w-4 h-4" />}
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <button className="adm-mini-btn" onClick={() => toggleActive(ad)} title="Ativar/Desativar">
+                          {ad.active
+                            ? <ToggleRight size={16} style={{ color: '#34C759' }} />
+                            : <ToggleLeft size={16} />}
                         </button>
-                        <button onClick={() => openEdit(ad)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                          <Edit2 className="w-4 h-4" />
+                        <button className="adm-mini-btn" onClick={() => openEdit(ad)}>
+                          <Edit2 size={14} />
                         </button>
-                        <button onClick={() => deleteAd(ad.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                          <Trash2 className="w-4 h-4" />
+                        <button className="adm-mini-btn" onClick={() => setDeleteConfirm(ad.id)} style={{ color: '#FF3B30' }}>
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>
@@ -219,96 +242,147 @@ export default function CampaignsPage() {
         )}
       </div>
 
-      {/* Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editing ? 'Editar Anúncio' : 'Novo Anúncio'}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Título *</Label>
-                <Input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Cliente *</Label>
-                <Input value={form.client} onChange={(e) => setForm((f) => ({ ...f, client: e.target.value }))} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Tipo</Label>
-                <Select value={form.type} onValueChange={(v) => setForm((f) => ({ ...f, type: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="NATIVE">Nativo</SelectItem>
-                    <SelectItem value="BANNER">Banner</SelectItem>
-                    <SelectItem value="INTERSTITIAL">Interstitial</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Posição</Label>
-                <Select value={form.position} onValueChange={(v) => setForm((f) => ({ ...f, position: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="FEED_BETWEEN">Entre Posts</SelectItem>
-                    <SelectItem value="FEED_TOP">Topo do Feed</SelectItem>
-                    <SelectItem value="POST_DETAIL">Detalhe do Post</SelectItem>
-                    <SelectItem value="SIDEBAR">Sidebar</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label>URL de Destino *</Label>
-              <Input placeholder="https://" value={form.targetUrl} onChange={(e) => setForm((f) => ({ ...f, targetUrl: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Imagem *</Label>
-              {form.imageUrl ? (
-                <div className="relative h-32 rounded-lg overflow-hidden">
-                  <Image src={form.imageUrl} alt="Ad preview" fill className="object-cover" />
-                  <button onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))} className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1">
-                    <Loader2 className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <label className="flex items-center justify-center h-24 border-2 border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors">
-                  {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span className="text-sm text-gray-500">Clique para upload</span>}
-                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                </label>
-              )}
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-1.5">
-                <Label>Frequência</Label>
-                <Input type="number" min={1} value={form.frequency} onChange={(e) => setForm((f) => ({ ...f, frequency: parseInt(e.target.value) }))} />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Início</Label>
-                <Input type="date" value={form.startsAt} onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))} />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Fim</Label>
-                <Input type="date" value={form.endsAt} onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))} />
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Switch checked={form.active} onCheckedChange={(v) => setForm((f) => ({ ...f, active: v }))} />
-              <Label>Ativo</Label>
+      {/* Delete confirm modal */}
+      {deleteConfirm && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div className="adm-panel" style={{ width: '360px', padding: '28px', textAlign: 'center' }}>
+            <div style={{ fontSize: '32px', marginBottom: '12px' }}>🗑️</div>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--adm-text)', marginBottom: '8px' }}>Deletar anúncio?</div>
+            <div style={{ fontSize: '13px', color: 'var(--adm-muted)', marginBottom: '24px' }}>Esta ação não pode ser desfeita.</div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button className="adm-btn-ghost" onClick={() => setDeleteConfirm(null)}>Cancelar</button>
+              <button onClick={() => confirmDelete(deleteConfirm)} style={{
+                padding: '8px 20px', borderRadius: '8px', border: 'none',
+                background: '#FF3B30', color: 'white', fontWeight: 600, fontSize: '13px', cursor: 'pointer',
+              }}>Deletar</button>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              {editing ? 'Salvar' : 'Criar Anúncio'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
+
+      {/* Form modal */}
+      {dialogOpen && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+        }}>
+          <div className="adm-panel" style={{ width: '100%', maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto', padding: '28px' }}>
+            {/* Modal header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--adm-text)', margin: 0 }}>
+                {editing ? 'Editar Anúncio' : 'Novo Anúncio'}
+              </h2>
+              <button className="adm-mini-btn" onClick={() => setDialogOpen(false)}><X size={16} /></button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Título + Cliente */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="adm-label">Título *</label>
+                  <input className="adm-input" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="adm-label">Cliente *</label>
+                  <input className="adm-input" value={form.client} onChange={(e) => setForm((f) => ({ ...f, client: e.target.value }))} />
+                </div>
+              </div>
+
+              {/* Tipo + Posição */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="adm-label">Tipo</label>
+                  <select className="adm-select" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}>
+                    <option value="NATIVE">Nativo</option>
+                    <option value="BANNER">Banner</option>
+                    <option value="INTERSTITIAL">Interstitial</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="adm-label">Posição</label>
+                  <select className="adm-select" value={form.position} onChange={(e) => setForm((f) => ({ ...f, position: e.target.value }))}>
+                    <option value="FEED_BETWEEN">Entre Posts</option>
+                    <option value="FEED_TOP">Topo do Feed</option>
+                    <option value="POST_DETAIL">Detalhe do Post</option>
+                    <option value="SIDEBAR">Sidebar</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* URL destino */}
+              <div>
+                <label className="adm-label">URL de Destino *</label>
+                <input className="adm-input" placeholder="https://" value={form.targetUrl} onChange={(e) => setForm((f) => ({ ...f, targetUrl: e.target.value }))} />
+              </div>
+
+              {/* Imagem */}
+              <div>
+                <label className="adm-label">Imagem *</label>
+                {form.imageUrl ? (
+                  <div style={{ position: 'relative', height: '120px', borderRadius: '10px', overflow: 'hidden' }}>
+                    <Image src={form.imageUrl} alt="preview" fill style={{ objectFit: 'cover' }} />
+                    <button
+                      onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))}
+                      style={{
+                        position: 'absolute', top: '8px', right: '8px',
+                        background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%',
+                        width: '24px', height: '24px', display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', cursor: 'pointer', color: 'white',
+                      }}
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="adm-upload-zone" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80px' }}>
+                    {uploading
+                      ? <Loader2 size={20} className="animate-spin" style={{ color: 'var(--adm-muted)' }} />
+                      : <span style={{ fontSize: '13px', color: 'var(--adm-muted)' }}>Clique para fazer upload</span>}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} />
+                  </label>
+                )}
+              </div>
+
+              {/* Frequência + Datas */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="adm-label">Frequência</label>
+                  <input className="adm-input" type="number" min={1} value={form.frequency} onChange={(e) => setForm((f) => ({ ...f, frequency: parseInt(e.target.value) }))} />
+                </div>
+                <div>
+                  <label className="adm-label">Início</label>
+                  <input className="adm-input" type="date" value={form.startsAt} onChange={(e) => setForm((f) => ({ ...f, startsAt: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="adm-label">Fim</label>
+                  <input className="adm-input" type="date" value={form.endsAt} onChange={(e) => setForm((f) => ({ ...f, endsAt: e.target.value }))} />
+                </div>
+              </div>
+
+              {/* Toggle ativo */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <label className="adm-toggle">
+                  <input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} />
+                  <span className="adm-toggle-track" />
+                </label>
+                <span style={{ fontSize: '13px', color: 'var(--adm-text)' }}>Ativo</span>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '24px' }}>
+              <button className="adm-btn-ghost" onClick={() => setDialogOpen(false)}>Cancelar</button>
+              <button className="adm-btn-primary" onClick={handleSave} disabled={saving}>
+                {saving && <Loader2 size={14} className="animate-spin" style={{ marginRight: '6px' }} />}
+                {editing ? 'Salvar' : 'Criar Anúncio'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

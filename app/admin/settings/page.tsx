@@ -2,10 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Save, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useToast } from '@/hooks/use-toast'
 
 interface SiteConfigForm {
   siteName: string
@@ -26,7 +22,12 @@ export default function SettingsPage() {
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const { toast } = useToast()
+  const [toast, setToast] = useState<{ msg: string; err?: boolean } | null>(null)
+
+  function showToast(msg: string, err = false) {
+    setToast({ msg, err })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   useEffect(() => {
     fetch('/api/admin/settings')
@@ -58,9 +59,9 @@ export default function SettingsPage() {
         body: JSON.stringify(form),
       })
       if (res.ok) {
-        toast({ title: 'Configurações salvas!' })
+        showToast('Configurações salvas!')
       } else {
-        toast({ title: 'Erro ao salvar', variant: 'destructive' })
+        showToast('Erro ao salvar', true)
       }
     } finally {
       setSaving(false)
@@ -68,58 +69,94 @@ export default function SettingsPage() {
   }
 
   if (loading) {
-    return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-gray-400" /></div>
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
+        <Loader2 size={28} className="animate-spin" style={{ color: 'var(--adm-muted)' }} />
+      </div>
+    )
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Configurações</h1>
-
-      <form onSubmit={handleSave} className="space-y-6">
-        {/* Site info */}
-        <div className="bg-white rounded-xl border shadow-sm p-6 space-y-5">
-          <h2 className="font-semibold text-gray-900">Informações do Site</h2>
-          <div className="space-y-2">
-            <Label>Nome do Site</Label>
-            <Input
-              value={form.siteName}
-              onChange={(e) => setForm((f) => ({ ...f, siteName: e.target.value }))}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Tagline</Label>
-            <Input
-              value={form.tagline}
-              onChange={(e) => setForm((f) => ({ ...f, tagline: e.target.value }))}
-              placeholder="Notícias de Foz do Iguaçu"
-            />
-          </div>
+    <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: 'fixed', top: '20px', right: '20px', zIndex: 9999,
+          background: toast.err ? '#FF3B3020' : '#34C75920',
+          border: `1px solid ${toast.err ? '#FF3B30' : '#34C759'}`,
+          color: toast.err ? '#FF3B30' : '#34C759',
+          padding: '10px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 600,
+        }}>
+          {toast.msg}
         </div>
+      )}
 
-        {/* Social media */}
-        <div className="bg-white rounded-xl border shadow-sm p-6 space-y-5">
-          <h2 className="font-semibold text-gray-900">Redes Sociais</h2>
-          {(['instagram', 'facebook', 'twitter', 'youtube'] as const).map((network) => (
-            <div key={network} className="space-y-2">
-              <Label className="capitalize">{network}</Label>
-              <Input
-                value={form.social[network]}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    social: { ...f.social, [network]: e.target.value },
-                  }))
-                }
-                placeholder={`https://${network}.com/fozfoco`}
+      {/* Header */}
+      <div style={{ marginBottom: '22px' }}>
+        <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--adm-text)', margin: 0 }}>Configurações</h1>
+        <p style={{ fontSize: '12px', color: 'var(--adm-muted)', marginTop: '2px' }}>Gerencie as informações do site</p>
+      </div>
+
+      <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* Informações do site */}
+        <div className="adm-panel">
+          <h2 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--adm-text)', marginBottom: '18px' }}>
+            Informações do Site
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div>
+              <label className="adm-label">Nome do Site</label>
+              <input
+                className="adm-input"
+                value={form.siteName}
+                onChange={(e) => setForm((f) => ({ ...f, siteName: e.target.value }))}
               />
             </div>
-          ))}
+            <div>
+              <label className="adm-label">Tagline</label>
+              <input
+                className="adm-input"
+                value={form.tagline}
+                onChange={(e) => setForm((f) => ({ ...f, tagline: e.target.value }))}
+                placeholder="Notícias de Foz do Iguaçu"
+              />
+            </div>
+          </div>
         </div>
 
-        <Button type="submit" disabled={saving} className="w-full sm:w-auto">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-          Salvar Configurações
-        </Button>
+        {/* Redes sociais */}
+        <div className="adm-panel">
+          <h2 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--adm-text)', marginBottom: '18px' }}>
+            Redes Sociais
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {(['instagram', 'facebook', 'twitter', 'youtube'] as const).map((network) => (
+              <div key={network}>
+                <label className="adm-label" style={{ textTransform: 'capitalize' }}>{network}</label>
+                <input
+                  className="adm-input"
+                  value={form.social[network]}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      social: { ...f.social, [network]: e.target.value },
+                    }))
+                  }
+                  placeholder={`https://${network}.com/fozfoco`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <button type="submit" className="adm-btn-primary" disabled={saving}>
+            {saving
+              ? <Loader2 size={14} className="animate-spin" style={{ marginRight: '6px' }} />
+              : <Save size={14} style={{ marginRight: '6px' }} />}
+            Salvar Configurações
+          </button>
+        </div>
       </form>
     </div>
   )

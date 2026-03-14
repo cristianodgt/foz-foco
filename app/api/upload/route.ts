@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
 
+export const maxDuration = 60 // seconds — needed for large video uploads
+export const dynamic = 'force-dynamic'
+
 const MAX_SIZE = 50 * 1024 * 1024 // 50MB (videos need more space)
 const ALLOWED_TYPES = [
   'image/jpeg', 'image/png', 'image/webp', 'image/gif',
