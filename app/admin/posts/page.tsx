@@ -2,19 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, Search, Eye, Edit2, Trash2, CheckCircle, XCircle, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { formatDateShort, formatNumber } from '@/lib/utils'
+import { formatRelativeDate, formatNumber } from '@/lib/utils'
 import type { Post } from '@/types'
 
-const STATUS_CONFIG = {
-  PUBLISHED: { label: 'Publicado', variant: 'success' as const },
-  DRAFT: { label: 'Rascunho', variant: 'warning' as const },
-  ARCHIVED: { label: 'Arquivado', variant: 'secondary' as const },
+const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
+  PUBLISHED: { label: 'Publicado', cls: 'adm-badge adm-badge-green' },
+  DRAFT:     { label: 'Rascunho', cls: 'adm-badge adm-badge-gray' },
+  ARCHIVED:  { label: 'Arquivado', cls: 'adm-badge adm-badge-gray' },
 }
 
 export default function AdminPostsPage() {
@@ -24,6 +20,7 @@ export default function AdminPostsPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<Post | null>(null)
   const { toast } = useToast()
 
   const fetchPosts = async () => {
@@ -46,14 +43,14 @@ export default function AdminPostsPage() {
     return () => clearTimeout(timeout)
   }, [search, statusFilter])
 
-  async function deletePost(slug: string) {
-    if (!confirm('Tem certeza que deseja deletar este post?')) return
-    setDeleting(slug)
+  async function deletePost(post: Post) {
+    setDeleting(post.id)
+    setConfirmDelete(null)
     try {
-      const res = await fetch(`/api/posts/${slug}`, { method: 'DELETE' })
+      const res = await fetch(`/api/posts/${post.slug}`, { method: 'DELETE' })
       if (res.ok) {
-        setPosts((prev) => prev.filter((p) => p.slug !== slug))
-        toast({ title: 'Post deletado', variant: 'default' })
+        setPosts((prev) => prev.filter((p) => p.id !== post.id))
+        toast({ title: 'Notícia deletada' })
       }
     } finally {
       setDeleting(null)
@@ -62,142 +59,143 @@ export default function AdminPostsPage() {
 
   async function toggleStatus(post: Post) {
     const newStatus = post.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED'
-    const res = await fetch(`/api/posts/${post.slug}`, {
+    const res = await fetch(`/api/admin/posts/${post.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus }),
+      body: JSON.stringify({ ...post, status: newStatus, tags: post.tags?.map((t: { name: string }) => t.name) || [] }),
     })
     if (res.ok) {
       const updated = await res.json()
       setPosts((prev) => prev.map((p) => (p.id === post.id ? updated : p)))
-      toast({ title: newStatus === 'PUBLISHED' ? 'Post publicado!' : 'Post despublicado' })
+      toast({ title: newStatus === 'PUBLISHED' ? '✅ Publicado!' : 'Despublicado' })
     }
   }
 
   return (
-    <div className="space-y-5 max-w-6xl">
-      <div className="flex items-center justify-between">
+    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Posts</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{total} post(s) no total</p>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--adm-text)', margin: 0 }}>Notícias</h1>
+          <p style={{ fontSize: '12px', color: 'var(--adm-muted)', marginTop: '2px' }}>{total} notícia(s) no total</p>
         </div>
-        <Button asChild>
-          <Link href="/admin/posts/novo"><Plus className="w-4 h-4 mr-2" /> Novo Post</Link>
-        </Button>
+        <Link href="/admin/posts/novo" className="adm-btn-primary">✏️ Nova Notícia</Link>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            placeholder="Buscar por título..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            <SelectItem value="PUBLISHED">Publicado</SelectItem>
-            <SelectItem value="DRAFT">Rascunho</SelectItem>
-            <SelectItem value="ARCHIVED">Arquivado</SelectItem>
-          </SelectContent>
-        </Select>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        <input
+          className="adm-input"
+          style={{ flex: 1, minWidth: '200px' }}
+          placeholder="🔍 Buscar por título..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="adm-select"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">Todos os status</option>
+          <option value="PUBLISHED">Publicado</option>
+          <option value="DRAFT">Rascunho</option>
+          <option value="ARCHIVED">Arquivado</option>
+        </select>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+      <div className="adm-panel" style={{ padding: 0, overflow: 'hidden' }}>
         {loading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '48px' }}>
+            <Loader2 className="animate-spin" size={28} style={{ color: 'var(--adm-muted)' }} />
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            <p className="text-lg">Nenhum post encontrado</p>
+          <div style={{ textAlign: 'center', padding: '48px', color: 'var(--adm-muted)', fontSize: '14px' }}>
+            Nenhuma notícia encontrada
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
+          <div style={{ overflowX: 'auto' }}>
+            <table className="adm-table">
+              <thead>
                 <tr>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Título</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Categoria</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Views</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Data</th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
+                  <th>Notícia</th>
+                  <th>Categoria</th>
+                  <th>Status</th>
+                  <th>Engajamento</th>
+                  <th>Data</th>
+                  <th style={{ textAlign: 'right' }}>Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody>
                 {posts.map((post) => {
-                  const status = STATUS_CONFIG[post.status]
+                  const status = STATUS_CONFIG[post.status] || STATUS_CONFIG.DRAFT
                   return (
-                    <tr key={post.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3">
-                        <p className="font-medium text-gray-900 text-sm line-clamp-1">{post.title}</p>
-                        {post.featured && (
-                          <span className="text-xs text-orange-500 font-medium">★ Destaque</span>
+                    <tr key={post.id}>
+                      {/* Title + thumbnail */}
+                      <td style={{ maxWidth: '320px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          {post.coverImage ? (
+                            <div style={{
+                              width: '44px', height: '44px', borderRadius: '8px',
+                              backgroundImage: `url(${post.coverImage})`,
+                              backgroundSize: 'cover', backgroundPosition: 'center', flexShrink: 0,
+                            }} />
+                          ) : (
+                            <div style={{
+                              width: '44px', height: '44px', borderRadius: '8px',
+                              background: 'var(--adm-surface2)', display: 'flex',
+                              alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0,
+                            }}>📰</div>
+                          )}
+                          <div style={{ minWidth: 0 }}>
+                            <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--adm-text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.title}</p>
+                            {post.featured && <span style={{ fontSize: '11px', color: '#FF9500' }}>★ Destaque</span>}
+                          </div>
+                        </div>
+                      </td>
+                      {/* Category */}
+                      <td>
+                        {post.category && (
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', padding: '3px 9px',
+                            borderRadius: '999px', fontSize: '11px', fontWeight: 600, color: 'white',
+                            background: post.category.color || '#666',
+                          }}>{post.category.name}</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        <span
-                          className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white"
-                          style={{ backgroundColor: post.category.color }}
-                        >
-                          {post.category.name}
+                      {/* Status */}
+                      <td>
+                        <span className={status.cls}>{status.label}</span>
+                      </td>
+                      {/* Engagement */}
+                      <td>
+                        <span style={{ fontSize: '12px', color: 'var(--adm-muted)' }}>
+                          👁 {formatNumber(post.views || 0)}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
-                        <Badge variant={status.variant}>{status.label}</Badge>
-                      </td>
-                      <td className="px-4 py-3 hidden sm:table-cell">
-                        <span className="text-sm text-gray-600 flex items-center gap-1">
-                          <Eye className="w-3.5 h-3.5" /> {formatNumber(post.views)}
+                      {/* Date */}
+                      <td>
+                        <span style={{ fontSize: '12px', color: 'var(--adm-muted)' }}>
+                          {formatRelativeDate(post.publishedAt || post.createdAt)}
                         </span>
                       </td>
-                      <td className="px-4 py-3 hidden lg:table-cell">
-                        <span className="text-sm text-gray-500">
-                          {formatDateShort(post.publishedAt || post.createdAt)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1">
+                      {/* Actions */}
+                      <td>
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                           <button
                             onClick={() => toggleStatus(post)}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              post.status === 'PUBLISHED'
-                                ? 'text-green-600 hover:bg-green-50'
-                                : 'text-gray-400 hover:bg-gray-100'
-                            }`}
+                            className="adm-mini-btn"
                             title={post.status === 'PUBLISHED' ? 'Despublicar' : 'Publicar'}
                           >
-                            {post.status === 'PUBLISHED' ? (
-                              <CheckCircle className="w-4 h-4" />
-                            ) : (
-                              <XCircle className="w-4 h-4" />
-                            )}
+                            {post.status === 'PUBLISHED' ? '✅' : '⭕'}
                           </button>
-                          <Link
-                            href={`/admin/posts/${post.id}`}
-                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </Link>
+                          <Link href={`/admin/posts/${post.id}`} className="adm-mini-btn" style={{ textDecoration: 'none' }}>✏️</Link>
                           <button
-                            onClick={() => deletePost(post.slug)}
-                            disabled={deleting === post.slug}
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            onClick={() => setConfirmDelete(post)}
+                            disabled={deleting === post.id}
+                            className="adm-mini-btn danger"
                           >
-                            {deleting === post.slug ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4" />
-                            )}
+                            {deleting === post.id ? <Loader2 size={13} className="animate-spin" /> : '🗑️'}
                           </button>
                         </div>
                       </td>
@@ -209,6 +207,33 @@ export default function AdminPostsPage() {
           </div>
         )}
       </div>
+
+      {/* Delete confirmation modal */}
+      {confirmDelete && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 100,
+          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }} onClick={() => setConfirmDelete(null)}>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'var(--adm-surface2)', border: '1px solid var(--adm-border)',
+              borderRadius: '16px', padding: '28px', maxWidth: '380px', width: '90%',
+            }}
+          >
+            <div style={{ fontSize: '28px', textAlign: 'center', marginBottom: '12px' }}>🗑️</div>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--adm-text)', textAlign: 'center', margin: '0 0 8px' }}>Deletar notícia?</h3>
+            <p style={{ fontSize: '13px', color: 'var(--adm-muted)', textAlign: 'center', margin: '0 0 22px' }}>
+              &quot;{confirmDelete.title}&quot; será permanentemente removida.
+            </p>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => setConfirmDelete(null)} className="adm-btn-ghost" style={{ flex: 1, justifyContent: 'center' }}>Cancelar</button>
+              <button onClick={() => deletePost(confirmDelete)} className="adm-btn-primary" style={{ flex: 1, justifyContent: 'center', background: '#FF3B30' }}>Sim, deletar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

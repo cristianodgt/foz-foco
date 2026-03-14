@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
 
-const MAX_SIZE = 5 * 1024 * 1024 // 5MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+const MAX_SIZE = 50 * 1024 * 1024 // 50MB (videos need more space)
+const ALLOWED_TYPES = [
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+  'video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v',
+]
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Tipo de arquivo não permitido' }, { status: 400 })
     }
     if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: 'Arquivo muito grande (máx. 5MB)' }, { status: 400 })
+      return NextResponse.json({ error: 'Arquivo muito grande (máx. 50MB)' }, { status: 400 })
     }
 
     const supabase = createClient(

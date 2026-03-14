@@ -2,33 +2,21 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { FileText, Eye, CheckCircle, Megaphone, TrendingUp, Plus, ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { formatNumber, formatRelativeDate } from '@/lib/utils'
 import type { DashboardStats } from '@/types'
 
-function StatCard({ icon: Icon, label, value, color }: {
-  icon: React.ElementType; label: string; value: string | number; color: string
-}) {
-  return (
-    <div className="bg-white rounded-xl p-5 border shadow-sm">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-gray-500 font-medium">{label}</span>
-        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${color}`}>
-          <Icon className="w-5 h-5 text-white" />
-        </div>
-      </div>
-      <p className="text-3xl font-bold text-gray-900">{formatNumber(Number(value))}</p>
-    </div>
-  )
+const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
+  PUBLISHED: { label: 'Publicado', cls: 'adm-badge adm-badge-green' },
+  DRAFT: { label: 'Rascunho', cls: 'adm-badge adm-badge-gray' },
+  ARCHIVED: { label: 'Arquivado', cls: 'adm-badge adm-badge-gray' },
 }
 
-const STATUS_LABELS: Record<string, { label: string; variant: 'success' | 'warning' | 'secondary' }> = {
-  PUBLISHED: { label: 'Publicado', variant: 'success' },
-  DRAFT: { label: 'Rascunho', variant: 'warning' },
-  ARCHIVED: { label: 'Arquivado', variant: 'secondary' },
-}
+const STAT_CARDS = [
+  { key: 'totalPosts',     label: 'Total de notícias',  icon: '📰', border: '#FF3B30' },
+  { key: 'publishedPosts', label: 'Publicadas',          icon: '✅', border: '#34C759' },
+  { key: 'totalViews',     label: 'Visualizações',       icon: '👁️', border: '#0A84FF' },
+  { key: 'activeAds',      label: 'Anúncios ativos',     icon: '📣', border: '#FFD60A' },
+]
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
@@ -41,82 +29,115 @@ export default function DashboardPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) {
-    return (
-      <div className="space-y-6 animate-pulse">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => <div key={i} className="h-28 bg-gray-200 rounded-xl" />)}
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-6 max-w-6xl">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <Button asChild>
-          <Link href="/admin/posts/novo"><Plus className="w-4 h-4 mr-2" /> Novo Post</Link>
-        </Button>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={FileText} label="Total de Posts" value={stats?.totalPosts || 0} color="bg-blue-600" />
-        <StatCard icon={CheckCircle} label="Publicados" value={stats?.publishedPosts || 0} color="bg-green-600" />
-        <StatCard icon={Eye} label="Visualizações" value={stats?.totalViews || 0} color="bg-purple-600" />
-        <StatCard icon={Megaphone} label="Anúncios Ativos" value={stats?.activeAds || 0} color="bg-orange-500" />
-      </div>
-
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Top posts */}
-        <div className="bg-white rounded-xl border shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-blue-600" /> Mais Visualizados
-            </h2>
-            <Link href="/admin/posts" className="text-xs text-blue-600 hover:underline flex items-center gap-1">
-              Ver todos <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-          <div className="space-y-3">
-            {stats?.topPosts.map((post, i) => (
-              <div key={post.id} className="flex items-center gap-3">
-                <span className="text-lg font-bold text-gray-200 w-6 text-center">{i + 1}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">{post.title}</p>
-                </div>
-                <span className="text-xs text-gray-500 flex items-center gap-1 whitespace-nowrap">
-                  <Eye className="w-3 h-3" /> {formatNumber(post.views)}
-                </span>
-              </div>
-            ))}
-          </div>
+    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '22px' }}>
+        <div>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--adm-text)', margin: 0 }}>Dashboard</h1>
+          <p style={{ fontSize: '12px', color: 'var(--adm-muted)', marginTop: '2px' }}>Visão geral do portal</p>
         </div>
+        <Link href="/admin/posts/novo" className="adm-btn-primary">✏️ Nova Notícia</Link>
+      </div>
 
-        {/* Recent posts */}
-        <div className="bg-white rounded-xl border shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-blue-600" /> Posts Recentes
-            </h2>
-            <Link href="/admin/posts" className="text-xs text-blue-600 hover:underline flex items-center gap-1">
-              Ver todos <ArrowRight className="w-3 h-3" />
-            </Link>
+      {/* Stat cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '24px' }}>
+        {STAT_CARDS.map((card) => {
+          const value = stats ? (stats as Record<string, number>)[card.key] ?? 0 : 0
+          return (
+            <div key={card.key} className="adm-stat-card" style={{ borderTopColor: card.border }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--adm-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{card.label}</span>
+                <span style={{ fontSize: '20px' }}>{card.icon}</span>
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--adm-text)', lineHeight: 1 }}>
+                {loading ? '—' : formatNumber(value)}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Two-column grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '18px' }}>
+        {/* Recent news */}
+        <div className="adm-panel">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <span style={{ fontWeight: 700, fontSize: '14px', color: 'var(--adm-text)' }}>📰 Últimas notícias</span>
+            <Link href="/admin/posts" style={{ fontSize: '12px', color: 'var(--adm-accent)', textDecoration: 'none' }}>Ver todas →</Link>
           </div>
-          <div className="space-y-3">
-            {stats?.recentPosts.map((post) => {
-              const statusInfo = STATUS_LABELS[post.status]
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {loading ? (
+              [1,2,3,4,5].map(i => (
+                <div key={i} style={{ height: '52px', background: 'rgba(255,255,255,0.04)', borderRadius: '9px' }} />
+              ))
+            ) : !stats?.recentPosts?.length ? (
+              <p style={{ color: 'var(--adm-muted)', fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>Nenhum post ainda</p>
+            ) : stats.recentPosts.map((post) => {
+              const st = STATUS_LABELS[post.status] || STATUS_LABELS.DRAFT
               return (
-                <div key={post.id} className="flex items-center gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{post.title}</p>
-                    <p className="text-xs text-gray-400">{formatRelativeDate(post.createdAt)}</p>
+                <div key={post.id} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '10px',
+                  borderRadius: '10px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid var(--adm-border)',
+                }}>
+                  {post.coverImage ? (
+                    <div style={{
+                      width: '44px', height: '44px', borderRadius: '8px',
+                      backgroundImage: `url(${post.coverImage})`,
+                      backgroundSize: 'cover', backgroundPosition: 'center', flexShrink: 0,
+                    }} />
+                  ) : (
+                    <div style={{
+                      width: '44px', height: '44px', borderRadius: '8px',
+                      background: 'var(--adm-surface2)', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0,
+                    }}>📰</div>
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--adm-text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.title}</p>
+                    <p style={{ fontSize: '11px', color: 'var(--adm-muted)', margin: '2px 0 0' }}>{formatRelativeDate(post.createdAt)}</p>
                   </div>
-                  <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
+                  <span className={st.cls}>{st.label}</span>
+                  <Link href={`/admin/posts/${post.id}`} style={{ color: 'var(--adm-muted)', fontSize: '13px', textDecoration: 'none' }}>✏️</Link>
                 </div>
               )
             })}
+          </div>
+        </div>
+
+        {/* Right column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          {/* Top posts */}
+          <div className="adm-panel">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <span style={{ fontWeight: 700, fontSize: '14px', color: 'var(--adm-text)' }}>🔥 Mais vistos</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {loading ? (
+                [1,2,3].map(i => <div key={i} style={{ height: '32px', background: 'rgba(255,255,255,0.04)', borderRadius: '7px' }} />)
+              ) : stats?.topPosts?.map((post, i) => (
+                <div key={post.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--adm-accent)', width: '18px', flexShrink: 0 }}>{i + 1}</span>
+                  <p style={{ fontSize: '12px', color: 'var(--adm-text)', flex: 1, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.title}</p>
+                  <span style={{ fontSize: '11px', color: 'var(--adm-muted)', whiteSpace: 'nowrap' }}>👁 {formatNumber(post.views)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick actions */}
+          <div className="adm-panel">
+            <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--adm-text)', marginBottom: '14px' }}>⚡ Ações rápidas</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <Link href="/admin/posts/novo" className="adm-btn-ghost" style={{ justifyContent: 'center', textDecoration: 'none' }}>✏️ Nova Notícia</Link>
+              <Link href="/admin/campaigns" className="adm-btn-ghost" style={{ justifyContent: 'center', textDecoration: 'none' }}>📣 Ver Anúncios</Link>
+              <Link href="/admin/settings" className="adm-btn-ghost" style={{ justifyContent: 'center', textDecoration: 'none' }}>⚙️ Configurações</Link>
+            </div>
           </div>
         </div>
       </div>

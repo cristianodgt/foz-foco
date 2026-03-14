@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="admin-shell flex h-screen overflow-hidden" style={{ background: 'var(--adm-bg)' }}>
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
         <Sidebar />
@@ -34,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto" style={{ padding: '24px' }}>
           {children}
         </main>
       </div>
