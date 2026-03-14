@@ -3,6 +3,12 @@ import type { NextRequest } from 'next/server'
 
 const PUBLIC_ADMIN_PATHS = ['/admin']
 
+function b64urlDecode(str: string): string {
+  const base64 = str.replace(/-/g, '+').replace(/_/g, '/')
+  const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=')
+  return atob(padded)
+}
+
 async function verifyJWT(token: string, secret: string): Promise<boolean> {
   try {
     const [headerB64, payloadB64, signatureB64] = token.split('.')
@@ -19,16 +25,13 @@ async function verifyJWT(token: string, secret: string): Promise<boolean> {
     )
 
     const data = encoder.encode(`${headerB64}.${payloadB64}`)
-    const signature = Uint8Array.from(
-      atob(signatureB64.replace(/-/g, '+').replace(/_/g, '/')),
-      (c) => c.charCodeAt(0)
-    )
+    const signature = Uint8Array.from(b64urlDecode(signatureB64), (c) => c.charCodeAt(0))
 
     const valid = await crypto.subtle.verify('HMAC', key, signature, data)
     if (!valid) return false
 
     // Check expiration
-    const payload = JSON.parse(atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/')))
+    const payload = JSON.parse(b64urlDecode(payloadB64))
     if (payload.exp && Date.now() / 1000 > payload.exp) return false
 
     return true
