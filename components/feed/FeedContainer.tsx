@@ -8,7 +8,7 @@ import { AdCard } from './AdCard'
 import { ArticleInline } from './ArticleInline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useFeed } from '@/hooks/useFeed'
-import type { FeedItem } from '@/types'
+import type { FeedItem, Post } from '@/types'
 
 interface ArticleData {
   id: string
@@ -45,7 +45,7 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
   const allItems = items.length > 0 ? items : initialItems
   const validItems = allItems.filter((item) => item && item.type && item.data)
 
-  const postItems = validItems.filter(i => i.type === 'post')
+  const postItems = validItems.filter((i): i is { type: 'post'; data: Post } => i.type === 'post')
   const visibleIndex = visibleSlug ? postItems.findIndex(i => i.data.slug === visibleSlug) : -1
   const desktopLikeState = visibleSlug
     ? desktopLikes.get(visibleSlug) || { liked: false, count: 0 }
