@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Clock, User, Heart, Share2, ChevronRight } from 'lucide-react'
@@ -14,18 +14,92 @@ interface FeedCardProps {
   onVisible?: (slug: string) => void
 }
 
+function MediaSlide({
+  item,
+  active,
+  muted,
+}: {
+  item: { url: string; type: 'image' | 'video' }
+  active: boolean
+  muted: boolean
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    if (!videoRef.current) return
+    if (active) {
+      videoRef.current.play().catch(() => {})
+    } else {
+      videoRef.current.pause()
+    }
+  }, [active])
+
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = muted
+  }, [muted])
+
+  if (item.type === 'video') {
+    return (
+      <video
+        ref={videoRef}
+        src={item.url}
+        muted={muted}
+        loop
+        playsInline
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+    )
+  }
+  return (
+    <Image
+      src={item.url}
+      alt=""
+      fill
+      className="object-cover"
+      sizes="(max-width: 640px) 100vw, 640px"
+    />
+  )
+}
+
 export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
   const [muted, setMuted] = useState(true)
   const [liked, setLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
+  const [slideIndex, setSlideIndex] = useState(0)
 
-  const isVideo = post.coverImage
-    ? /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage)
-    : false
+  // Build media list: prefer post.media array, fallback to coverImage
+  const mediaList: { url: string; type: 'image' | 'video' }[] = (() => {
+    if (post.media && post.media.length > 0) return post.media
+    if (post.coverImage) {
+      const isVideo = /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage)
+      return [{ url: post.coverImage, type: isVideo ? 'video' : 'image' }]
+    }
+    return []
+  })()
 
-  // Preload when card becomes visible
+  const hasMultiple = mediaList.length > 1
+  const currentMedia = mediaList[slideIndex]
+  const isCurrentVideo = currentMedia?.type === 'video'
+
+  // Touch swipe state
+  const touchStart = useRef<number | null>(null)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStart.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart.current === null) return
+    const diff = touchStart.current - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) setSlideIndex(i => Math.min(i + 1, mediaList.length - 1))
+      else setSlideIndex(i => Math.max(i - 1, 0))
+    }
+    touchStart.current = null
+  }
+
+  // Preload on visible
   useEffect(() => {
     if (!onVisible || !cardRef.current) return
     const observer = new IntersectionObserver(
@@ -38,10 +112,7 @@ export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCard
 
   function toggleMute(e: React.MouseEvent) {
     e.stopPropagation()
-    setMuted(m => {
-      if (videoRef.current) videoRef.current.muted = !m
-      return !m
-    })
+    setMuted(m => !m)
   }
 
   function handleLike(e: React.MouseEvent) {
@@ -67,27 +138,25 @@ export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCard
       ref={cardRef}
       className="feed-item relative overflow-hidden bg-black"
       onClick={() => onOpen(post.slug)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       style={{ cursor: 'pointer' }}
     >
       {/* Background media */}
-      {post.coverImage ? (
-        isVideo ? (
-          <video
-            ref={videoRef}
-            src={post.coverImage}
-            autoPlay muted={muted} loop playsInline
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <Image
-            src={post.coverImage}
-            alt={post.title}
-            fill
-            className="object-cover"
-            priority={index < 2}
-            sizes="(max-width: 480px) 100vw, 480px"
-          />
-        )
+      {mediaList.length > 0 ? (
+        mediaList.map((item, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute', inset: 0,
+              opacity: i === slideIndex ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              pointerEvents: i === slideIndex ? 'auto' : 'none',
+            }}
+          >
+            <MediaSlide item={item} active={i === slideIndex} muted={muted} />
+          </div>
+        ))
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900 to-slate-900" />
       )}
@@ -95,8 +164,34 @@ export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCard
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-      {/* Mute button — only for videos, top right */}
-      {isVideo && (
+      {/* Slide dots — top center, only if multiple media */}
+      {hasMultiple && (
+        <div
+          style={{
+            position: 'absolute', top: 60, left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', gap: 5, zIndex: 10,
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          {mediaList.map((_, i) => (
+            <button
+              key={i}
+              onClick={e => { e.stopPropagation(); setSlideIndex(i) }}
+              style={{
+                width: i === slideIndex ? 20 : 6,
+                height: 6,
+                borderRadius: 999,
+                background: i === slideIndex ? '#fff' : 'rgba(255,255,255,0.4)',
+                border: 'none', cursor: 'pointer', padding: 0,
+                transition: 'all 0.25s ease',
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Mute button — only for videos */}
+      {isCurrentVideo && (
         <button
           onClick={toggleMute}
           style={{
@@ -111,7 +206,7 @@ export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCard
         </button>
       )}
 
-      {/* Like + Share — right side, vertically centered (hidden on desktop via CSS) */}
+      {/* Like + Share */}
       <div className="feed-card-actions" style={{
         position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
         zIndex: 10, flexDirection: 'column', alignItems: 'center', gap: 18,
@@ -149,7 +244,6 @@ export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCard
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: index * 0.05 }}
         >
-          {/* Category chip */}
           <div style={{ marginBottom: 10 }}>
             <span
               className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white"
@@ -160,17 +254,14 @@ export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCard
             </span>
           </div>
 
-          {/* Title */}
           <h2 className="text-white font-bold text-2xl leading-tight line-clamp-3" style={{ marginBottom: 8 }}>
             {post.title}
           </h2>
 
-          {/* Summary */}
           <p className="text-white/75 text-sm leading-relaxed line-clamp-2" style={{ marginBottom: 14 }}>
             {post.summary}
           </p>
 
-          {/* Single row: meta left + Ver matéria right */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
               <span className="flex items-center gap-1 text-white/70 text-xs">

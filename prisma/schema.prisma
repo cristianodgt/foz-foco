@@ -44,6 +44,7 @@ model Post {
   summary     String
   content     String     @db.Text
   coverImage  String?
+  media       Json?
   status      PostStatus @default(DRAFT)
   featured    Boolean    @default(false)
   views       Int        @default(0)

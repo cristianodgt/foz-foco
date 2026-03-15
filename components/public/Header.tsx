@@ -1,9 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { Menu, X, Search, Newspaper } from 'lucide-react'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import { Menu, X, Search, Newspaper, Clock } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { formatRelativeDate } from '@/lib/utils'
+import type { Post } from '@/types'
 
 const NAV_LINKS = [
   { label: 'Todos', href: '/' },
@@ -14,9 +18,39 @@ const NAV_LINKS = [
   { label: 'Cultura', href: '/categoria/cultura' },
 ]
 
+function useSearch(query: string) {
+  const [results, setResults] = useState<Post[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (!query.trim() || query.length < 2) {
+      setResults([])
+      return
+    }
+    const timeout = setTimeout(async () => {
+      setIsLoading(true)
+      try {
+        const res = await fetch(`/api/posts?search=${encodeURIComponent(query)}`)
+        const data = await res.json()
+        setResults(data.data || [])
+      } finally {
+        setIsLoading(false)
+      }
+    }, 300)
+    return () => clearTimeout(timeout)
+  }, [query])
+
+  return { results, isLoading }
+}
+
 export function Header() {
+  const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const [scrolled, setScrolled] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const { results, isLoading } = useSearch(query)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
@@ -24,40 +58,74 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close menu and search on navigation
+  useEffect(() => {
+    setMenuOpen(false)
+    setSearchOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    if (searchOpen) {
+      setTimeout(() => inputRef.current?.focus(), 100)
+    } else {
+      setQuery('')
+    }
+  }, [searchOpen])
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSearchOpen(false)
+        setMenuOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [])
+
   return (
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled || menuOpen ? 'bg-black/80 backdrop-blur-md' : 'bg-transparent'
+          scrolled || menuOpen || searchOpen ? 'bg-black/80 backdrop-blur-md' : 'bg-transparent'
         }`}
       >
-        <div className="max-w-[640px] mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-white font-bold text-xl">
-            <Newspaper className="w-6 h-6 text-orange-400" />
+        <div className="max-w-[640px] mx-auto px-3 h-14 flex items-center gap-2">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-1.5 text-white font-bold text-lg flex-shrink-0">
+            <Newspaper className="w-5 h-5 text-orange-400" />
             <span>Foz<span className="text-orange-400">.</span>Foco</span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-0.5">
+          {/* Category strip — horizontally scrollable */}
+          <nav
+            className="flex-1 flex items-center gap-1.5 overflow-x-auto"
+            style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
+          >
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-white font-semibold text-sm px-3 py-1.5 rounded-lg hover:bg-white/15 transition-all"
+                className={`flex-shrink-0 text-xs font-semibold px-3 py-1 rounded-full transition-all whitespace-nowrap ${
+                  pathname === link.href
+                    ? 'bg-orange-400 text-black'
+                    : 'text-white/70 hover:text-white bg-white/10'
+                }`}
               >
                 {link.label}
               </Link>
             ))}
-            <Link href="/busca" className="text-white hover:text-white/70 transition-colors p-2 ml-1">
-              <Search className="w-4 h-4" />
-            </Link>
           </nav>
 
-          {/* Mobile buttons */}
-          <div className="flex md:hidden items-center gap-3">
-            <Link href="/busca" className="text-white/80 hover:text-white transition-colors p-1">
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => { setSearchOpen(true); setMenuOpen(false) }}
+              className="text-white/80 hover:text-white transition-colors p-1"
+              aria-label="Buscar"
+            >
               <Search className="w-5 h-5" />
-            </Link>
+            </button>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="text-white/80 hover:text-white transition-colors p-1"
@@ -69,6 +137,98 @@ export function Header() {
         </div>
       </header>
 
+      {/* Search popup */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-60 bg-black/95 backdrop-blur-md flex flex-col"
+            style={{ zIndex: 60 }}
+          >
+            {/* Search input bar */}
+            <div className="h-14 flex items-center px-3 gap-2 border-b border-white/10">
+              <Search className="w-5 h-5 text-white/40 flex-shrink-0" />
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Buscar notícias..."
+                className="flex-1 bg-transparent text-white placeholder-white/30 text-base outline-none"
+              />
+              <button
+                onClick={() => setSearchOpen(false)}
+                className="text-white/50 hover:text-white transition-colors p-1"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Results */}
+            <div className="flex-1 overflow-y-auto max-w-[640px] w-full mx-auto px-3 py-4">
+              {isLoading && (
+                <div className="flex justify-center py-12">
+                  <div className="w-7 h-7 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+
+              {!isLoading && query.length >= 2 && results.length === 0 && (
+                <div className="text-center py-16 text-white/30">
+                  <Search className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>Nenhum resultado para &quot;{query}&quot;</p>
+                </div>
+              )}
+
+              {!isLoading && results.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-xs text-white/30">{results.length} resultado(s)</p>
+                  {results.map((post) => (
+                    <Link
+                      key={post.id}
+                      href={`/${post.slug}`}
+                      onClick={() => setSearchOpen(false)}
+                      className="flex gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                    >
+                      {post.coverImage && (
+                        <div className="relative w-20 h-14 rounded-lg overflow-hidden flex-shrink-0">
+                          <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className="text-xs font-semibold px-2 py-0.5 rounded-full text-white"
+                          style={{ backgroundColor: post.category?.color || '#666' }}
+                        >
+                          {post.category?.name}
+                        </span>
+                        <h3 className="text-sm font-semibold text-white mt-1 line-clamp-2 leading-snug">
+                          {post.title}
+                        </h3>
+                        <p className="text-xs text-white/30 mt-1 flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {post.publishedAt ? formatRelativeDate(post.publishedAt) : ''}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {!query && (
+                <div className="text-center py-16 text-white/20">
+                  <Search className="w-14 h-14 mx-auto mb-4 opacity-30" />
+                  <p>Digite para buscar notícias</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -76,9 +236,9 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-md flex flex-col md:hidden"
+            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-md flex flex-col"
           >
-            <div className="h-14" /> {/* header space */}
+            <div className="h-14" />
             <nav className="flex-1 flex flex-col justify-center items-center gap-5 p-8">
               {NAV_LINKS.map((link) => (
                 <Link
@@ -90,14 +250,6 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
-              <div className="w-16 h-px bg-white/20 my-2" />
-              <Link
-                href="/busca"
-                onClick={() => setMenuOpen(false)}
-                className="text-lg text-white/60 hover:text-white transition-colors flex items-center gap-2"
-              >
-                <Search className="w-5 h-5" /> Buscar
-              </Link>
             </nav>
           </motion.div>
         )}

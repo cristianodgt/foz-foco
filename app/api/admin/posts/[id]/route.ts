@@ -31,7 +31,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     await requireAuth()
     const { id } = await params
     const body = await request.json()
-    const { title, summary, content, categoryId, coverImage, status, featured, tags = [] } = body
+    const { title, summary, content, categoryId, coverImage, media, status, featured, tags = [] } = body
 
     const post = await prisma.post.findUnique({ where: { id } })
     if (!post) return NextResponse.json({ error: 'Post não encontrado' }, { status: 404 })
@@ -54,6 +54,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
         content,
         categoryId,
         coverImage,
+        media: media ?? [],
         status,
         featured,
         publishedAt: status === 'PUBLISHED' && !post.publishedAt ? new Date() : post.publishedAt,

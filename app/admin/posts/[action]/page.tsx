@@ -81,7 +81,13 @@ export default function PostFormPage() {
             featured: post.featured || false,
             tags: post.tags?.map((t: { name: string }) => t.name) || [],
           })
-          if (post.coverImage) {
+          if (post.media && Array.isArray(post.media) && post.media.length > 0) {
+            setMediaFiles(post.media.map((m: { url: string; type: string }, i: number) => ({
+              url: m.url,
+              type: m.type as 'image' | 'video',
+              name: i === 0 ? 'capa' : `mídia ${i + 1}`,
+            })))
+          } else if (post.coverImage) {
             const isVideo = /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage)
             setMediaFiles([{ url: post.coverImage, type: isVideo ? 'video' : 'image', name: 'capa' }])
           }
@@ -163,7 +169,7 @@ export default function PostFormPage() {
     }
     setSaving(true)
     try {
-      const body = { ...form, status }
+      const body = { ...form, status, media: mediaFiles.map(({ url, type }) => ({ url, type })) }
       const url = isNew ? '/api/admin/posts' : `/api/admin/posts/${action}`
       const method = isNew ? 'POST' : 'PUT'
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })

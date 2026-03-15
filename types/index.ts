@@ -38,6 +38,7 @@ export interface Post {
   summary: string
   content: string
   coverImage?: string | null
+  media?: { url: string; type: 'image' | 'video' }[] | null
   status: PostStatus
   featured: boolean
   views: number

@@ -4,12 +4,15 @@ import { requireAuth } from '@/lib/auth'
 import { generateSlug } from '@/lib/utils'
 import { z } from 'zod'
 
+const mediaItemSchema = z.object({ url: z.string(), type: z.enum(['image', 'video']) })
+
 const createPostSchema = z.object({
   title: z.string().min(3).max(200),
   summary: z.string().min(10).max(500),
   content: z.string().min(1),
   categoryId: z.string(),
   coverImage: z.string().optional(),
+  media: z.array(mediaItemSchema).optional(),
   status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
   featured: z.boolean().default(false),
   tags: z.array(z.string()).default([]),
@@ -83,6 +86,7 @@ export async function POST(request: NextRequest) {
         summary: data.summary,
         content: data.content,
         coverImage: data.coverImage,
+        media: data.media ?? [],
         status: data.status,
         featured: data.featured,
         categoryId: data.categoryId,
