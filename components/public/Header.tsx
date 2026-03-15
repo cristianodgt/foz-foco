@@ -6,6 +6,7 @@ import { Menu, X, Search, Newspaper } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const NAV_LINKS = [
+  { label: 'Todos', href: '/' },
   { label: 'Política', href: '/categoria/politica' },
   { label: 'Economia', href: '/categoria/economia' },
   { label: 'Segurança', href: '/categoria/seguranca' },
@@ -37,17 +38,17 @@ export function Header() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all"
+                className="text-white font-semibold text-sm px-3 py-1.5 rounded-lg hover:bg-white/15 transition-all"
               >
                 {link.label}
               </Link>
             ))}
-            <Link href="/busca" className="text-white/70 hover:text-white transition-colors p-2 ml-1">
+            <Link href="/busca" className="text-white hover:text-white/70 transition-colors p-2 ml-1">
               <Search className="w-4 h-4" />
             </Link>
           </nav>
@@ -78,13 +79,13 @@ export function Header() {
             className="fixed inset-0 z-40 bg-black/95 backdrop-blur-md flex flex-col md:hidden"
           >
             <div className="h-14" /> {/* header space */}
-            <nav className="flex-1 flex flex-col justify-center items-center gap-6 p-8">
+            <nav className="flex-1 flex flex-col justify-center items-center gap-5 p-8">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="text-2xl font-semibold text-white hover:text-orange-400 transition-colors"
+                  className="text-2xl font-bold text-white hover:text-orange-400 transition-colors"
                 >
                   {link.label}
                 </Link>
