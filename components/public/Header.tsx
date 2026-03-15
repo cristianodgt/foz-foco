@@ -26,17 +26,34 @@ export function Header() {
   return (
     <>
       <header
-        className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled || menuOpen ? 'bg-black/80 backdrop-blur-md' : 'bg-transparent'
         }`}
       >
-        <div className="max-w-[480px] mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-[640px] mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-white font-bold text-xl">
             <Newspaper className="w-6 h-6 text-orange-400" />
             <span>Foz<span className="text-orange-400">.</span>Foco</span>
           </Link>
 
-          <div className="flex items-center gap-3">
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link href="/busca" className="text-white/70 hover:text-white transition-colors p-2 ml-1">
+              <Search className="w-4 h-4" />
+            </Link>
+          </nav>
+
+          {/* Mobile buttons */}
+          <div className="flex md:hidden items-center gap-3">
             <Link href="/busca" className="text-white/80 hover:text-white transition-colors p-1">
               <Search className="w-5 h-5" />
             </Link>
@@ -58,7 +75,7 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-0 z-40 bg-black/95 backdrop-blur-md flex flex-col"
+            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-md flex flex-col md:hidden"
           >
             <div className="h-14" /> {/* header space */}
             <nav className="flex-1 flex flex-col justify-center items-center gap-6 p-8">

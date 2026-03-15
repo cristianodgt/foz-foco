@@ -80,88 +80,9 @@
 }
 
 @media (min-width: 768px) {
-  .feed-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
-
   .feed-container {
-    max-width: 430px;
-    width: 430px;
-    border-left: 1px solid rgba(255,255,255,0.08);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    flex-shrink: 0;
-  }
-
-  /* Hide in-card buttons on desktop (moved to right panel) */
-  .feed-card-actions {
-    display: none;
-  }
-
-  /* Left sidebar */
-  .feed-sidebar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 0;
-    gap: 20px;
-    width: 72px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-  }
-
-  /* Right actions panel */
-  .feed-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 80px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-  }
-
-  .feed-action-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: rgba(255,255,255,0.85);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 10px;
-    border-radius: 12px;
-    transition: background 0.15s, color 0.15s;
-    min-width: 52px;
-  }
-  .feed-action-btn:hover { background: rgba(255,255,255,0.08); }
-  .feed-action-btn:disabled { opacity: 0.25; cursor: default; }
-  .feed-action-btn:disabled:hover { background: none; }
-
-  .feed-sidebar-icon {
-    color: rgba(255,255,255,0.55);
-    padding: 10px;
-    border-radius: 12px;
-    transition: background 0.15s, color 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .feed-sidebar-icon:hover {
-    background: rgba(255,255,255,0.08);
-    color: white;
-  }
-  .feed-sidebar-icon.active {
-    color: white;
+    max-width: 640px;
+    margin: 0 auto;
   }
 }
 
