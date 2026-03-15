@@ -170,31 +170,30 @@ export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCard
             {post.summary}
           </p>
 
-          {/* Meta row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-            <span className="flex items-center gap-1 text-white/60 text-xs">
-              <User className="w-3 h-3" /> {post.author.name}
-            </span>
-            <span className="flex items-center gap-1 text-white/60 text-xs">
-              <Clock className="w-3 h-3" />
-              {post.publishedAt ? formatRelativeDate(post.publishedAt) : 'Agora'}
-            </span>
-          </div>
+          {/* Single row: meta left + Ver matéria right */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+              <span className="flex items-center gap-1 text-white/70 text-xs">
+                <User className="w-3 h-3" /> {post.author.name}
+              </span>
+              <span className="flex items-center gap-1 text-white/70 text-xs">
+                <Clock className="w-3 h-3" />
+                {post.publishedAt ? formatRelativeDate(post.publishedAt) : 'Agora'}
+              </span>
+            </div>
 
-          {/* Ver matéria — standalone, right-aligned, prominent */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={(e) => { e.stopPropagation(); onOpen(post.slug) }}
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                background: '#fff', color: '#111',
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                background: '#FF3B30', color: '#fff',
                 border: 'none', cursor: 'pointer',
-                borderRadius: 999, padding: '9px 18px',
-                fontSize: 13, fontWeight: 700,
-                boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+                borderRadius: 999, padding: '8px 16px',
+                fontSize: 13, fontWeight: 700, flexShrink: 0,
+                boxShadow: '0 2px 10px rgba(255,59,48,0.4)',
               }}
             >
-              Ver matéria <ChevronRight size={14} />
+              Ver matéria <ChevronRight size={13} />
             </button>
           </div>
         </motion.div>

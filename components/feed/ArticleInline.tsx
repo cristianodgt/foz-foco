@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { X, Clock, Eye, Share2 } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/utils'
 
@@ -22,12 +21,10 @@ interface ArticleData {
 interface ArticleInlineProps {
   post: ArticleData
   onClose: () => void
+  id?: string
 }
 
-export function ArticleInline({ post, onClose }: ArticleInlineProps) {
-  const isVideo = post.coverImage
-    ? /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage)
-    : false
+export function ArticleInline({ post, onClose, id }: ArticleInlineProps) {
 
   async function handleShare() {
     const url = `${window.location.origin}/${post.slug}`
@@ -40,6 +37,7 @@ export function ArticleInline({ post, onClose }: ArticleInlineProps) {
 
   return (
     <div
+      id={id}
       style={{
         background: '#fff',
         colorScheme: 'light',
@@ -83,28 +81,7 @@ export function ArticleInline({ post, onClose }: ArticleInlineProps) {
         </div>
       </div>
 
-      {/* Cover */}
-      {post.coverImage && (
-        <div style={{ position: 'relative', height: '45vw', maxHeight: 280, background: '#111' }}>
-          {isVideo ? (
-            <video
-              src={post.coverImage}
-              autoPlay muted loop playsInline
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          ) : (
-            <Image
-              src={post.coverImage}
-              alt={post.title}
-              fill
-              style={{ objectFit: 'cover' }}
-              priority
-            />
-          )}
-        </div>
-      )}
-
-      {/* Content */}
+      {/* Content — no cover, the card above acts as the cover */}
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '20px 18px 48px' }}>
 
         {/* Category */}

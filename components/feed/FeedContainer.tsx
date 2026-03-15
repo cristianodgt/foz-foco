@@ -73,18 +73,32 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
       .catch(() => preloading.current.delete(slug))
   }
 
+  function scrollToArticle(slug: string) {
+    // After render, scroll feed container so the inline article is visible
+    setTimeout(() => {
+      const el = document.getElementById(`article-inline-${slug}`)
+      if (el && containerRef.current) {
+        const containerRect = containerRef.current.getBoundingClientRect()
+        const elRect = el.getBoundingClientRect()
+        const offset = elRect.top - containerRect.top
+        containerRef.current.scrollBy({ top: offset, behavior: 'smooth' })
+      }
+    }, 60)
+  }
+
   function handleOpen(slug: string) {
-    // If already cached, open instantly; otherwise fetch now
     if (!preloadCache.current.has(slug)) {
       fetch(`/api/posts/${slug}`)
         .then(r => r.json())
         .then(data => {
           preloadCache.current.set(slug, data)
           setOpenSlug(slug)
+          scrollToArticle(slug)
         })
       return
     }
     setOpenSlug(slug)
+    scrollToArticle(slug)
   }
 
   function handleClose() {
@@ -124,6 +138,7 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
           {/* Inline article — only for the open slug, right below its card */}
           {item.type === 'post' && openSlug === item.data.slug && preloadCache.current.has(item.data.slug) && (
             <ArticleInline
+              id={`article-inline-${item.data.slug}`}
               post={preloadCache.current.get(item.data.slug)!}
               onClose={handleClose}
             />
