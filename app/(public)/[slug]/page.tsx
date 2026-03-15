@@ -9,6 +9,8 @@ import { formatDate, formatNumber } from '@/lib/utils'
 import { FeedCard } from '@/components/feed/FeedCard'
 import { ShareButton } from './ShareButton'
 
+export const dynamic = 'force-dynamic'
+
 interface PageProps {
   params: Promise<{ slug: string }>
 }

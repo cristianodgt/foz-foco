@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma'
 import { FeedContainer } from '@/components/feed/FeedContainer'
 import { buildMetadata } from '@/lib/seo'
 
+export const dynamic = 'force-dynamic'
+
 interface PageProps {
   params: Promise<{ slug: string }>
 }

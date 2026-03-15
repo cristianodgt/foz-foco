@@ -2,6 +2,8 @@ import { Metadata } from 'next'
 import { FeedContainer } from '@/components/feed/FeedContainer'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Foz.Foco — Notícias de Foz do Iguaçu',
   description: 'O portal de notícias da tríplice fronteira. Fique por dentro de tudo que acontece em Foz do Iguaçu.',
