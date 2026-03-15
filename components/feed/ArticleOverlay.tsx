@@ -4,13 +4,19 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { X, ChevronDown, Clock, Eye, Share2 } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/utils'
-import type { Post } from '@/types'
-
-interface FullPost extends Post {
+interface FullPost {
+  id: string
+  title: string
+  slug: string
+  summary: string
   content: string
+  coverImage?: string | null
   views: number
   publishedAt: string | null
   createdAt: string
+  category: { name: string; color: string; icon?: string | null }
+  author: { name: string }
+  tags: { id: string; name: string }[]
 }
 
 interface ArticleOverlayProps {
