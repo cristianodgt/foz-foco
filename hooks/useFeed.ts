@@ -8,7 +8,10 @@ const fetcher = (url: string) => {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 10000)
   return fetch(url, { signal: controller.signal })
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      return r.json()
+    })
     .finally(() => clearTimeout(timeout))
 }
 
