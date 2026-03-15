@@ -1,10 +1,16 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import type { FeedItem } from '@/types'
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+const fetcher = (url: string) => {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 10000)
+  return fetch(url, { signal: controller.signal })
+    .then(r => r.json())
+    .finally(() => clearTimeout(timeout))
+}
 
 interface FeedPage {
   items: FeedItem[]

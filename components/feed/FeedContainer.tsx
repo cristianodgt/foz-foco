@@ -31,7 +31,7 @@ interface FeedContainerProps {
 }
 
 export function FeedContainer({ initialItems = [], category }: FeedContainerProps) {
-  const { items, isLoading, hasMore, loadMore, isValidating } = useFeed(category)
+  const { items, isLoading, error, hasMore, loadMore, isValidating } = useFeed(category)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [openSlug, setOpenSlug] = useState<string | null>(null)
@@ -141,6 +141,27 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
 
   function scrollNext() {
     if (visibleIndex < postItems.length - 1) scrollToPostIndex(visibleIndex + 1)
+  }
+
+  if (error && allItems.length === 0) {
+    return (
+      <div className="feed-wrapper">
+        <div className="feed-sidebar" />
+        <div className="feed-container">
+          <div className="feed-item flex flex-col items-center justify-center bg-black gap-4">
+            <p className="text-white/40 text-4xl">📡</p>
+            <p className="text-white/50 text-sm text-center px-8">Não foi possível carregar as notícias.<br />Verifique sua conexão e tente novamente.</p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{ background: '#FF3B30', color: '#fff', border: 'none', borderRadius: 999, padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        </div>
+        <div className="feed-actions" />
+      </div>
+    )
   }
 
   if (isLoading && allItems.length === 0) {
