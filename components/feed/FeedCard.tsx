@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Clock, User, Heart, Share2, ChevronRight } from 'lucide-react'
@@ -11,9 +11,10 @@ interface FeedCardProps {
   post: Post
   index: number
   onOpen?: (slug: string) => void
+  onVisible?: (slug: string) => void
 }
 
-export function FeedCard({ post, index, onOpen = () => {} }: FeedCardProps) {
+export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [muted, setMuted] = useState(true)
@@ -23,6 +24,17 @@ export function FeedCard({ post, index, onOpen = () => {} }: FeedCardProps) {
   const isVideo = post.coverImage
     ? /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage)
     : false
+
+  // Preload when card becomes visible
+  useEffect(() => {
+    if (!onVisible || !cardRef.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) onVisible(post.slug) },
+      { threshold: 0.3 }
+    )
+    observer.observe(cardRef.current)
+    return () => observer.disconnect()
+  }, [onVisible, post.slug])
 
   function toggleMute(e: React.MouseEvent) {
     e.stopPropagation()
@@ -34,8 +46,10 @@ export function FeedCard({ post, index, onOpen = () => {} }: FeedCardProps) {
 
   function handleLike(e: React.MouseEvent) {
     e.stopPropagation()
-    setLiked(l => !l)
-    setLikeCount(c => liked ? c - 1 : c + 1)
+    setLiked(l => {
+      setLikeCount(c => !l ? c + 1 : c - 1)
+      return !l
+    })
   }
 
   async function handleShare(e: React.MouseEvent) {
@@ -79,106 +93,108 @@ export function FeedCard({ post, index, onOpen = () => {} }: FeedCardProps) {
       )}
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-      {/* Mute button — only for videos */}
+      {/* Mute button — only for videos, top right */}
       {isVideo && (
         <button
           onClick={toggleMute}
           style={{
-            position: 'absolute', top: 56, right: 14, zIndex: 10,
-            background: 'rgba(0,0,0,0.45)', border: 'none', cursor: 'pointer',
-            color: '#fff', borderRadius: '50%', width: 36, height: 36,
+            position: 'absolute', top: 52, right: 14, zIndex: 10,
+            background: 'rgba(0,0,0,0.5)', border: 'none', cursor: 'pointer',
+            color: '#fff', borderRadius: '50%', width: 38, height: 38,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            backdropFilter: 'blur(6px)', fontSize: 16,
+            backdropFilter: 'blur(6px)', fontSize: 17,
           }}
         >
           {muted ? '🔇' : '🔊'}
         </button>
       )}
 
-      {/* Like + Share — right side */}
+      {/* Like + Share — right side, vertically centered */}
       <div style={{
-        position: 'absolute', right: 14, bottom: 90, zIndex: 10,
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
+        position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
+        zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18,
       }}>
         <button
           onClick={handleLike}
           style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
             background: 'none', border: 'none', cursor: 'pointer',
-            color: liked ? '#FF3B30' : 'rgba(255,255,255,0.85)',
+            color: liked ? '#FF3B30' : 'rgba(255,255,255,0.9)',
           }}
         >
-          <Heart size={22} fill={liked ? '#FF3B30' : 'none'} stroke={liked ? '#FF3B30' : 'currentColor'} />
+          <Heart size={26} fill={liked ? '#FF3B30' : 'none'} stroke={liked ? '#FF3B30' : 'currentColor'} strokeWidth={1.8} />
           {likeCount > 0 && (
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{likeCount}</span>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>{likeCount}</span>
           )}
         </button>
 
         <button
           onClick={handleShare}
           style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
             background: 'none', border: 'none', cursor: 'pointer',
-            color: 'rgba(255,255,255,0.85)',
+            color: 'rgba(255,255,255,0.9)',
           }}
         >
-          <Share2 size={20} />
+          <Share2 size={24} strokeWidth={1.8} />
         </button>
       </div>
 
-      {/* Content */}
-      <div className="absolute inset-x-0 bottom-0 p-5 pb-8" style={{ paddingRight: 60 }}>
+      {/* Bottom content */}
+      <div className="absolute inset-x-0 bottom-0 p-5 pb-8" style={{ paddingRight: 64 }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: index * 0.05 }}
-          className="space-y-3"
         >
           {/* Category chip */}
-          <span
-            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white"
-            style={{ backgroundColor: post.category.color }}
-          >
-            {post.category.icon && <span className="mr-1">{post.category.icon}</span>}
-            {post.category.name}
-          </span>
+          <div style={{ marginBottom: 10 }}>
+            <span
+              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white"
+              style={{ backgroundColor: post.category.color }}
+            >
+              {post.category.icon && <span className="mr-1">{post.category.icon}</span>}
+              {post.category.name}
+            </span>
+          </div>
 
           {/* Title */}
-          <h2 className="text-white font-bold text-2xl leading-tight line-clamp-3">
+          <h2 className="text-white font-bold text-2xl leading-tight line-clamp-3" style={{ marginBottom: 8 }}>
             {post.title}
           </h2>
 
           {/* Summary */}
-          <p className="text-white/75 text-sm leading-relaxed line-clamp-2">
+          <p className="text-white/75 text-sm leading-relaxed line-clamp-2" style={{ marginBottom: 14 }}>
             {post.summary}
           </p>
 
-          {/* Meta + Ver matéria */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div className="flex items-center gap-4 text-white/60 text-xs">
-              <span className="flex items-center gap-1">
-                <User className="w-3 h-3" />
-                {post.author.name}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {post.publishedAt ? formatRelativeDate(post.publishedAt) : 'Agora'}
-              </span>
-            </div>
+          {/* Meta row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <span className="flex items-center gap-1 text-white/60 text-xs">
+              <User className="w-3 h-3" /> {post.author.name}
+            </span>
+            <span className="flex items-center gap-1 text-white/60 text-xs">
+              <Clock className="w-3 h-3" />
+              {post.publishedAt ? formatRelativeDate(post.publishedAt) : 'Agora'}
+            </span>
+          </div>
 
+          {/* Ver matéria — standalone, right-aligned, prominent */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={(e) => { e.stopPropagation(); onOpen(post.slug) }}
               style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                background: 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer',
-                color: '#fff', borderRadius: 999, padding: '5px 12px',
-                fontSize: 12, fontWeight: 600, backdropFilter: 'blur(6px)',
-                flexShrink: 0,
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                background: '#fff', color: '#111',
+                border: 'none', cursor: 'pointer',
+                borderRadius: 999, padding: '9px 18px',
+                fontSize: 13, fontWeight: 700,
+                boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
               }}
             >
-              Ver matéria <ChevronRight size={13} />
+              Ver matéria <ChevronRight size={14} />
             </button>
           </div>
         </motion.div>

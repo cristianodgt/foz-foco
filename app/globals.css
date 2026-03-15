@@ -31,8 +31,11 @@
   * {
     @apply border-border;
   }
+  html, body {
+    background-color: #000;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-family: 'Inter', system-ui, sans-serif;
   }
 }
