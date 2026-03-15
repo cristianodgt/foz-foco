@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { FeedContainer } from '@/components/feed/FeedContainer'
 import { prisma } from '@/lib/prisma'
+import type { Post } from '@/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,7 +22,7 @@ async function getInitialFeed() {
       orderBy: { publishedAt: 'desc' },
       take: 5,
     })
-    return posts.map((post) => ({ type: 'post' as const, data: post }))
+    return posts.map((post) => ({ type: 'post' as const, data: post as unknown as Post }))
   } catch {
     return []
   }
