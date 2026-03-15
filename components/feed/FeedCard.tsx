@@ -10,10 +10,10 @@ import type { Post } from '@/types'
 interface FeedCardProps {
   post: Post
   index: number
-  onOpen: (slug: string) => void
+  onOpen?: (slug: string) => void
 }
 
-export function FeedCard({ post, index, onOpen }: FeedCardProps) {
+export function FeedCard({ post, index, onOpen = () => {} }: FeedCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [muted, setMuted] = useState(true)
