@@ -61,6 +61,28 @@
   scrollbar-width: none;
 }
 
+/* Desktop: feed centered like a phone column */
+.feed-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #000;
+  min-height: 100dvh;
+}
+
+@media (min-width: 768px) {
+  .feed-wrapper {
+    gap: 32px;
+  }
+  .feed-container {
+    max-width: 430px;
+    width: 430px;
+    border-left: 1px solid rgba(255,255,255,0.08);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+}
+
 /* TipTap Editor styles */
 .tiptap {
   outline: none;

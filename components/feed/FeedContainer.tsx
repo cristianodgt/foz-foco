@@ -107,57 +107,61 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
 
   if (isLoading && allItems.length === 0) {
     return (
-      <div className="feed-container">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="feed-item bg-gray-900">
-            <Skeleton className="h-full w-full bg-gray-800" />
-          </div>
-        ))}
+      <div className="feed-wrapper">
+        <div className="feed-container">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="feed-item bg-gray-900">
+              <Skeleton className="h-full w-full bg-gray-800" />
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
 
   return (
-    <div ref={containerRef} className="feed-container">
-      {validItems.map((item, index) => (
-        <div key={`${item.type}-${item.data.id}`}>
-          {/* The card itself — always 100dvh */}
-          <div className="feed-item">
-            {item.type === 'post' ? (
-              <FeedCard
-                post={item.data}
-                index={index}
-                onOpen={handleOpen}
-                onVisible={prefetch}
+    <div className="feed-wrapper">
+      <div ref={containerRef} className="feed-container">
+        {validItems.map((item, index) => (
+          <div key={`${item.type}-${item.data.id}`}>
+            {/* The card itself — always 100dvh */}
+            <div className="feed-item">
+              {item.type === 'post' ? (
+                <FeedCard
+                  post={item.data}
+                  index={index}
+                  onOpen={handleOpen}
+                  onVisible={prefetch}
+                />
+              ) : (
+                <AdCard ad={item.data} />
+              )}
+            </div>
+
+            {/* Inline article — only for the open slug, right below its card */}
+            {item.type === 'post' && openSlug === item.data.slug && preloadCache.current.has(item.data.slug) && (
+              <ArticleInline
+                id={`article-inline-${item.data.slug}`}
+                post={preloadCache.current.get(item.data.slug)!}
+                onClose={handleClose}
               />
-            ) : (
-              <AdCard ad={item.data} />
             )}
           </div>
+        ))}
 
-          {/* Inline article — only for the open slug, right below its card */}
-          {item.type === 'post' && openSlug === item.data.slug && preloadCache.current.has(item.data.slug) && (
-            <ArticleInline
-              id={`article-inline-${item.data.slug}`}
-              post={preloadCache.current.get(item.data.slug)!}
-              onClose={handleClose}
-            />
-          )}
+        <div ref={loadMoreRef} className="feed-item flex items-center justify-center bg-black">
+          {isValidating ? (
+            <div className="flex flex-col items-center gap-3 text-white/50">
+              <div className="w-8 h-8 border-2 border-white/20 border-t-white/70 rounded-full animate-spin" />
+              <span className="text-sm">Carregando mais notícias...</span>
+            </div>
+          ) : !hasMore ? (
+            <div className="text-white/30 text-sm text-center p-8">
+              <p className="text-2xl mb-2">📰</p>
+              <p>Você leu tudo por hoje!</p>
+            </div>
+          ) : null}
         </div>
-      ))}
-
-      <div ref={loadMoreRef} className="feed-item flex items-center justify-center bg-black">
-        {isValidating ? (
-          <div className="flex flex-col items-center gap-3 text-white/50">
-            <div className="w-8 h-8 border-2 border-white/20 border-t-white/70 rounded-full animate-spin" />
-            <span className="text-sm">Carregando mais notícias...</span>
-          </div>
-        ) : !hasMore ? (
-          <div className="text-white/30 text-sm text-center p-8">
-            <p className="text-2xl mb-2">📰</p>
-            <p>Você leu tudo por hoje!</p>
-          </div>
-        ) : null}
       </div>
     </div>
   )
