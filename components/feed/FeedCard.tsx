@@ -111,10 +111,10 @@ export function FeedCard({ post, index, onOpen = () => {}, onVisible }: FeedCard
         </button>
       )}
 
-      {/* Like + Share — right side, vertically centered */}
-      <div style={{
+      {/* Like + Share — right side, vertically centered (hidden on desktop via CSS) */}
+      <div className="feed-card-actions" style={{
         position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
-        zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18,
+        zIndex: 10, flexDirection: 'column', alignItems: 'center', gap: 18,
       }}>
         <button
           onClick={handleLike}

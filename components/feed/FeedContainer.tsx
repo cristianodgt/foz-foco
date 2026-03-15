@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useCallback, useState } from 'react'
+import Link from 'next/link'
+import { Home, Search, Newspaper, Heart, Share2, ChevronUp, ChevronDown } from 'lucide-react'
 import { FeedCard } from './FeedCard'
 import { AdCard } from './AdCard'
 import { ArticleInline } from './ArticleInline'
@@ -33,6 +35,8 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [openSlug, setOpenSlug] = useState<string | null>(null)
+  const [visibleSlug, setVisibleSlug] = useState<string | null>(null)
+  const [desktopLikes, setDesktopLikes] = useState<Map<string, { liked: boolean; count: number }>>(new Map())
 
   // Preload cache: slug → article data
   const preloadCache = useRef<Map<string, ArticleData>>(new Map())
@@ -40,6 +44,12 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
 
   const allItems = items.length > 0 ? items : initialItems
   const validItems = allItems.filter((item) => item && item.type && item.data)
+
+  const postItems = validItems.filter(i => i.type === 'post')
+  const visibleIndex = visibleSlug ? postItems.findIndex(i => i.data.slug === visibleSlug) : -1
+  const desktopLikeState = visibleSlug
+    ? desktopLikes.get(visibleSlug) || { liked: false, count: 0 }
+    : { liked: false, count: 0 }
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -61,7 +71,8 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
     containerRef.current.style.scrollSnapType = openSlug ? 'none' : 'y mandatory'
   }, [openSlug])
 
-  function prefetch(slug: string) {
+  function handleVisible(slug: string) {
+    setVisibleSlug(slug)
     if (preloadCache.current.has(slug) || preloading.current.has(slug)) return
     preloading.current.add(slug)
     fetch(`/api/posts/${slug}`)
@@ -74,7 +85,6 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
   }
 
   function scrollToArticle(slug: string) {
-    // After render, scroll feed container so the inline article is visible
     setTimeout(() => {
       const el = document.getElementById(`article-inline-${slug}`)
       if (el && containerRef.current) {
@@ -105,9 +115,38 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
     setOpenSlug(null)
   }
 
+  function toggleDesktopLike(slug: string) {
+    setDesktopLikes(prev => {
+      const next = new Map(prev)
+      const cur = next.get(slug) || { liked: false, count: 0 }
+      next.set(slug, { liked: !cur.liked, count: cur.liked ? cur.count - 1 : cur.count + 1 })
+      return next
+    })
+  }
+
+  function handleDesktopShare(slug: string) {
+    const url = `${window.location.origin}/${slug}`
+    if (navigator.share) navigator.share({ url }).catch(() => {})
+    else navigator.clipboard.writeText(url).catch(() => {})
+  }
+
+  function scrollToPostIndex(index: number) {
+    if (!containerRef.current) return
+    containerRef.current.scrollTo({ top: index * containerRef.current.clientHeight, behavior: 'smooth' })
+  }
+
+  function scrollPrev() {
+    if (visibleIndex > 0) scrollToPostIndex(visibleIndex - 1)
+  }
+
+  function scrollNext() {
+    if (visibleIndex < postItems.length - 1) scrollToPostIndex(visibleIndex + 1)
+  }
+
   if (isLoading && allItems.length === 0) {
     return (
       <div className="feed-wrapper">
+        <div className="feed-sidebar" />
         <div className="feed-container">
           {[1, 2, 3].map((i) => (
             <div key={i} className="feed-item bg-gray-900">
@@ -115,30 +154,46 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
             </div>
           ))}
         </div>
+        <div className="feed-actions" />
       </div>
     )
   }
 
   return (
     <div className="feed-wrapper">
+
+      {/* Desktop left sidebar */}
+      <div className="feed-sidebar">
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+          <Newspaper size={26} style={{ color: '#FF3B30' }} />
+        </Link>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }}>
+          <Link href="/" className="feed-sidebar-icon active" title="Início">
+            <Home size={22} />
+          </Link>
+          <Link href="/busca" className="feed-sidebar-icon" title="Buscar">
+            <Search size={22} />
+          </Link>
+        </div>
+      </div>
+
+      {/* Feed column */}
       <div ref={containerRef} className="feed-container">
         {validItems.map((item, index) => (
           <div key={`${item.type}-${item.data.id}`}>
-            {/* The card itself — always 100dvh */}
             <div className="feed-item">
               {item.type === 'post' ? (
                 <FeedCard
                   post={item.data}
                   index={index}
                   onOpen={handleOpen}
-                  onVisible={prefetch}
+                  onVisible={handleVisible}
                 />
               ) : (
                 <AdCard ad={item.data} />
               )}
             </div>
 
-            {/* Inline article — only for the open slug, right below its card */}
             {item.type === 'post' && openSlug === item.data.slug && preloadCache.current.has(item.data.slug) && (
               <ArticleInline
                 id={`article-inline-${item.data.slug}`}
@@ -163,6 +218,53 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
           ) : null}
         </div>
       </div>
+
+      {/* Desktop right actions */}
+      <div className="feed-actions">
+        <button
+          className="feed-action-btn"
+          onClick={() => visibleSlug && toggleDesktopLike(visibleSlug)}
+          style={{ color: desktopLikeState.liked ? '#FF3B30' : 'rgba(255,255,255,0.85)' }}
+        >
+          <Heart
+            size={28}
+            fill={desktopLikeState.liked ? '#FF3B30' : 'none'}
+            stroke={desktopLikeState.liked ? '#FF3B30' : 'currentColor'}
+            strokeWidth={1.8}
+          />
+          {desktopLikeState.count > 0 && (
+            <span style={{ fontSize: 11, fontWeight: 600 }}>{desktopLikeState.count}</span>
+          )}
+        </button>
+
+        <button
+          className="feed-action-btn"
+          onClick={() => visibleSlug && handleDesktopShare(visibleSlug)}
+        >
+          <Share2 size={26} strokeWidth={1.8} />
+        </button>
+
+        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.12)', margin: '8px 0' }} />
+
+        <button
+          className="feed-action-btn"
+          onClick={scrollPrev}
+          disabled={visibleIndex <= 0}
+          title="Anterior"
+        >
+          <ChevronUp size={26} strokeWidth={2} />
+        </button>
+
+        <button
+          className="feed-action-btn"
+          onClick={scrollNext}
+          disabled={visibleIndex < 0 || visibleIndex >= postItems.length - 1}
+          title="Próxima"
+        >
+          <ChevronDown size={26} strokeWidth={2} />
+        </button>
+      </div>
+
     </div>
   )
 }

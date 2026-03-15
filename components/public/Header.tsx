@@ -26,7 +26,7 @@ export function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled || menuOpen ? 'bg-black/80 backdrop-blur-md' : 'bg-transparent'
         }`}
       >
@@ -58,7 +58,7 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-md flex flex-col"
+            className="md:hidden fixed inset-0 z-40 bg-black/95 backdrop-blur-md flex flex-col"
           >
             <div className="h-14" /> {/* header space */}
             <nav className="flex-1 flex flex-col justify-center items-center gap-6 p-8">
