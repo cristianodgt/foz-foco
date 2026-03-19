@@ -102,6 +102,7 @@ enum AdType {
 enum AdPosition {
   FEED_BETWEEN
   FEED_TOP
+  GRID_BANNER
   POST_DETAIL
   SIDEBAR
 }

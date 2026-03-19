@@ -1,7 +1,7 @@
 export type Role = 'ADMIN' | 'EDITOR'
 export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
 export type AdType = 'BANNER' | 'NATIVE' | 'INTERSTITIAL'
-export type AdPosition = 'FEED_BETWEEN' | 'FEED_TOP' | 'POST_DETAIL' | 'SIDEBAR'
+export type AdPosition = 'FEED_BETWEEN' | 'FEED_TOP' | 'GRID_BANNER' | 'POST_DETAIL' | 'SIDEBAR'
 
 export interface User {
   id: string

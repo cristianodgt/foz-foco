@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
-import { FeedContainer } from '@/components/feed/FeedContainer'
+import { GridHome } from '@/components/feed/GridHome'
 import { buildMetadata } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
@@ -44,7 +44,7 @@ export default async function CategoryPage({ params }: PageProps) {
         </span>
       </div>
 
-      <FeedContainer category={slug} />
+      <GridHome category={slug} />
     </div>
   )
 }

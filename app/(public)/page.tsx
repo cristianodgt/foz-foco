@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { FeedContainer } from '@/components/feed/FeedContainer'
+import { GridHome } from '@/components/feed/GridHome'
 import { prisma } from '@/lib/prisma'
 import type { Post } from '@/types'
 
@@ -20,7 +20,7 @@ async function getInitialFeed() {
         tags: true,
       },
       orderBy: { publishedAt: 'desc' },
-      take: 5,
+      take: 6,
     })
     return posts.map((post) => ({ type: 'post' as const, data: post as unknown as Post }))
   } catch {
@@ -31,5 +31,5 @@ async function getInitialFeed() {
 export default async function HomePage() {
   const initialItems = await getInitialFeed()
 
-  return <FeedContainer initialItems={initialItems} />
+  return <GridHome initialItems={initialItems} />
 }

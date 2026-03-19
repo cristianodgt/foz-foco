@@ -6,6 +6,7 @@ import { AdCard } from './AdCard'
 import { ArticleInline } from './ArticleInline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useFeed } from '@/hooks/useFeed'
+import { LayoutGrid } from 'lucide-react'
 import type { FeedItem, Post } from '@/types'
 
 interface ArticleData {
@@ -26,18 +27,53 @@ interface ArticleData {
 interface FeedContainerProps {
   initialItems?: FeedItem[]
   category?: string
+  externalItems?: FeedItem[]
+  startIndex?: number
+  onBack?: () => void
+  externalLoadMore?: () => void
+  externalHasMore?: boolean
+  externalIsValidating?: boolean
 }
 
-export function FeedContainer({ initialItems = [], category }: FeedContainerProps) {
-  const { items, isLoading, error, hasMore, loadMore, isValidating } = useFeed(category)
+export function FeedContainer({
+  initialItems = [],
+  category,
+  externalItems,
+  startIndex,
+  onBack,
+  externalLoadMore,
+  externalHasMore,
+  externalIsValidating,
+}: FeedContainerProps) {
+  const useExternal = !!externalItems
+  const internalFeed = useFeed(useExternal ? '__skip__' : category)
+  const items = useExternal ? externalItems : internalFeed.items
+  const isLoading = useExternal ? false : internalFeed.isLoading
+  const error = useExternal ? undefined : internalFeed.error
+  const hasMore = useExternal ? (externalHasMore ?? false) : internalFeed.hasMore
+  const loadMore = useExternal ? (externalLoadMore ?? (() => {})) : internalFeed.loadMore
+  const isValidating = useExternal ? (externalIsValidating ?? false) : internalFeed.isValidating
+
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [openSlug, setOpenSlug] = useState<string | null>(null)
+  const scrolledToStart = useRef(false)
   // Preload cache: slug → article data
   const preloadCache = useRef<Map<string, ArticleData>>(new Map())
   const preloading = useRef<Set<string>>(new Set())
 
   const allItems = items.length > 0 ? items : initialItems
+
+  // Scroll to startIndex on mount
+  useEffect(() => {
+    if (startIndex != null && startIndex > 0 && containerRef.current && !scrolledToStart.current) {
+      scrolledToStart.current = true
+      containerRef.current.scrollTo({
+        top: startIndex * window.innerHeight,
+        behavior: 'instant' as ScrollBehavior,
+      })
+    }
+  }, [startIndex])
   const validItems = allItems.filter((item) => item && item.type && item.data)
 
   const handleObserver = useCallback(
@@ -138,9 +174,14 @@ export function FeedContainer({ initialItems = [], category }: FeedContainerProp
 
   return (
     <div className="feed-wrapper">
+      {onBack && (
+        <button className="back-to-grid" onClick={onBack} aria-label="Voltar à grade">
+          <LayoutGrid size={20} />
+        </button>
+      )}
       <div ref={containerRef} className="feed-container">
         {validItems.map((item, index) => (
-          <div key={`${item.type}-${item.data.id}`}>
+          <div key={`${item.type}-${item.data.id}-${index}`}>
             <div className="feed-item">
               {item.type === 'post' ? (
                 <FeedCard

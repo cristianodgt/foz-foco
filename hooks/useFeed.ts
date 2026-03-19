@@ -21,18 +21,25 @@ interface FeedPage {
   page: number
 }
 
-export function useFeed(category?: string) {
+export function useFeed(category?: string, fallbackData?: FeedItem[]) {
+  const skip = category === '__skip__'
   const getKey = (pageIndex: number, previousPageData: FeedPage | null) => {
+    if (skip) return null
     if (previousPageData && !previousPageData.hasMore) return null
-    const params = new URLSearchParams({ page: String(pageIndex + 1), limit: '5' })
-    if (category) params.set('category', category)
+    const params = new URLSearchParams({ page: String(pageIndex + 1), limit: '6' })
+    if (category && category !== '__skip__') params.set('category', category)
     return `/api/feed?${params}`
   }
 
   const { data, error, isLoading, size, setSize, isValidating } = useSWRInfinite<FeedPage>(
     getKey,
     fetcher,
-    { revalidateFirstPage: false }
+    {
+      revalidateFirstPage: false,
+      fallbackData: fallbackData
+        ? [{ items: fallbackData, hasMore: true, page: 1 }]
+        : undefined,
+    }
   )
 
   const items = data ? data.flatMap((page) => page.items || []).filter(Boolean) : []

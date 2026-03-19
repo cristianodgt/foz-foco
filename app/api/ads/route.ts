@@ -29,7 +29,7 @@ const adSchema = z.object({
   imageUrl: z.string().url(),
   targetUrl: z.string().url(),
   client: z.string().min(2),
-  position: z.enum(['FEED_BETWEEN', 'FEED_TOP', 'POST_DETAIL', 'SIDEBAR']),
+  position: z.enum(['FEED_BETWEEN', 'FEED_TOP', 'GRID_BANNER', 'POST_DETAIL', 'SIDEBAR']),
   frequency: z.number().int().min(1).default(5),
   active: z.boolean().default(true),
   startsAt: z.string().transform((s) => new Date(s)),
