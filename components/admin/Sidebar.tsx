@@ -9,6 +9,7 @@ const NAV: Array<{ section?: string; href?: string; label?: string; icon?: strin
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊', exact: true },
   { href: '/admin/posts/novo', label: 'Nova Notícia', icon: '✏️', badge: '+', exact: true },
   { href: '/admin/posts', label: 'Notícias', icon: '📰', exact: true },
+  { href: '/admin/categories', label: 'Categorias', icon: '🏷️', exact: true },
   { section: 'Monetização' },
   { href: '/admin/campaigns', label: 'Anúncios', icon: '📣', exact: true },
   { section: 'Gestão' },

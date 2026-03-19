@@ -36,6 +36,9 @@ export default function PostFormPage() {
   const [scheduled, setScheduled] = useState(false)
   const [scheduleDate, setScheduleDate] = useState('')
   const [tagInput, setTagInput] = useState('')
+  const [showNewCategory, setShowNewCategory] = useState(false)
+  const [newCatForm, setNewCatForm] = useState({ name: '', color: '#3B82F6', icon: '' })
+  const [savingCat, setSavingCat] = useState(false)
 
   const [form, setForm] = useState({
     title: '',
@@ -61,9 +64,42 @@ export default function PostFormPage() {
 
   const seoSlug = form.title ? generateSlugPreview(form.title) : 'seu-titulo-aqui'
 
-  useEffect(() => {
+  function fetchCategories() {
     fetch('/api/categories').then(r => r.json()).then(setCategories).catch(() => {})
-  }, [])
+  }
+
+  useEffect(() => { fetchCategories() }, [])
+
+  function generateCatSlug(name: string) {
+    return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  }
+
+  async function handleCreateCategory() {
+    if (!newCatForm.name) { toast({ title: 'Nome da categoria é obrigatório', variant: 'destructive' }); return }
+    setSavingCat(true)
+    try {
+      const res = await fetch('/api/admin/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newCatForm.name, slug: generateCatSlug(newCatForm.name), color: newCatForm.color, icon: newCatForm.icon || null }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        toast({ title: data.error || 'Erro ao criar categoria', variant: 'destructive' })
+        return
+      }
+      const created = await res.json()
+      fetchCategories()
+      setForm(f => ({ ...f, categoryId: created.id }))
+      setShowNewCategory(false)
+      setNewCatForm({ name: '', color: '#3B82F6', icon: '' })
+      toast({ title: '✅ Categoria criada!' })
+    } catch {
+      toast({ title: 'Erro de conexão', variant: 'destructive' })
+    } finally {
+      setSavingCat(false)
+    }
+  }
 
   useEffect(() => {
     if (!isNew) {
@@ -283,17 +319,78 @@ export default function PostFormPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
                 <label className="adm-label">Categoria *</label>
-                <select
-                  className="adm-select"
-                  style={{ width: '100%' }}
-                  value={form.categoryId}
-                  onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))}
-                >
-                  <option value="">Selecionar...</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <select
+                    className="adm-select"
+                    style={{ flex: 1 }}
+                    value={form.categoryId}
+                    onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))}
+                  >
+                    <option value="">Selecionar...</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.icon ? `${cat.icon} ` : ''}{cat.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="adm-mini-btn"
+                    onClick={() => setShowNewCategory(!showNewCategory)}
+                    title="Nova categoria"
+                    style={{ flexShrink: 0, width: 38, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+                {showNewCategory && (
+                  <div style={{
+                    marginTop: 8, padding: 12, borderRadius: 9,
+                    background: 'var(--adm-surface2)', border: '1px solid var(--adm-border)',
+                    display: 'flex', flexDirection: 'column', gap: 8,
+                  }}>
+                    <input
+                      className="adm-input"
+                      placeholder="Nome da categoria"
+                      value={newCatForm.name}
+                      onChange={e => setNewCatForm(f => ({ ...f, name: e.target.value }))}
+                    />
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <input
+                        type="color"
+                        value={newCatForm.color}
+                        onChange={e => setNewCatForm(f => ({ ...f, color: e.target.value }))}
+                        style={{ width: 38, height: 36, border: 'none', background: 'none', cursor: 'pointer' }}
+                      />
+                      <input
+                        className="adm-input"
+                        placeholder="Ícone (emoji)"
+                        value={newCatForm.icon}
+                        onChange={e => setNewCatForm(f => ({ ...f, icon: e.target.value }))}
+                        style={{ width: 80 }}
+                      />
+                      <button
+                        className="adm-btn-primary"
+                        style={{ fontSize: 12, padding: '6px 12px', flex: 1 }}
+                        onClick={handleCreateCategory}
+                        disabled={savingCat}
+                      >
+                        {savingCat ? 'Criando...' : 'Criar'}
+                      </button>
+                    </div>
+                    {newCatForm.name && (
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                        <span style={{ fontSize: 11, color: 'var(--adm-muted)' }}>Preview:</span>
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 3,
+                          padding: '2px 8px', borderRadius: 999, fontSize: 11, fontWeight: 600,
+                          background: newCatForm.color, color: 'white',
+                        }}>
+                          {newCatForm.icon && <span>{newCatForm.icon}</span>}
+                          {newCatForm.name}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="adm-label">Tags</label>
