@@ -90,7 +90,7 @@
 .grid-home {
   background: #000;
   height: 100dvh;
-  padding-top: 52px;
+  padding-top: 56px;
   overflow: hidden;
 }
 
@@ -98,7 +98,7 @@
 .grid-layout {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 52px);
+  height: calc(100dvh - 56px);
 }
 
 /* Fixed banner zones */
@@ -118,10 +118,10 @@
   display: none;
 }
 
-/* Grid of thumbnails */
+/* Grid of thumbnails — always 3 columns */
 .grid-view {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 2px;
   padding: 2px;
 }
@@ -130,7 +130,6 @@
   .grid-view {
     max-width: 640px;
     margin: 0 auto;
-    grid-template-columns: repeat(3, 1fr);
   }
   .grid-layout {
     max-width: 640px;
@@ -138,10 +137,11 @@
   }
 }
 
-/* Thumbnail cell */
+/* Thumbnail cell — sized so exactly 3 rows fit between banners */
 .grid-thumb {
   position: relative;
-  aspect-ratio: 4/5;
+  /* Available = 100dvh - 56px header - 160px banners - 24px gaps/padding, ÷ 3 rows */
+  height: calc((100dvh - 56px - 160px - 24px) / 3);
   overflow: hidden;
   cursor: pointer;
 }

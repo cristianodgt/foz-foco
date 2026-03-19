@@ -20,7 +20,7 @@ async function getInitialFeed() {
         tags: true,
       },
       orderBy: { publishedAt: 'desc' },
-      take: 6,
+      take: 9,
     })
     return posts.map((post) => ({ type: 'post' as const, data: post as unknown as Post }))
   } catch {

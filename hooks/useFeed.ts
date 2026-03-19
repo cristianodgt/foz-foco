@@ -26,7 +26,7 @@ export function useFeed(category?: string, fallbackData?: FeedItem[]) {
   const getKey = (pageIndex: number, previousPageData: FeedPage | null) => {
     if (skip) return null
     if (previousPageData && !previousPageData.hasMore) return null
-    const params = new URLSearchParams({ page: String(pageIndex + 1), limit: '6' })
+    const params = new URLSearchParams({ page: String(pageIndex + 1), limit: '9' })
     if (category && category !== '__skip__') params.set('category', category)
     return `/api/feed?${params}`
   }

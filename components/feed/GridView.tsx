@@ -41,7 +41,7 @@ const GridThumbnail = memo(function GridThumbnail({ post, index, onClick }: Grid
           alt={post.title}
           fill
           className="object-cover"
-          sizes="(max-width: 640px) 50vw, 213px"
+          sizes="(max-width: 640px) 33vw, 213px"
           quality={60}
           priority={index < 6}
         />
