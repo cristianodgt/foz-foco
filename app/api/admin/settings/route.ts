@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAuth } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -13,7 +13,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    await requireAuth()
+    await requireAdmin()
     const body = await request.json()
     const config = await prisma.siteConfig.upsert({
       where: { id: 'main' },

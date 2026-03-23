@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // PUT update category
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    await requireAdmin()
     const { id } = await params
     const body = await req.json()
     const { name, slug, color, icon, order, active } = body
@@ -35,6 +37,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 // DELETE category
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    await requireAdmin()
     const { id } = await params
 
     // Check if category has posts

@@ -52,3 +52,14 @@ export async function requireAuth(): Promise<JWTPayload> {
   }
   return session
 }
+
+export async function requireAdmin(): Promise<JWTPayload> {
+  const session = await getSession()
+  if (!session) {
+    throw new Error('Não autenticado')
+  }
+  if (session.role !== 'ADMIN') {
+    throw new Error('Acesso negado: apenas administradores')
+  }
+  return session
+}

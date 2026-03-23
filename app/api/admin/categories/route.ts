@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET all categories (including inactive) for admin
@@ -17,6 +18,7 @@ export async function GET() {
 // POST create new category
 export async function POST(req: NextRequest) {
   try {
+    await requireAdmin()
     const body = await req.json()
     const { name, slug, color, icon, order, active } = body
 
