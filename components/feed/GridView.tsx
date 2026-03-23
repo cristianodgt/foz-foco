@@ -116,15 +116,18 @@ function BannerSlot({ ads, index }: { ads: Ad[]; index: number }) {
 
 export function GridView({ items, onSelectPost, onLoadMore, hasMore, isValidating, isLoading }: GridViewProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
-  const [bannerAds, setBannerAds] = useState<Ad[]>([])
+  const [bannerTopAds, setBannerTopAds] = useState<Ad[]>([])
+  const [bannerBottomAds, setBannerBottomAds] = useState<Ad[]>([])
 
   // Fetch grid banner ads
   useEffect(() => {
-    fetch('/api/ads?position=GRID_BANNER')
+    fetch('/api/ads?position=GRID_BANNER_TOP')
       .then(r => r.json())
-      .then((ads: Ad[]) => {
-        if (Array.isArray(ads)) setBannerAds(ads)
-      })
+      .then((ads: Ad[]) => { if (Array.isArray(ads)) setBannerTopAds(ads) })
+      .catch(() => {})
+    fetch('/api/ads?position=GRID_BANNER_BOTTOM')
+      .then(r => r.json())
+      .then((ads: Ad[]) => { if (Array.isArray(ads)) setBannerBottomAds(ads) })
       .catch(() => {})
   }, [])
 
@@ -175,7 +178,7 @@ export function GridView({ items, onSelectPost, onLoadMore, hasMore, isValidatin
     <div className="grid-layout">
       {/* Banner TOPO — fixo */}
       <div className="grid-banner-top">
-        <BannerSlot ads={bannerAds} index={0} />
+        <BannerSlot ads={bannerTopAds} index={0} />
       </div>
 
       {/* Thumbnails — scrollable entre os banners */}
@@ -206,7 +209,7 @@ export function GridView({ items, onSelectPost, onLoadMore, hasMore, isValidatin
 
       {/* Banner INFERIOR — fixo */}
       <div className="grid-banner-bottom">
-        <BannerSlot ads={bannerAds} index={1} />
+        <BannerSlot ads={bannerBottomAds} index={0} />
       </div>
     </div>
   )

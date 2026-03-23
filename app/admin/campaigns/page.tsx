@@ -15,6 +15,7 @@ const emptyForm = {
 
 const AD_POSITION_LABELS: Record<string, string> = {
   FEED_BETWEEN: 'Entre Posts', FEED_TOP: 'Topo do Feed',
+  GRID_BANNER_TOP: 'Banner Grid - Topo', GRID_BANNER_BOTTOM: 'Banner Grid - Baixo',
   POST_DETAIL: 'Detalhe do Post', SIDEBAR: 'Sidebar'
 }
 const AD_TYPE_LABELS: Record<string, string> = {
@@ -102,6 +103,9 @@ export default function CampaignsPage() {
         showToast(editing ? 'Anúncio atualizado' : 'Anúncio criado!')
         setDialogOpen(false)
         fetchAds()
+      } else {
+        const err = await res.json().catch(() => ({}))
+        showToast(err.error || 'Erro ao salvar anúncio', true)
       }
     } finally {
       setSaving(false)
@@ -304,6 +308,8 @@ export default function CampaignsPage() {
                 <div>
                   <label className="adm-label">Posição</label>
                   <select className="adm-select" value={form.position} onChange={(e) => setForm((f) => ({ ...f, position: e.target.value }))}>
+                    <option value="GRID_BANNER_TOP">Banner Grid - Topo</option>
+                    <option value="GRID_BANNER_BOTTOM">Banner Grid - Baixo</option>
                     <option value="FEED_BETWEEN">Entre Posts</option>
                     <option value="FEED_TOP">Topo do Feed</option>
                     <option value="POST_DETAIL">Detalhe do Post</option>
