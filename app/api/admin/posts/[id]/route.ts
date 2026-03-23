@@ -72,3 +72,22 @@ export async function PUT(request: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'Erro ao atualizar post' }, { status: 500 })
   }
 }
+
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  try {
+    await requireAuth()
+    const { id } = await params
+    const post = await prisma.post.findUnique({ where: { id } })
+    if (!post) return NextResponse.json({ error: 'Post não encontrado' }, { status: 404 })
+
+    await prisma.post.update({
+      where: { id },
+      data: { tags: { set: [] } },
+    })
+    await prisma.post.delete({ where: { id } })
+
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: 'Erro ao deletar post' }, { status: 500 })
+  }
+}

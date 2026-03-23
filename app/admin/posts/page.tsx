@@ -47,10 +47,12 @@ export default function AdminPostsPage() {
     setDeleting(post.id)
     setConfirmDelete(null)
     try {
-      const res = await fetch(`/api/posts/${post.slug}`, { method: 'DELETE' })
+      const res = await fetch(`/api/admin/posts/${post.id}`, { method: 'DELETE' })
       if (res.ok) {
         setPosts((prev) => prev.filter((p) => p.id !== post.id))
         toast({ title: 'Notícia deletada' })
+      } else {
+        toast({ title: 'Erro ao deletar notícia', variant: 'destructive' })
       }
     } finally {
       setDeleting(null)
