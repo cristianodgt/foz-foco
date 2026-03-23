@@ -7,13 +7,13 @@ async function main() {
   console.log('🌱 Iniciando seed...')
 
   // Admin user
-  const hashedPassword = await bcrypt.hash('admin123', 12)
+  const hashedPassword = await bcrypt.hash('foco27113', 12)
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@fozfoco.com.br' },
-    update: {},
+    where: { email: 'luana.fachi@hotmail.com' },
+    update: { password: hashedPassword, email: 'luana.fachi@hotmail.com' },
     create: {
       name: 'Admin Foz.Foco',
-      email: 'admin@fozfoco.com.br',
+      email: 'luana.fachi@hotmail.com',
       password: hashedPassword,
       role: 'ADMIN',
     },
