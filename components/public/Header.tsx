@@ -50,8 +50,16 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [scrolled, setScrolled] = useState(false)
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const { results, isLoading } = useSearch(query)
+
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.logo) setLogoUrl(data.logo) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)
@@ -95,12 +103,16 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0">
             <Image
-              src="/logo.svg"
+              src={logoUrl || '/logo.svg'}
               alt="Foz Cidade em Foco"
               width={72}
               height={28}
-              style={{ filter: 'brightness(0) invert(1)', objectFit: 'contain' }}
+              style={{
+                objectFit: 'contain',
+                filter: logoUrl ? 'none' : 'brightness(0) invert(1)',
+              }}
               priority
+              unoptimized={!!logoUrl}
             />
           </Link>
 
