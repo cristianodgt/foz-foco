@@ -3,14 +3,13 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Clock, User, Heart, Share2, ChevronRight, X, ChevronLeft } from 'lucide-react'
+import { Clock, User, Heart, Share2, ChevronRight, X } from 'lucide-react'
 import { formatRelativeDate } from '@/lib/utils'
 import type { Post } from '@/types'
 
 interface FeedCardProps {
   post: Post
   index: number
-  onOpen?: (slug: string) => void
   onVisible?: (slug: string) => void
 }
 
@@ -27,11 +26,8 @@ function MediaSlide({
 
   useEffect(() => {
     if (!videoRef.current) return
-    if (active) {
-      videoRef.current.play().catch(() => {})
-    } else {
-      videoRef.current.pause()
-    }
+    if (active) videoRef.current.play().catch(() => {})
+    else videoRef.current.pause()
   }, [active])
 
   useEffect(() => {
@@ -61,22 +57,6 @@ function MediaSlide({
   )
 }
 
-function splitHtmlIntoPages(html: string, charsPerPage = 900): string[] {
-  const segments = html.split(/(?<=<\/(?:p|h[1-6]|blockquote|ul|ol|li)>)\s*/gi)
-  const pages: string[] = []
-  let current = ''
-  for (const seg of segments) {
-    if (current.length + seg.length > charsPerPage && current.length > 0) {
-      pages.push(current)
-      current = seg
-    } else {
-      current += seg
-    }
-  }
-  if (current.trim()) pages.push(current)
-  return pages.length ? pages : [html]
-}
-
 export function FeedCard({ post, index, onVisible }: FeedCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [muted, setMuted] = useState(true)
@@ -85,7 +65,7 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
   const [slideIndex, setSlideIndex] = useState(0)
 
   // Article state
-  const [articleSlides, setArticleSlides] = useState<string[]>([])
+  const [articleContent, setArticleContent] = useState<string | null>(null)
   const [articleTitle, setArticleTitle] = useState('')
   const [articleLoading, setArticleLoading] = useState(false)
   const articleFetched = useRef(false)
@@ -100,10 +80,29 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
     return []
   })()
 
-  const totalSlides = mediaList.length + articleSlides.length
-  const isArticleSlide = slideIndex >= mediaList.length
+  // Total slides = media + 1 article slot (always last)
+  const ARTICLE_SLIDE_IDX = mediaList.length
+  const totalSlides = mediaList.length + 1
+  const isArticleSlide = slideIndex === ARTICLE_SLIDE_IDX
   const currentMedia = mediaList[slideIndex]
   const isCurrentVideo = currentMedia?.type === 'video'
+
+  // Reset to slide 0 when card scrolls out of view
+  useEffect(() => {
+    if (!cardRef.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          setSlideIndex(0)
+        } else if (onVisible) {
+          onVisible(post.slug)
+        }
+      },
+      { threshold: 0.3 }
+    )
+    observer.observe(cardRef.current)
+    return () => observer.disconnect()
+  }, [onVisible, post.slug])
 
   // Touch swipe
   const touchStart = useRef<number | null>(null)
@@ -122,17 +121,6 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
     touchStart.current = null
   }
 
-  // Preload on visible
-  useEffect(() => {
-    if (!onVisible || !cardRef.current) return
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) onVisible(post.slug) },
-      { threshold: 0.3 }
-    )
-    observer.observe(cardRef.current)
-    return () => observer.disconnect()
-  }, [onVisible, post.slug])
-
   function toggleMute(e: React.MouseEvent) {
     e.stopPropagation()
     setMuted(m => !m)
@@ -149,30 +137,24 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
   async function handleShare(e: React.MouseEvent) {
     e.stopPropagation()
     const url = `${window.location.origin}/${post.slug}`
-    if (navigator.share) {
-      navigator.share({ title: post.title, url }).catch(() => {})
-    } else {
-      navigator.clipboard.writeText(url).catch(() => {})
-    }
+    if (navigator.share) navigator.share({ title: post.title, url }).catch(() => {})
+    else navigator.clipboard.writeText(url).catch(() => {})
   }
 
   async function handleVerMateria(e: React.MouseEvent) {
     e.stopPropagation()
 
-    // Already fetched: jump to first article slide
-    if (articleFetched.current && articleSlides.length > 0) {
-      setSlideIndex(mediaList.length)
-      return
-    }
+    // Go to article slide immediately
+    setSlideIndex(ARTICLE_SLIDE_IDX)
 
+    // Fetch content if not already loaded
+    if (articleFetched.current) return
     setArticleLoading(true)
     try {
       const data = await fetch(`/api/posts/${post.slug}`).then(r => r.json())
-      const pages = splitHtmlIntoPages(data.content || '')
       setArticleTitle(data.title || post.title)
-      setArticleSlides(pages)
+      setArticleContent(data.content || '')
       articleFetched.current = true
-      setSlideIndex(mediaList.length)
     } finally {
       setArticleLoading(false)
     }
@@ -210,85 +192,89 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900 to-slate-900" />
       )}
 
-      {/* ── ARTICLE SLIDES ── */}
-      {articleSlides.map((html, i) => {
-        const idx = mediaList.length + i
-        const isActive = idx === slideIndex
-        return (
-          <div
-            key={`article-${i}`}
-            style={{
-              position: 'absolute', inset: 0,
-              opacity: isActive ? 1 : 0,
-              transition: 'opacity 0.3s ease',
-              pointerEvents: isActive ? 'auto' : 'none',
-              background: '#ffffff',
-              overflowY: 'auto',
-              zIndex: 5,
-            }}
-          >
-            {/* Article header */}
-            <div style={{ padding: '56px 20px 0', borderBottom: '1px solid #f0f0f0', paddingBottom: 16, marginBottom: 16 }}>
-              <span
-                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white mb-3"
-                style={{ backgroundColor: post.category.color }}
-              >
-                {post.category.icon && <span className="mr-1">{post.category.icon}</span>}
-                {post.category.name}
-              </span>
-              {i === 0 && (
-                <h1 style={{ fontSize: 20, fontWeight: 800, color: '#111', lineHeight: 1.3, marginBottom: 8 }}>
-                  {articleTitle}
-                </h1>
-              )}
-              {i > 0 && (
-                <p style={{ fontSize: 13, color: '#aaa', fontWeight: 600 }}>
-                  {articleTitle} — continuação
-                </p>
-              )}
-            </div>
+      {/* ── ARTICLE SLIDE (always last) ── */}
+      <div
+        style={{
+          position: 'absolute', inset: 0,
+          opacity: isArticleSlide ? 1 : 0,
+          transition: 'opacity 0.3s ease',
+          pointerEvents: isArticleSlide ? 'auto' : 'none',
+          background: '#ffffff',
+          overflowY: 'auto',
+          zIndex: 5,
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        {/* Back button */}
+        <button
+          onClick={handleCloseArticle}
+          style={{
+            position: 'sticky', top: 0, left: 0,
+            zIndex: 10, display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
+            border: 'none', cursor: 'pointer', color: '#333',
+            padding: '14px 16px 10px', width: '100%',
+            borderBottom: '1px solid #f0f0f0', fontSize: 13, fontWeight: 600,
+          }}
+        >
+          <X size={16} />
+          Fechar matéria
+        </button>
 
-            {/* Content */}
+        <div style={{ padding: '16px 20px 80px' }}>
+          {/* Category */}
+          <span
+            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white"
+            style={{ backgroundColor: post.category.color, marginBottom: 12, display: 'inline-flex' }}
+          >
+            {post.category.icon && <span className="mr-1">{post.category.icon}</span>}
+            {post.category.name}
+          </span>
+
+          {/* Title */}
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: '#111', lineHeight: 1.3, margin: '8px 0 6px' }}>
+            {articleTitle || post.title}
+          </h1>
+
+          {/* Meta */}
+          <div style={{ display: 'flex', gap: 12, color: '#888', fontSize: 12, marginBottom: 20, alignItems: 'center' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <User size={12} /> {post.author.name}
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Clock size={12} />
+              {post.publishedAt ? formatRelativeDate(post.publishedAt) : 'Agora'}
+            </span>
+          </div>
+
+          {/* Content */}
+          {articleLoading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: '50%',
+                border: '3px solid #FF3B30', borderTopColor: 'transparent',
+                animation: 'spin 0.8s linear infinite',
+              }} />
+            </div>
+          ) : articleContent ? (
             <div
               className="prose-content"
-              style={{ padding: '0 20px 80px', color: '#333', fontSize: 15, lineHeight: 1.7 }}
-              dangerouslySetInnerHTML={{ __html: html }}
+              style={{ color: '#333', fontSize: 15, lineHeight: 1.75 }}
+              dangerouslySetInnerHTML={{ __html: articleContent }}
             />
+          ) : (
+            <p style={{ color: '#999', textAlign: 'center', padding: '40px 0' }}>Carregando conteúdo...</p>
+          )}
+        </div>
+      </div>
 
-            {/* Page indicator */}
-            <div style={{
-              position: 'sticky', bottom: 0, background: 'linear-gradient(to top, #fff 80%, transparent)',
-              padding: '12px 20px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}>
-              {articleSlides.length > 1 && (
-                <span style={{ fontSize: 12, color: '#aaa' }}>
-                  Página {i + 1} de {articleSlides.length}
-                </span>
-              )}
-              {i < articleSlides.length - 1 && (
-                <button
-                  onClick={e => { e.stopPropagation(); setSlideIndex(idx + 1) }}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 4,
-                    background: '#FF3B30', color: '#fff', border: 'none', cursor: 'pointer',
-                    borderRadius: 999, padding: '7px 14px', fontSize: 12, fontWeight: 700,
-                  }}
-                >
-                  Continuar <ChevronRight size={12} />
-                </button>
-              )}
-            </div>
-          </div>
-        )
-      })}
-
-      {/* Gradient overlay — only on media slides */}
+      {/* ── Gradient overlay (media only) ── */}
       {!isArticleSlide && (
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
       )}
 
       {/* ── DOTS ── */}
-      {totalSlides > 1 && (
+      {totalSlides > 1 && !isArticleSlide && (
         <div
           style={{
             position: 'absolute', top: 60, left: '50%', transform: 'translateX(-50%)',
@@ -297,7 +283,7 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
           onClick={e => e.stopPropagation()}
         >
           {Array.from({ length: totalSlides }).map((_, i) => {
-            const isArticle = i >= mediaList.length
+            const isArticleDot = i === ARTICLE_SLIDE_IDX
             const isActive = i === slideIndex
             return (
               <button
@@ -308,8 +294,8 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
                   height: 6,
                   borderRadius: 999,
                   background: isActive
-                    ? (isArticle ? '#FF6B00' : '#fff')
-                    : (isArticle ? 'rgba(255,107,0,0.4)' : 'rgba(255,255,255,0.4)'),
+                    ? '#fff'
+                    : isArticleDot ? 'rgba(255,107,0,0.7)' : 'rgba(255,255,255,0.4)',
                   border: 'none', cursor: 'pointer', padding: 0,
                   transition: 'all 0.25s ease',
                 }}
@@ -319,39 +305,7 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
         </div>
       )}
 
-      {/* Close article button */}
-      {isArticleSlide && (
-        <button
-          onClick={handleCloseArticle}
-          style={{
-            position: 'absolute', top: 14, left: 14, zIndex: 20,
-            background: 'rgba(0,0,0,0.08)', border: 'none', cursor: 'pointer',
-            borderRadius: '50%', width: 36, height: 36,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#333',
-          }}
-        >
-          <ChevronLeft size={20} />
-        </button>
-      )}
-
-      {/* Close (X) button on article — top right */}
-      {isArticleSlide && (
-        <button
-          onClick={handleCloseArticle}
-          style={{
-            position: 'absolute', top: 14, right: 14, zIndex: 20,
-            background: 'rgba(0,0,0,0.08)', border: 'none', cursor: 'pointer',
-            borderRadius: '50%', width: 36, height: 36,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#333',
-          }}
-        >
-          <X size={18} />
-        </button>
-      )}
-
-      {/* Mute button — only for videos on media slides */}
+      {/* ── Mute button ── */}
       {isCurrentVideo && !isArticleSlide && (
         <button
           onClick={toggleMute}
@@ -367,7 +321,7 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
         </button>
       )}
 
-      {/* Like + Share — only on media slides */}
+      {/* ── Like + Share (media only) ── */}
       {!isArticleSlide && (
         <div className="feed-card-actions" style={{
           position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
@@ -386,7 +340,6 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>{likeCount}</span>
             )}
           </button>
-
           <button
             onClick={handleShare}
             style={{
@@ -400,7 +353,7 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
         </div>
       )}
 
-      {/* Bottom content — only on media slides */}
+      {/* ── Bottom info + "Ver matéria" (media only) ── */}
       {!isArticleSlide && (
         <div className="absolute inset-x-0 bottom-0 p-5 pb-8" style={{ paddingRight: 64 }}>
           <motion.div
@@ -439,18 +392,16 @@ export function FeedCard({ post, index, onVisible }: FeedCardProps) {
 
               <button
                 onClick={handleVerMateria}
-                disabled={articleLoading}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 5,
                   background: '#FF3B30', color: '#fff',
-                  border: 'none', cursor: articleLoading ? 'wait' : 'pointer',
+                  border: 'none', cursor: 'pointer',
                   borderRadius: 999, padding: '8px 16px',
                   fontSize: 13, fontWeight: 700, flexShrink: 0,
                   boxShadow: '0 2px 10px rgba(255,59,48,0.4)',
-                  opacity: articleLoading ? 0.7 : 1,
                 }}
               >
-                {articleLoading ? 'Abrindo...' : 'Ver matéria'} <ChevronRight size={13} />
+                Ver matéria <ChevronRight size={13} />
               </button>
             </div>
           </motion.div>

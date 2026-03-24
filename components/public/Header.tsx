@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu, X, Search, Clock } from 'lucide-react'
-import { Logo } from '@/components/Logo'
+// Logo importada via next/image abaixo
 import { motion, AnimatePresence } from 'framer-motion'
 import { formatRelativeDate } from '@/lib/utils'
 import type { Post } from '@/types'
@@ -94,7 +94,14 @@ export function Header() {
         <div className="max-w-[640px] mx-auto px-3 h-14 flex items-center gap-2">
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0">
-            <Logo variant="light" size="sm" />
+            <Image
+              src="/logo.svg"
+              alt="Foz Cidade em Foco"
+              width={72}
+              height={28}
+              style={{ filter: 'brightness(0) invert(1)', objectFit: 'contain' }}
+              priority
+            />
           </Link>
 
           {/* Category strip — horizontally scrollable */}
