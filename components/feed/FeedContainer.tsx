@@ -3,26 +3,10 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { FeedCard } from './FeedCard'
 import { AdCard } from './AdCard'
-import { ArticleInline } from './ArticleInline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useFeed } from '@/hooks/useFeed'
 import { LayoutGrid } from 'lucide-react'
-import type { FeedItem, Post, Ad } from '@/types'
-
-interface ArticleData {
-  id: string
-  title: string
-  slug: string
-  summary: string
-  content: string
-  coverImage?: string | null
-  views: number
-  publishedAt: string | null
-  createdAt: string
-  category: { name: string; color: string; icon?: string | null }
-  author: { name: string }
-  tags: { id: string; name: string }[]
-}
+import type { FeedItem, Ad } from '@/types'
 
 interface FeedContainerProps {
   initialItems?: FeedItem[]
@@ -56,7 +40,7 @@ export function FeedContainer({
 
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [openSlug, setOpenSlug] = useState<string | null>(null)
+  const scrolledToStart = useRef(false)
   const [feedTopAd, setFeedTopAd] = useState<Ad | null>(null)
 
   useEffect(() => {
@@ -65,14 +49,9 @@ export function FeedContainer({
       .then((data: Ad[]) => { if (data[0]) setFeedTopAd(data[0]) })
       .catch(() => {})
   }, [])
-  const scrolledToStart = useRef(false)
-  // Preload cache: slug → article data
-  const preloadCache = useRef<Map<string, ArticleData>>(new Map())
-  const preloading = useRef<Set<string>>(new Set())
 
   const allItems = items.length > 0 ? items : initialItems
 
-  // Scroll to startIndex on mount
   useEffect(() => {
     if (startIndex != null && startIndex > 0 && containerRef.current && !scrolledToStart.current) {
       scrolledToStart.current = true
@@ -82,6 +61,7 @@ export function FeedContainer({
       })
     }
   }, [startIndex])
+
   const validItems = allItems.filter((item) => item && item.type && item.data)
 
   const handleObserver = useCallback(
@@ -97,55 +77,6 @@ export function FeedContainer({
     if (loadMoreRef.current) observer.observe(loadMoreRef.current)
     return () => observer.disconnect()
   }, [handleObserver])
-
-  // Disable/enable scroll-snap when article is open
-  useEffect(() => {
-    if (!containerRef.current) return
-    containerRef.current.style.scrollSnapType = openSlug ? 'none' : 'y mandatory'
-  }, [openSlug])
-
-  function handleVisible(slug: string) {
-    if (preloadCache.current.has(slug) || preloading.current.has(slug)) return
-    preloading.current.add(slug)
-    fetch(`/api/posts/${slug}`)
-      .then(r => r.json())
-      .then(data => {
-        preloadCache.current.set(slug, data)
-        preloading.current.delete(slug)
-      })
-      .catch(() => preloading.current.delete(slug))
-  }
-
-  function scrollToArticle(slug: string) {
-    setTimeout(() => {
-      const el = document.getElementById(`article-inline-${slug}`)
-      if (el && containerRef.current) {
-        const containerRect = containerRef.current.getBoundingClientRect()
-        const elRect = el.getBoundingClientRect()
-        const offset = elRect.top - containerRect.top
-        containerRef.current.scrollBy({ top: offset, behavior: 'smooth' })
-      }
-    }, 60)
-  }
-
-  function handleOpen(slug: string) {
-    if (!preloadCache.current.has(slug)) {
-      fetch(`/api/posts/${slug}`)
-        .then(r => r.json())
-        .then(data => {
-          preloadCache.current.set(slug, data)
-          setOpenSlug(slug)
-          scrollToArticle(slug)
-        })
-      return
-    }
-    setOpenSlug(slug)
-    scrollToArticle(slug)
-  }
-
-  function handleClose() {
-    setOpenSlug(null)
-  }
 
   if (error && allItems.length === 0) {
     return (
@@ -194,26 +125,11 @@ export function FeedContainer({
           </div>
         )}
         {validItems.map((item, index) => (
-          <div key={`${item.type}-${item.data.id}-${index}`}>
-            <div className="feed-item">
-              {item.type === 'post' ? (
-                <FeedCard
-                  post={item.data}
-                  index={index}
-                  onOpen={handleOpen}
-                  onVisible={handleVisible}
-                />
-              ) : (
-                <AdCard ad={item.data} />
-              )}
-            </div>
-
-            {item.type === 'post' && openSlug === item.data.slug && preloadCache.current.has(item.data.slug) && (
-              <ArticleInline
-                id={`article-inline-${item.data.slug}`}
-                post={preloadCache.current.get(item.data.slug)!}
-                onClose={handleClose}
-              />
+          <div key={`${item.type}-${item.data.id}-${index}`} className="feed-item">
+            {item.type === 'post' ? (
+              <FeedCard post={item.data} index={index} />
+            ) : (
+              <AdCard ad={item.data} />
             )}
           </div>
         ))}
