@@ -7,7 +7,7 @@ import { ArticleInline } from './ArticleInline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useFeed } from '@/hooks/useFeed'
 import { LayoutGrid } from 'lucide-react'
-import type { FeedItem, Post } from '@/types'
+import type { FeedItem, Post, Ad } from '@/types'
 
 interface ArticleData {
   id: string
@@ -57,6 +57,14 @@ export function FeedContainer({
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [openSlug, setOpenSlug] = useState<string | null>(null)
+  const [feedTopAd, setFeedTopAd] = useState<Ad | null>(null)
+
+  useEffect(() => {
+    fetch('/api/ads?position=FEED_TOP')
+      .then(r => r.ok ? r.json() : [])
+      .then((data: Ad[]) => { if (data[0]) setFeedTopAd(data[0]) })
+      .catch(() => {})
+  }, [])
   const scrolledToStart = useRef(false)
   // Preload cache: slug → article data
   const preloadCache = useRef<Map<string, ArticleData>>(new Map())
@@ -180,6 +188,11 @@ export function FeedContainer({
         </button>
       )}
       <div ref={containerRef} className="feed-container">
+        {feedTopAd && (
+          <div className="feed-item">
+            <AdCard ad={feedTopAd} />
+          </div>
+        )}
         {validItems.map((item, index) => (
           <div key={`${item.type}-${item.data.id}-${index}`}>
             <div className="feed-item">

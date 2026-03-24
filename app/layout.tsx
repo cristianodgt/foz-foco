@@ -12,9 +12,15 @@ export const metadata: Metadata = {
   },
   description: 'O portal de notícias da tríplice fronteira. Fique por dentro de tudo que acontece em Foz do Iguaçu.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/apple-icon.png',
+  },
   openGraph: {
     siteName: 'Foz.Foco',
     locale: 'pt_BR',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Foz.Foco — Notícias de Foz do Iguaçu' }],
   },
 }
 

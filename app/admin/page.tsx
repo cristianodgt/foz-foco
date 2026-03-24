@@ -12,6 +12,7 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checking, setChecking] = useState(true)
   const router = useRouter()
   const { toast } = useToast()
 
@@ -19,8 +20,17 @@ export default function AdminLoginPage() {
   useEffect(() => {
     fetch('/api/admin/me').then((r) => {
       if (r.ok) router.push('/admin/dashboard')
-    })
+      else setChecking(false)
+    }).catch(() => setChecking(false))
   }, [router])
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-white/40 animate-spin" />
+      </div>
+    )
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

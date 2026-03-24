@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { X, ExternalLink } from 'lucide-react'
+import { Logo } from '@/components/Logo'
 
 const NAV: Array<{ section?: string; href?: string; label?: string; icon?: string; badge?: string; exact?: boolean }> = [
   { section: 'Conteúdo' },
@@ -51,25 +52,9 @@ export function Sidebar({ onClose, userName = 'Admin', userRole = 'Editor-chefe'
         gap: '10px',
         justifyContent: 'space-between',
       }}>
-        <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <div style={{
-            width: '34px',
-            height: '34px',
-            borderRadius: '9px',
-            background: 'linear-gradient(135deg, #FF3B30, #FF9500)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '14px',
-            color: 'white',
-            letterSpacing: '0.5px',
-            flexShrink: 0,
-          }}>FC</div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--adm-text)', lineHeight: 1.1 }}>FOZ.FOCO</div>
-            <div style={{ fontSize: '10px', color: 'var(--adm-muted)' }}>Painel Admin</div>
-          </div>
+        <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+          <Logo variant="light" size="md" />
+          <div style={{ fontSize: '10px', color: 'var(--adm-muted)', whiteSpace: 'nowrap' }}>Painel Admin</div>
         </Link>
         {onClose && (
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--adm-muted)', padding: '4px' }}>

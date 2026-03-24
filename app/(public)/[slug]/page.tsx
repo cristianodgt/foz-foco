@@ -27,6 +27,13 @@ async function getPost(slug: string) {
   return post
 }
 
+async function getPostDetailAd() {
+  const now = new Date()
+  return prisma.ad.findFirst({
+    where: { position: 'POST_DETAIL', active: true, startsAt: { lte: now }, endsAt: { gte: now } },
+  })
+}
+
 async function getRelatedPosts(categoryId: string, excludeId: string) {
   return prisma.post.findMany({
     where: { categoryId, status: 'PUBLISHED', id: { not: excludeId } },
@@ -61,7 +68,10 @@ export default async function PostPage({ params }: PageProps) {
   // Increment views (fire and forget)
   prisma.post.update({ where: { id: post.id }, data: { views: { increment: 1 } } }).catch(() => {})
 
-  const relatedPosts = await getRelatedPosts(post.categoryId, post.id)
+  const [relatedPosts, postDetailAd] = await Promise.all([
+    getRelatedPosts(post.categoryId, post.id),
+    getPostDetailAd(),
+  ])
   const jsonLd = buildArticleJsonLd({
     title: post.title,
     description: post.summary,
@@ -161,6 +171,30 @@ export default async function PostPage({ params }: PageProps) {
             </div>
           )}
         </div>
+
+        {/* POST_DETAIL ad banner */}
+        {postDetailAd && (
+          <div className="max-w-2xl mx-auto px-4 pb-6">
+            <a
+              href={postDetailAd.targetUrl}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="block relative rounded-xl overflow-hidden"
+              style={{ height: '120px' }}
+            >
+              <Image
+                src={postDetailAd.imageUrl}
+                alt={postDetailAd.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 672px) 100vw, 672px"
+              />
+              <span className="absolute top-2 right-2 text-[10px] bg-black/50 text-white/70 px-1.5 py-0.5 rounded">
+                Patrocinado
+              </span>
+            </a>
+          </div>
+        )}
 
         {/* Related posts */}
         {relatedPosts.length > 0 && (
