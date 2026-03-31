@@ -1,7 +1,46 @@
 export type Role = 'ADMIN' | 'EDITOR'
 export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
-export type AdType = 'BANNER' | 'NATIVE' | 'INTERSTITIAL'
-export type AdPosition = 'FEED_BETWEEN' | 'FEED_TOP' | 'GRID_BANNER' | 'GRID_BANNER_TOP' | 'GRID_BANNER_BOTTOM' | 'POST_DETAIL' | 'SIDEBAR'
+export type AdType = 'BANNER' | 'NATIVE' | 'INTERSTITIAL' | 'BUSINESS' | 'SPONSOR'
+export type AdPosition =
+  | 'FEED_BETWEEN'
+  | 'FEED_TOP'
+  | 'GRID_BANNER'
+  | 'GRID_BANNER_TOP'
+  | 'GRID_BANNER_BOTTOM'
+  | 'POST_DETAIL'
+  | 'SIDEBAR'
+  | 'BREAKING_BANNER'
+  | 'SECTION_SPONSOR'
+  | 'INLINE_BANNER'
+  | 'ARTICLE_TOP'
+
+export type BusinessCategory =
+  | 'ALIMENTACAO'
+  | 'SAUDE'
+  | 'SERVICOS'
+  | 'EDUCACAO'
+  | 'COMERCIO'
+  | 'ESPORTES'
+  | 'AUTOMOTIVO'
+  | 'IMOBILIARIO'
+  | 'OUTRO'
+
+export interface Business {
+  id: string
+  name: string
+  logo?: string | null
+  category: BusinessCategory
+  description: string
+  phone?: string | null
+  whatsapp?: string | null
+  address?: string | null
+  website?: string | null
+  isPremium: boolean
+  active: boolean
+  order: number
+  createdAt: Date
+  updatedAt: Date
+}
 
 export interface User {
   id: string

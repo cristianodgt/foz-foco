@@ -2,12 +2,19 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Metadata } from 'next'
-import { ChevronLeft, Clock, Eye } from 'lucide-react'
+import { Clock, Eye, User, Share2, ChevronLeft } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { buildMetadata, buildArticleJsonLd } from '@/lib/seo'
 import { formatDate, formatNumber } from '@/lib/utils'
-import { FeedCard } from '@/components/feed/FeedCard'
+import { CategoryBadge } from '@/components/news/CategoryBadge'
+import { ArticleCard } from '@/components/news/ArticleCard'
+import { AdBannerTop } from '@/components/ads/AdBannerTop'
+import { AdBannerBottom } from '@/components/ads/AdBannerBottom'
+import { AdSidebarSticky } from '@/components/ads/AdSidebarSticky'
+import { TrendingWidget } from '@/components/widgets/TrendingWidget'
+import { NewsletterWidget } from '@/components/widgets/NewsletterWidget'
 import { ShareButton } from './ShareButton'
+import type { Post } from '@/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,21 +23,13 @@ interface PageProps {
 }
 
 async function getPost(slug: string) {
-  const post = await prisma.post.findUnique({
+  return prisma.post.findUnique({
     where: { slug, status: 'PUBLISHED' },
     include: {
       category: true,
       author: { select: { id: true, name: true, avatar: true } },
       tags: true,
     },
-  })
-  return post
-}
-
-async function getPostDetailAd() {
-  const now = new Date()
-  return prisma.ad.findFirst({
-    where: { position: 'POST_DETAIL', active: true, startsAt: { lte: now }, endsAt: { gte: now } },
   })
 }
 
@@ -44,6 +43,19 @@ async function getRelatedPosts(categoryId: string, excludeId: string) {
     },
     orderBy: { publishedAt: 'desc' },
     take: 3,
+  })
+}
+
+async function getTrendingPosts() {
+  return prisma.post.findMany({
+    where: { status: 'PUBLISHED' },
+    include: {
+      category: true,
+      author: { select: { id: true, name: true, avatar: true } },
+      tags: true,
+    },
+    orderBy: { views: 'desc' },
+    take: 5,
   })
 }
 
@@ -65,13 +77,17 @@ export default async function PostPage({ params }: PageProps) {
   const post = await getPost(slug)
   if (!post) notFound()
 
-  // Increment views (fire and forget)
   prisma.post.update({ where: { id: post.id }, data: { views: { increment: 1 } } }).catch(() => {})
 
-  const [relatedPosts, postDetailAd] = await Promise.all([
+  const [relatedPosts, trendingPosts] = await Promise.all([
     getRelatedPosts(post.categoryId, post.id),
-    getPostDetailAd(),
+    getTrendingPosts(),
   ])
+
+  const coverUrl = post.coverImage && !/\.(mp4|mov|webm)(\?.*)?$/i.test(post.coverImage)
+    ? post.coverImage
+    : null
+
   const jsonLd = buildArticleJsonLd({
     title: post.title,
     description: post.summary,
@@ -84,135 +100,114 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <div className="min-h-screen bg-white">
-        {/* Cover media (image or video) */}
-        <div className="relative h-[50vh] bg-gray-900">
-          {post.coverImage && (
-            /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(post.coverImage) ? (
-              <video
-                src={post.coverImage}
-                autoPlay
-                muted
-                loop
-                playsInline
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
-              />
-            ) : (
-              <Image
-                src={post.coverImage}
-                alt={post.title}
-                fill
-                className="object-cover opacity-80"
-                priority
-              />
-            )
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-          {/* Back button */}
-          <Link
-            href="/"
-            className="absolute top-16 left-4 flex items-center gap-1 text-white/80 hover:text-white text-sm font-medium bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" /> Voltar
-          </Link>
+      <div className="container-editorial" style={{ paddingTop: 24, paddingBottom: 48 }}>
+        <AdBannerTop />
+
+        {/* Breadcrumb */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, fontSize: '0.825rem', color: 'var(--color-text-muted)' }}>
+          <Link href="/" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>Início</Link>
+          <span>/</span>
+          <Link href={`/categoria/${post.category.slug}`} style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>{post.category.name}</Link>
+          <span>/</span>
+          <span style={{ color: 'var(--color-text-secondary)' }} className="line-clamp-1">{post.title}</span>
         </div>
 
-        {/* Content */}
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          {/* Category + Meta */}
-          <div className="flex items-center gap-3 mb-4">
-            <Link
-              href={`/categoria/${post.category.slug}`}
-              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white"
-              style={{ backgroundColor: post.category.color }}
-            >
-              {post.category.icon} {post.category.name}
-            </Link>
-            <span className="text-gray-400 text-sm flex items-center gap-1">
-              <Eye className="w-3 h-3" /> {formatNumber(post.views)}
-            </span>
-          </div>
+        {/* Main layout: article + sidebar */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 40, alignItems: 'start' }} className="article-grid">
 
-          {/* Title */}
-          <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-4">{post.title}</h1>
-
-          {/* Author + Date */}
-          <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-6 border-b">
-            <span className="font-medium text-gray-700">{post.author.name}</span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" />
-              {post.publishedAt ? formatDate(post.publishedAt) : formatDate(post.createdAt)}
-            </span>
-            <ShareButton title={post.title} />
-          </div>
-
-          {/* Summary */}
-          <p className="text-lg text-gray-600 leading-relaxed mb-6 font-medium">{post.summary}</p>
-
-          {/* Content */}
-          <div
-            className="prose-content"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-
-          {/* Tags */}
-          {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t">
-              {post.tags.map((tag) => (
-                <span key={tag.id} className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
-                  #{tag.name}
-                </span>
-              ))}
+          {/* Article */}
+          <article>
+            {/* Category + meta */}
+            <div style={{ marginBottom: 16 }}>
+              <CategoryBadge name={post.category.name} color={post.category.color} icon={post.category.icon} />
             </div>
-          )}
-        </div>
 
-        {/* POST_DETAIL ad banner */}
-        {postDetailAd && (
-          <div className="max-w-2xl mx-auto px-4 pb-6">
-            <a
-              href={postDetailAd.targetUrl}
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              className="block relative rounded-xl overflow-hidden"
-              style={{ height: '120px' }}
-            >
-              <Image
-                src={postDetailAd.imageUrl}
-                alt={postDetailAd.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 672px) 100vw, 672px"
-              />
-              <span className="absolute top-2 right-2 text-[10px] bg-black/50 text-white/70 px-1.5 py-0.5 rounded">
-                Patrocinado
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', lineHeight: 1.25, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 16 }}>
+              {post.title}
+            </h1>
+
+            <p style={{ fontSize: '1.05rem', lineHeight: 1.65, color: 'var(--color-text-secondary)', marginBottom: 20, fontWeight: 400 }}>
+              {post.summary}
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, paddingBottom: 20, borderBottom: '1px solid var(--color-border)', marginBottom: 28, flexWrap: 'wrap' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.825rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                <User size={13} /> {post.author.name}
               </span>
-            </a>
-          </div>
-        )}
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.825rem', color: 'var(--color-text-muted)' }}>
+                <Clock size={13} /> {post.publishedAt ? formatDate(post.publishedAt) : formatDate(post.createdAt)}
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.825rem', color: 'var(--color-text-muted)' }}>
+                <Eye size={13} /> {formatNumber(post.views)} visualizações
+              </span>
+              <ShareButton title={post.title} />
+            </div>
+
+            {/* Cover image */}
+            {coverUrl && (
+              <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden', borderRadius: 10, marginBottom: 32 }}>
+                <Image src={coverUrl} alt={post.title} fill className="object-cover" priority sizes="(max-width: 768px) 100vw, 700px" />
+              </div>
+            )}
+
+            {/* Content */}
+            <div className="prose-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+
+            {/* Tags */}
+            {post.tags.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 36, paddingTop: 20, borderTop: '1px solid var(--color-border)' }}>
+                {post.tags.map(tag => (
+                  <span key={tag.id} style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)', fontSize: '0.775rem', padding: '4px 12px', borderRadius: 20, border: '1px solid var(--color-border)' }}>
+                    #{tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
+          </article>
+
+          {/* Sidebar */}
+          <aside style={{ position: 'sticky', top: 120 }}>
+            <AdSidebarSticky />
+            <TrendingWidget posts={trendingPosts as unknown as Post[]} />
+            <NewsletterWidget />
+          </aside>
+        </div>
 
         {/* Related posts */}
         {relatedPosts.length > 0 && (
-          <div className="mt-4">
-            <div className="max-w-2xl mx-auto px-4 py-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Veja também</h2>
-            </div>
-            <div className="space-y-0">
-              {relatedPosts.map((related, i) => (
-                <div key={related.id} style={{ height: '100dvh' }}>
-                  <FeedCard post={related as any} index={i} />
-                </div>
+          <div style={{ marginTop: 56 }}>
+            <h2 className="section-title" style={{ marginBottom: 24 }}>Veja também</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="related-grid">
+              {relatedPosts.map(p => (
+                <ArticleCard key={p.id} post={p as unknown as Post} variant="standard" />
               ))}
             </div>
           </div>
         )}
+
+        <AdBannerBottom />
       </div>
+
+      <style>{`
+        .article-grid { }
+        @media (max-width: 1024px) {
+          .article-grid { grid-template-columns: 1fr !important; }
+          .article-grid aside { position: static !important; }
+          .related-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .related-grid { grid-template-columns: 1fr !important; }
+        }
+        .prose-content { color: var(--color-text-primary); font-size: 1rem; line-height: 1.8; }
+        .prose-content h2 { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; margin: 32px 0 16px; color: var(--color-text-primary); }
+        .prose-content h3 { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 600; margin: 24px 0 12px; }
+        .prose-content p { margin-bottom: 20px; }
+        .prose-content a { color: var(--color-brand); }
+        .prose-content img { width: 100%; border-radius: 8px; margin: 24px 0; }
+        .prose-content blockquote { border-left: 3px solid var(--color-brand); padding-left: 20px; margin: 24px 0; font-style: italic; color: var(--color-text-secondary); }
+      `}</style>
     </>
   )
 }
-

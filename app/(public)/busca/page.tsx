@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search, ChevronLeft, Clock } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { CategoryBadge } from '@/components/news/CategoryBadge'
 import { formatRelativeDate } from '@/lib/utils'
 import type { Post } from '@/types'
 
@@ -40,77 +41,83 @@ export default function SearchPage() {
   const { results, isLoading } = useSearch(query)
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="sticky top-0 bg-white border-b z-10 px-4 pt-16 pb-3">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
-          <Link href="/" className="text-gray-400 hover:text-gray-600">
-            <ChevronLeft className="w-6 h-6" />
-          </Link>
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              autoFocus
-              placeholder="Buscar notícias..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
+    <div className="container-editorial" style={{ paddingTop: 32, paddingBottom: 64 }}>
+      {/* Search input */}
+      <div style={{ maxWidth: 640, marginBottom: 40 }}>
+        <h1 style={{ fontFamily: 'var(--font-bebas)', fontSize: '2rem', letterSpacing: '0.05em', color: 'var(--color-text-primary)', marginBottom: 16 }}>
+          Buscar notícias
+        </h1>
+        <div style={{ position: 'relative' }}>
+          <Search style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} size={18} />
+          <Input
+            autoFocus
+            placeholder="Digite para buscar..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            style={{ paddingLeft: 44, height: 48, fontSize: '1rem' }}
+          />
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {isLoading && (
-          <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
+      {/* Loading */}
+      {isLoading && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+          <div style={{ width: 32, height: 32, border: '3px solid var(--color-brand)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      )}
 
-        {!isLoading && query.length >= 2 && results.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
-            <Search className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-lg">Nenhum resultado para &quot;{query}&quot;</p>
-          </div>
-        )}
+      {/* No results */}
+      {!isLoading && query.length >= 2 && results.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-text-muted)' }}>
+          <Search size={40} style={{ margin: '0 auto 16px', opacity: 0.3 }} />
+          <p>Nenhum resultado para <strong>&quot;{query}&quot;</strong></p>
+        </div>
+      )}
 
-        {!isLoading && results.length > 0 && (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500">{results.length} resultado(s) para &quot;{query}&quot;</p>
-            {results.map((post) => (
-              <Link key={post.id} href={`/${post.slug}`} className="flex gap-4 p-4 rounded-xl border hover:bg-gray-50 transition-colors">
-                {post.coverImage && (
-                  <div className="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0">
+      {/* Results */}
+      {!isLoading && results.length > 0 && (
+        <div>
+          <p style={{ fontSize: '0.825rem', color: 'var(--color-text-muted)', marginBottom: 20 }}>
+            {results.length} resultado(s) para <strong>&quot;{query}&quot;</strong>
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {results.map(post => (
+              <Link
+                key={post.id}
+                href={`/${post.slug}`}
+                style={{ display: 'flex', gap: 16, padding: '16px', borderRadius: 10, border: '1px solid var(--color-border)', background: 'var(--color-bg)', textDecoration: 'none', transition: 'box-shadow 0.15s' }}
+                className="article-card"
+              >
+                {post.coverImage && !/\.(mp4|mov|webm)(\?.*)?$/i.test(post.coverImage) && (
+                  <div style={{ position: 'relative', width: 120, height: 80, borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
                     <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
                   </div>
                 )}
-                <div className="flex-1 min-w-0">
-                  <span
-                    className="text-xs font-semibold px-2 py-0.5 rounded-full text-white"
-                    style={{ backgroundColor: post.category.color }}
-                  >
-                    {post.category.name}
-                  </span>
-                  <h3 className="font-semibold text-gray-900 mt-1 line-clamp-2 text-sm leading-snug">
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ marginBottom: 8 }}>
+                    <CategoryBadge name={post.category.name} color={post.category.color} icon={post.category.icon} size="sm" />
+                  </div>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700, lineHeight: 1.35, color: 'var(--color-text-primary)', marginBottom: 6 }} className="line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
+                  <p style={{ fontSize: '0.775rem', color: 'var(--color-text-muted)' }}>
                     {post.publishedAt ? formatRelativeDate(post.publishedAt) : ''}
                   </p>
                 </div>
               </Link>
             ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {!query && (
-          <div className="text-center py-16 text-gray-300">
-            <Search className="w-16 h-16 mx-auto mb-4 opacity-40" />
-            <p className="text-lg">Digite para buscar notícias</p>
-          </div>
-        )}
-      </div>
+      {/* Empty state */}
+      {!query && (
+        <div style={{ textAlign: 'center', padding: '64px 0', color: 'var(--color-text-muted)' }}>
+          <Search size={48} style={{ margin: '0 auto 16px', opacity: 0.2 }} />
+          <p>Digite para buscar notícias em Foz do Iguaçu</p>
+        </div>
+      )}
     </div>
   )
 }

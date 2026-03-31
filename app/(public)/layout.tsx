@@ -1,12 +1,14 @@
 import { Header } from '@/components/public/Header'
-import { StickyBanner } from '@/components/public/StickyBanner'
+import { Footer } from '@/components/layout/Footer'
+import { BreakingNewsBanner } from '@/components/news/BreakingNewsBanner'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
-      {children}
-      <StickyBanner />
+      <BreakingNewsBanner />
+      <main>{children}</main>
+      <Footer />
     </>
   )
 }
