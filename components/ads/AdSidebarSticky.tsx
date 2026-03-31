@@ -42,11 +42,6 @@ export function AdSidebarSticky() {
 
   return (
     <div className="widget" style={{ padding: 0, overflow: 'hidden' }}>
-      <div style={{ padding: '8px 12px 4px', borderBottom: '1px solid var(--color-border)' }}>
-        <span style={{ fontSize: 10, color: 'var(--color-ad-label)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-          Publicidade
-        </span>
-      </div>
       <div
         className="relative cursor-pointer"
         style={{ height: 250, background: 'var(--color-ad-bg)' }}
@@ -91,11 +86,7 @@ export function AdSidebarSticky() {
               </div>
             )}
           </>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span style={{ fontSize: 12, color: 'var(--color-ad-label)' }}>300 x 250</span>
-          </div>
-        )}
+        ) : null}
       </div>
       {ad && (
         <div style={{ padding: '6px 12px 8px' }}>

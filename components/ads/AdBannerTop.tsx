@@ -28,32 +28,22 @@ export function AdBannerTop() {
     window.open(ad.targetUrl, '_blank', 'noopener,noreferrer')
   }
 
+  if (!ad) return null
+
   return (
     <div className="ad-banner-wrapper">
-      <span className="ad-label-center">Publicidade</span>
       <div
         className="relative w-full cursor-pointer"
         style={{ height: 90, maxWidth: 970, margin: '0 auto' }}
-        onClick={ad ? handleClick : undefined}
+        onClick={handleClick}
       >
-        {ad ? (
-          <Image
-            src={ad.imageUrl}
-            alt={ad.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 728px) 100vw, 970px"
-          />
-        ) : (
-          <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ background: 'var(--color-ad-bg)', border: '1px dashed var(--color-ad-border)' }}
-          >
-            <span style={{ fontSize: 12, color: 'var(--color-ad-label)' }}>
-              728 x 90 — Espaco publicitario
-            </span>
-          </div>
-        )}
+        <Image
+          src={ad.imageUrl}
+          alt={ad.title}
+          fill
+          className="object-cover"
+          sizes="(max-width: 728px) 100vw, 970px"
+        />
       </div>
     </div>
   )

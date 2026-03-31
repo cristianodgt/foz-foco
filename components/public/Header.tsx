@@ -108,7 +108,7 @@ export function Header() {
           gap: 0,
         }}>
           {/* LOGO ─────────────────────────────────────────── */}
-          <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', marginRight: 'auto' }}>
+          <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', marginRight: 28 }}>
             {logoUrl ? (
               <Image src={logoUrl} alt="Foz em Foco" width={120} height={36} className="object-contain" unoptimized />
             ) : (
@@ -125,8 +125,12 @@ export function Header() {
             )}
           </Link>
 
+          {/* Separador vertical logo / nav */}
+          <div style={{ width: 1, height: 18, background: 'var(--color-border)', flexShrink: 0, marginRight: 4 }} className="hdr-divider" />
+
           {/* NAV — categorias, scrollável, agrupada antes das ações */}
           <nav className="hdr-nav hide-scrollbar" style={{
+            flex: 1,
             display: 'flex',
             alignItems: 'center',
             gap: 0,

@@ -30,7 +30,6 @@ export function AdInlineBanner() {
 
   return (
     <div className="ad-banner-wrapper" style={{ borderRadius: 6, margin: '24px 0' }}>
-      <span className="ad-label-center">Publicidade</span>
       <div
         className="relative w-full cursor-pointer"
         style={{ height: 90, borderRadius: 4, overflow: 'hidden' }}
@@ -44,16 +43,7 @@ export function AdInlineBanner() {
             className="object-cover"
             sizes="100vw"
           />
-        ) : (
-          <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ background: 'var(--color-ad-bg)', border: '1px dashed var(--color-ad-border)' }}
-          >
-            <span style={{ fontSize: 12, color: 'var(--color-ad-label)' }}>
-              728 x 90 — Publicidade inline
-            </span>
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   )
