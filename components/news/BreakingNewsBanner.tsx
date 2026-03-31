@@ -17,7 +17,8 @@ export async function BreakingNewsBanner() {
   if (!breakingPost) return null
 
   return (
-    <div className="breaking-banner">
+    <div style={{ padding: '0 16px', background: 'var(--color-page-bg)' }}>
+      <div className="breaking-banner" style={{ borderRadius: '0 0 12px 12px' }}>
       <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 28px', display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
         <span className="breaking-pulse" />
         <span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', fontSize: 10, flexShrink: 0, background: 'rgba(255,215,0,0.2)', padding: '2px 8px', borderRadius: 4, border: '1px solid rgba(255,215,0,0.3)' }}>
@@ -32,6 +33,7 @@ export async function BreakingNewsBanner() {
         >
           Ler mais →
         </Link>
+      </div>
       </div>
     </div>
   )

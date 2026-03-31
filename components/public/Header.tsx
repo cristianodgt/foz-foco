@@ -43,12 +43,12 @@ function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  if (!mounted) return <div style={{ width: 32, height: 32 }} />
+  if (!mounted) return <div style={{ width: 34, height: 34 }} />
   return (
     <button
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      aria-label="Alternar modo escuro"
-      className="header-icon-btn"
+      aria-label="Alternar modo"
+      className="hdr-icon"
     >
       {resolvedTheme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
     </button>
@@ -86,45 +86,35 @@ export function Header() {
 
   return (
     <>
-      {/* ── HEADER PRINCIPAL — linha única ──────────────────── */}
-      <header style={{
+      {/* ── WRAPPER: cria o "espaço" ao redor do card ──────── */}
+      <div style={{
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        background: 'var(--color-bg)',
-        borderBottom: '1px solid var(--color-border)',
-        boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+        padding: '10px 16px 0',
+        background: 'var(--color-page-bg)',
       }}>
-        {/* Acento de marca no topo */}
-        <div style={{ height: 3, background: 'var(--color-brand)', width: '100%' }} />
-
-        <div style={{
-          maxWidth: 1440,
-          margin: '0 auto',
-          padding: '0 24px',
-          height: 60,
+        {/* ── CARD FLUTUANTE — inspirado no AVTL ────────────── */}
+        <header style={{
+          background: 'var(--color-bg)',
+          borderRadius: '12px 12px 0 0',
+          border: '1px solid var(--color-border)',
+          borderBottom: 'none',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04)',
           display: 'flex',
           alignItems: 'center',
+          padding: '0 24px',
+          height: 60,
           gap: 0,
         }}>
-          {/* ── LOGO ──────────────────────────────────────── */}
-          <Link
-            href="/"
-            style={{ flexShrink: 0, textDecoration: 'none', marginRight: 32 }}
-          >
+          {/* LOGO ─────────────────────────────────────────── */}
+          <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', marginRight: 'auto' }}>
             {logoUrl ? (
-              <Image
-                src={logoUrl}
-                alt="Foz em Foco"
-                width={120}
-                height={36}
-                className="object-contain"
-                unoptimized
-              />
+              <Image src={logoUrl} alt="Foz em Foco" width={120} height={36} className="object-contain" unoptimized />
             ) : (
               <span style={{
                 fontFamily: 'var(--font-bebas, "Bebas Neue", sans-serif)',
-                fontSize: 24,
+                fontSize: 22,
                 letterSpacing: 3,
                 color: 'var(--color-text)',
                 lineHeight: 1,
@@ -135,39 +125,37 @@ export function Header() {
             )}
           </Link>
 
-          {/* ── NAV — categorias na mesma linha ──────────── */}
-          <nav
-            style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0,
-              overflowX: 'auto',
-              height: '100%',
-            }}
-            className="hide-scrollbar header-nav"
-          >
+          {/* NAV — categorias, scrollável, agrupada antes das ações */}
+          <nav className="hdr-nav hide-scrollbar" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0,
+            overflowX: 'auto',
+            height: '100%',
+            flexShrink: 1,
+            minWidth: 0,
+          }}>
             {NAV_LINKS.map(link => {
-              const isActive = pathname === link.href
+              const active = pathname === link.href
               return (
                 <Link
                   key={link.href}
                   href={link.href}
+                  className="hdr-link"
                   style={{
                     flexShrink: 0,
-                    padding: '0 14px',
+                    padding: '0 15px',
                     height: '100%',
                     display: 'flex',
                     alignItems: 'center',
-                    fontSize: 13,
-                    fontWeight: isActive ? 600 : 500,
-                    color: isActive ? 'var(--color-brand)' : 'var(--color-text-2)',
+                    fontSize: 13.5,
+                    fontWeight: active ? 600 : 400,
+                    color: active ? 'var(--color-brand)' : 'var(--color-text-2)',
                     textDecoration: 'none',
-                    borderBottom: isActive ? '2px solid var(--color-brand)' : '2px solid transparent',
-                    transition: 'color 0.15s, border-color 0.15s',
+                    borderBottom: active ? '2px solid var(--color-brand)' : '2px solid transparent',
                     whiteSpace: 'nowrap',
+                    transition: 'color 0.15s',
                   }}
-                  className="header-nav-link"
                 >
                   {link.label}
                 </Link>
@@ -175,34 +163,31 @@ export function Header() {
             })}
           </nav>
 
-          {/* ── UTILITIES (dir.) ─────────────────────────── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 16 }}>
-            {/* Busca */}
-            <button
-              onClick={() => { setSearchOpen(true); setMenuOpen(false) }}
-              aria-label="Buscar"
-              className="header-icon-btn"
-            >
+          {/* AÇÕES (dir.) ─────────────────────────────────── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 20 }}>
+            <button onClick={() => setSearchOpen(true)} aria-label="Buscar" className="hdr-icon">
               <Search size={15} />
             </button>
 
             <ThemeToggle />
 
-            {/* CTA — desktop */}
+            {/* CTA pill — estilo AVTL */}
             <Link
               href="/anunciantes"
-              className="anuncie-btn"
+              className="hdr-cta"
               style={{
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: 600,
                 color: 'white',
                 background: 'var(--color-brand)',
                 textDecoration: 'none',
-                padding: '7px 16px',
-                borderRadius: 6,
+                padding: '8px 20px',
+                borderRadius: 100,
                 whiteSpace: 'nowrap',
-                letterSpacing: 0.3,
-                transition: 'background 0.15s',
+                letterSpacing: 0.2,
+                transition: 'background 0.15s, transform 0.1s',
+                display: 'inline-flex',
+                alignItems: 'center',
               }}
             >
               Anuncie aqui
@@ -212,16 +197,16 @@ export function Header() {
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Menu"
-              className="header-icon-btn mobile-only"
+              className="hdr-icon hdr-mobile"
               style={{ display: 'none' }}
             >
               {menuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
 
-      {/* ── SEARCH OVERLAY ──────────────────────────────────── */}
+      {/* ── SEARCH OVERLAY ─────────────────────────────────── */}
       {searchOpen && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 60,
@@ -250,10 +235,7 @@ export function Header() {
             />
             <button
               onClick={() => setSearchOpen(false)}
-              style={{
-                color: 'rgba(255,255,255,0.35)', background: 'none',
-                border: 'none', cursor: 'pointer', padding: 4,
-              }}
+              style={{ color: 'rgba(255,255,255,0.35)', background: 'none', border: 'none', cursor: 'pointer' }}
             >
               <X size={22} />
             </button>
@@ -290,17 +272,14 @@ export function Header() {
                     }}
                   >
                     {post.coverImage && (
-                      <div style={{
-                        position: 'relative', width: 76, height: 52,
-                        borderRadius: 6, overflow: 'hidden', flexShrink: 0,
-                      }}>
+                      <div style={{ position: 'relative', width: 76, height: 52, borderRadius: 6, overflow: 'hidden', flexShrink: 0 }}>
                         <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
                       </div>
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{
                         fontSize: 10, fontWeight: 700, padding: '2px 7px',
-                        borderRadius: 3, color: 'white', display: 'inline-block', marginBottom: 5,
+                        borderRadius: 4, color: 'white', display: 'inline-block', marginBottom: 5,
                         background: post.category?.color || 'var(--color-brand)',
                       }}>
                         {post.category?.name}
@@ -313,10 +292,7 @@ export function Header() {
                       }}>
                         {post.title}
                       </h3>
-                      <p style={{
-                        fontSize: 11, color: 'rgba(255,255,255,0.28)',
-                        marginTop: 4, display: 'flex', alignItems: 'center', gap: 4,
-                      }}>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
                         <Clock size={11} />
                         {post.publishedAt ? formatRelativeDate(post.publishedAt) : ''}
                       </p>
@@ -329,7 +305,7 @@ export function Header() {
         </div>
       )}
 
-      {/* ── MOBILE MENU ─────────────────────────────────────── */}
+      {/* ── MOBILE MENU ──────────────────────────────────────── */}
       {menuOpen && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 40,
@@ -337,11 +313,10 @@ export function Header() {
           backdropFilter: 'blur(20px)',
           display: 'flex', flexDirection: 'column',
         }}>
-          <div style={{ height: 63 }} />
+          <div style={{ height: 70 }} />
           <nav style={{
             flex: 1, display: 'flex', flexDirection: 'column',
-            justifyContent: 'center', alignItems: 'center',
-            gap: 4, padding: 32,
+            justifyContent: 'center', alignItems: 'center', gap: 4, padding: 32,
           }}>
             {NAV_LINKS.map(link => (
               <Link
@@ -352,8 +327,7 @@ export function Header() {
                   fontFamily: 'var(--font-bebas, "Bebas Neue", sans-serif)',
                   fontSize: 34, letterSpacing: 3,
                   color: pathname === link.href ? 'var(--color-brand)' : 'rgba(224,234,242,0.85)',
-                  textDecoration: 'none',
-                  padding: '2px 0',
+                  textDecoration: 'none', padding: '2px 0',
                 }}
               >
                 {link.label}
@@ -365,7 +339,7 @@ export function Header() {
               style={{
                 marginTop: 20, fontSize: 13, fontWeight: 600,
                 color: 'white', background: 'var(--color-brand)',
-                textDecoration: 'none', padding: '10px 28px', borderRadius: 6,
+                textDecoration: 'none', padding: '10px 28px', borderRadius: 100,
               }}
             >
               Anuncie aqui
@@ -384,9 +358,10 @@ export function Header() {
           animation: spin 0.7s linear infinite;
         }
 
-        .header-icon-btn {
-          width: 32px; height: 32px;
-          border-radius: 6px;
+        /* Ícone genérico do header */
+        .hdr-icon {
+          width: 34px; height: 34px;
+          border-radius: 8px;
           border: 1px solid var(--color-border);
           background: transparent;
           display: flex; align-items: center; justify-content: center;
@@ -395,29 +370,29 @@ export function Header() {
           transition: color 0.15s, border-color 0.15s, background 0.15s;
           flex-shrink: 0;
         }
-        .header-icon-btn:hover {
+        .hdr-icon:hover {
           color: var(--color-brand);
           border-color: var(--color-brand);
           background: var(--color-brand-light);
         }
 
-        .header-nav-link:hover {
+        /* Link de nav */
+        .hdr-link:hover {
           color: var(--color-brand) !important;
           border-bottom-color: var(--color-brand) !important;
         }
 
-        .anuncie-btn:hover {
+        /* CTA pill */
+        .hdr-cta:hover {
           background: var(--color-brand-dark) !important;
+          transform: translateY(-1px);
         }
 
+        /* Mobile breakpoints */
         @media (max-width: 900px) {
-          .header-nav { display: none !important; }
-          .mobile-only { display: flex !important; }
-          .anuncie-btn { display: none !important; }
-        }
-
-        @media (max-width: 480px) {
-          .anuncie-btn { display: none !important; }
+          .hdr-nav { display: none !important; }
+          .hdr-mobile { display: flex !important; }
+          .hdr-cta { display: none !important; }
         }
       `}</style>
     </>
