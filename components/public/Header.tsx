@@ -103,13 +103,14 @@ export function Header() {
         style={{
           position: 'sticky', top: 0, zIndex: 50,
           background: 'var(--color-bg)',
-          borderBottom: scrolled ? '1px solid var(--color-border)' : '1px solid transparent',
-          boxShadow: scrolled ? '0 1px 8px rgba(0,0,0,0.08)' : 'none',
-          transition: 'box-shadow 0.2s, border-color 0.2s',
+          borderTop: '3px solid var(--color-brand)',
+          borderBottom: '1px solid var(--color-border)',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
+          transition: 'box-shadow 0.2s',
         }}
       >
         {/* LOGO BAR */}
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px', height: 60, display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--color-border)' }}>
+        <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 28px', height: 60, display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid var(--color-border)' }}>
           <Link href="/" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
             {logoUrl ? (
               <Image src={logoUrl} alt="Foz em Foco" width={110} height={36} className="object-contain" unoptimized />
@@ -139,7 +140,7 @@ export function Header() {
         </div>
 
         {/* NAV BAR */}
-        <nav style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px', height: 44, display: 'flex', alignItems: 'center', gap: 4, overflowX: 'auto', borderBottom: '2px solid var(--color-brand)' }} className="hide-scrollbar">
+        <nav style={{ maxWidth: 1440, margin: '0 auto', padding: '0 28px', height: 44, display: 'flex', alignItems: 'center', gap: 4, overflowX: 'auto', borderBottom: '2px solid var(--color-brand)' }} className="hide-scrollbar">
           {NAV_LINKS.map(link => (
             <Link key={link.href} href={link.href} className={`nav-pill ${pathname === link.href ? 'active' : ''}`}>
               {link.label}

@@ -34,7 +34,7 @@ export function HeroSection({ post }: HeroSectionProps) {
         <div className="hero-overlay" />
 
         {/* Content */}
-        <div className="hero-content container-editorial">
+        <div className="hero-content" style={{ maxWidth: 1440, margin: '0 auto', padding: '0 40px' }}>
           <div style={{ marginBottom: 10 }}>
             <CategoryBadge
               name={post.category?.name || 'Geral'}

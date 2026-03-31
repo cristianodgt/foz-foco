@@ -9,7 +9,8 @@
 @layer base {
   :root {
     /* Cores base light mode */
-    --color-bg:          #FFFFFF;
+    --color-page-bg:     #EAEAEA;  /* fundo da página (atrás dos containers) */
+    --color-bg:          #FFFFFF;  /* fundo dos cards e seções */
     --color-surface:     #F5F5F5;
     --color-surface-2:   #EBEBEB;
     --color-border:      #E0E0E0;
@@ -71,16 +72,17 @@
   }
 
   .dark {
-    --color-bg:          #0A0A0A;
-    --color-surface:     #141414;
-    --color-surface-2:   #1E1E1E;
-    --color-border:      #2A2A2A;
-    --color-text:        #F5F5F5;
-    --color-text-2:      #AAAAAA;
-    --color-text-muted:  #666666;
-    --color-ad-bg:       #1A1510;
-    --color-ad-border:   #2E2215;
-    --color-ad-label:    #666666;
+    --color-page-bg:     #0D0F12;  /* fundo da página dark */
+    --color-bg:          #1A1D24;  /* cards e seções dark */
+    --color-surface:     #22262F;
+    --color-surface-2:   #2A2E38;
+    --color-border:      #2E3340;
+    --color-text:        #F0F2F5;
+    --color-text-2:      #A8B0C0;
+    --color-text-muted:  #5A6478;
+    --color-ad-bg:       #1E1A14;
+    --color-ad-border:   #2E2518;
+    --color-ad-label:    #5A6478;
 
     --background:        222 84% 5%;
     --foreground:        210 40% 98%;
@@ -115,7 +117,7 @@
   }
 
   html, body {
-    background-color: var(--color-bg);
+    background-color: var(--color-page-bg);
     color: var(--color-text);
     font-family: 'DM Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -159,12 +161,14 @@
   color: white;
 }
 
-/* ─── HERO SECTION ────────────────────────────────────────────── */
+/* ─── HERO SECTION — full width ──────────────────────────────── */
 .hero-section {
   position: relative;
-  height: clamp(360px, 60vh, 560px);
+  width: 100%;
+  height: clamp(420px, 65vh, 620px);
   overflow: hidden;
   background: var(--color-surface);
+  display: block;
 }
 
 .hero-overlay {
@@ -184,7 +188,13 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 2rem;
+  padding: 2rem 40px;
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 1.5rem 16px;
+  }
 }
 
 .hero-title {
@@ -199,10 +209,10 @@
 .breaking-banner {
   background-color: var(--color-breaking);
   color: white;
-  padding: 8px 16px;
+  padding: 9px 0;
   display: flex;
   align-items: center;
-  gap: 12px;
+  width: 100%;
   font-size: 13px;
   font-weight: 600;
 }
@@ -508,17 +518,40 @@
 
 /* ─── CONTAINER ───────────────────────────────────────────────── */
 .container-editorial {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
 @media (min-width: 768px) {
-  .container-editorial { padding: 0 24px; }
+  .container-editorial { padding: 0 28px; }
 }
 
 @media (min-width: 1280px) {
-  .container-editorial { padding: 0 32px; }
+  .container-editorial { padding: 0 40px; }
+}
+
+/* ─── FUNDO DA PÁGINA (contraste c/ cards) ────────────────────── */
+.page-bg {
+  background-color: var(--color-page-bg);
+  min-height: 400px;
+}
+
+/* ─── LAYOUT HOME: CONTEÚDO + SIDEBAR ────────────────────────── */
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+  }
+  .home-layout aside {
+    display: none;
+  }
 }
 
 /* ─── UTILITIES ───────────────────────────────────────────────── */

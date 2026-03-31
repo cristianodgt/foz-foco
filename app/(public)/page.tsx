@@ -19,7 +19,6 @@ export const metadata: Metadata = {
 
 async function getHomeData() {
   const now = new Date()
-
   const [allPosts, categories, sponsoredAd, trendingPosts] = await Promise.all([
     prisma.post.findMany({
       where: { status: 'PUBLISHED' },
@@ -46,7 +45,6 @@ async function getHomeData() {
       take: 5,
     }),
   ])
-
   return { allPosts, categories, sponsoredAd, trendingPosts }
 }
 
@@ -64,59 +62,61 @@ export default async function HomePage() {
   const hero = allPosts[0] as unknown as Post
   const mainGridPosts = allPosts.slice(1, 14) as unknown as Post[]
 
-  // Posts por categoria
   const postsByCategory = categories.map(cat => ({
     category: cat,
     posts: (allPosts as unknown as Post[]).filter(p => p.category?.slug === cat.slug).slice(0, 5),
   })).filter(c => c.posts.length > 0)
 
   return (
-    <div className="container-editorial" style={{ paddingTop: 24 }}>
-      {/* Banner topo */}
+    <>
+      {/* Banner topo — full width */}
       <AdBannerTop />
 
-      {/* Hero */}
+      {/* Hero — full width, fora do container */}
       <HeroSection post={hero} />
 
-      {/* Main content + Sidebar */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, marginTop: 32, alignItems: 'start' }} className="home-grid">
+      {/* Conteúdo principal */}
+      <div className="page-bg">
+        <div className="container-editorial" style={{ paddingTop: 32, paddingBottom: 48 }}>
 
-        {/* Coluna principal */}
-        <div>
-          {/* Grid principal com posts recentes */}
-          <MainGrid posts={mainGridPosts} sponsoredAd={sponsoredAd as Ad | null} />
+          {/* Grid principal + Sidebar */}
+          <div className="home-layout">
+            {/* Coluna principal */}
+            <div>
+              <MainGrid posts={mainGridPosts} sponsoredAd={sponsoredAd as Ad | null} />
 
-          {/* Seções por categoria */}
-          {postsByCategory.map((item, i) => (
-            <div key={item.category.id}>
-              <CategorySection
-                title={item.category.name}
-                slug={item.category.slug}
-                posts={item.posts}
-                layout={i % 2 === 0 ? 'grid' : 'featured-list'}
-                showSponsor={true}
-              />
-              {/* Banner inline a cada 2 categorias */}
-              {i === 1 && <AdInlineBanner />}
+              {/* Seções por categoria */}
+              {postsByCategory.map((item, i) => (
+                <div key={item.category.id}>
+                  {i === 1 && (
+                    <div style={{ margin: '8px 0' }}>
+                      <AdInlineBanner />
+                    </div>
+                  )}
+                  <CategorySection
+                    title={item.category.name}
+                    slug={item.category.slug}
+                    posts={item.posts}
+                    layout={i % 2 === 0 ? 'grid' : 'featured-list'}
+                    showSponsor={true}
+                  />
+                </div>
+              ))}
+
+              {/* Vitrine de estabelecimentos */}
+              <div style={{ marginTop: 16 }}>
+                <BusinessDirectory />
+              </div>
             </div>
-          ))}
 
-          {/* Vitrine de estabelecimentos */}
-          <BusinessDirectory />
+            {/* Sidebar */}
+            <Sidebar trendingPosts={trendingPosts as unknown as Post[]} />
+          </div>
         </div>
-
-        {/* Sidebar */}
-        <Sidebar trendingPosts={trendingPosts as unknown as Post[]} />
       </div>
 
-      {/* Banner rodapé */}
+      {/* Banner rodapé — full width */}
       <AdBannerBottom />
-
-      <style>{`
-        @media (max-width: 1024px) {
-          .home-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
-    </div>
+    </>
   )
 }
