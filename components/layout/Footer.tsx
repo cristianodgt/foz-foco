@@ -18,7 +18,7 @@ export function Footer() {
       <div className="container-editorial">
         {/* CTA Publicidade */}
         <div style={{
-          background: 'linear-gradient(135deg, var(--color-brand), #c0392b)',
+          background: 'linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-dark) 100%)',
           borderRadius: 12,
           padding: '28px 32px',
           display: 'flex',
@@ -61,11 +61,11 @@ export function Footer() {
             <div style={{ fontFamily: 'var(--font-bebas)', fontSize: '1.8rem', letterSpacing: '0.05em', color: 'var(--color-brand)', marginBottom: 12 }}>
               FOZ EM FOCO
             </div>
-            <p style={{ fontSize: '0.825rem', lineHeight: 1.7, color: 'var(--color-text-muted)', maxWidth: 240 }}>
+            <p style={{ fontSize: '0.825rem', lineHeight: 1.7, color: '#607D96', maxWidth: 240 }}>
               O portal de notícias de Foz do Iguaçu e região. Informação local, sempre em foco.
             </p>
             <div style={{ display: 'flex', gap: 12, marginTop: 18 }}>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: 'var(--color-text-muted)' }}>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#607D96', transition: 'color 0.15s' }}>
                 <Instagram size={18} />
               </a>
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: 'var(--color-text-muted)' }}>

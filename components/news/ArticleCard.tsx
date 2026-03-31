@@ -31,7 +31,9 @@ function FeaturedCard({ post, priority }: { post: Post; priority?: boolean }) {
         {cover ? (
           <Image src={cover} alt={post.title} fill className="object-cover" priority={priority} sizes="(max-width: 640px) 100vw, 50vw" />
         ) : (
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #1B3A5C, #0A0A0A)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--color-brand) 0%, #0C1E2C 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontFamily: 'var(--font-bebas)', fontSize: 22, letterSpacing: 3, color: 'rgba(255,255,255,0.2)' }}>FOZ EM FOCO</span>
+          </div>
         )}
       </div>
       <div style={{ padding: '16px 18px 18px' }}>
@@ -59,7 +61,7 @@ function StandardCard({ post, priority }: { post: Post; priority?: boolean }) {
         {cover ? (
           <Image src={cover} alt={post.title} fill className="object-cover" priority={priority} sizes="(max-width: 640px) 100vw, 33vw" />
         ) : (
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #264653, #0A0A0A)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--color-surface-2) 0%, var(--color-surface) 100%)' }} />
         )}
         <div style={{ position: 'absolute', top: 8, left: 8 }}>
           <CategoryBadge name={post.category?.name || ''} color={post.category?.color} icon={post.category?.icon} size="sm" />

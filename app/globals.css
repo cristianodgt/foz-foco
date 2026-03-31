@@ -3,110 +3,119 @@
 @tailwind utilities;
 
 /* ─── FONTES ──────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
 
-/* ─── DESIGN TOKENS ───────────────────────────────────────────── */
+/* ─── DESIGN TOKENS ────────────────────────────────────────────── */
 @layer base {
   :root {
-    /* Cores base light mode */
-    --color-page-bg:     #EAEAEA;  /* fundo da página (atrás dos containers) */
-    --color-bg:          #FFFFFF;  /* fundo dos cards e seções */
-    --color-surface:     #F5F5F5;
-    --color-surface-2:   #EBEBEB;
-    --color-border:      #E0E0E0;
-    --color-text:        #111111;
-    --color-text-2:      #444444;
-    --color-text-muted:  #888888;
+    /* ── Paleta Tríplice Fronteira ─────────────────────────────
+       Inspirada nas Cataratas do Iguaçu e na natureza da região:
+       teal profundo (água), âmbar (calor), branco (névoa)
+    ────────────────────────────────────────────────────────── */
+    --color-brand:        #076D8A;   /* teal — identidade regional (Cataratas) */
+    --color-brand-dark:   #055570;   /* teal escuro — hover states */
+    --color-brand-light:  #E4F4F8;   /* teal claro — fundos suaves */
+    --color-accent:       #C8880A;   /* âmbar dourado — destaques premium */
+    --color-breaking:     #B0323A;   /* vinho-vermelho — APENAS alertas urgentes */
 
-    /* Identidade — mantida do prototipo original */
-    --color-brand:       #FF3B30;
-    --color-brand-2:     #FF9500;
-    --color-breaking:    #E63946;
+    /* ── Fundos & Superfícies ──────────────────────────────── */
+    --color-page-bg:      #ECF0F4;   /* fundo geral (azul-cinza neutro) */
+    --color-bg:           #FFFFFF;   /* cards e painéis */
+    --color-surface:      #F4F7FA;   /* superfície secundária */
+    --color-surface-2:    #E8EDF2;   /* superfície terciária */
 
-    /* Publicidade */
-    --color-ad-bg:       #FFF9F0;
-    --color-ad-border:   #F0E0C8;
-    --color-ad-label:    #999999;
-    --color-premium:     #C8962A;
+    /* ── Bordas ────────────────────────────────────────────── */
+    --color-border:       #C8D4DE;
 
-    /* Aliases de texto (compatibilidade com componentes) */
+    /* ── Texto ─────────────────────────────────────────────── */
+    --color-text:         #111E2C;   /* navy-black (mais legível que puro preto) */
+    --color-text-2:       #334D64;   /* navy médio */
+    --color-text-muted:   #6E8EA6;   /* muted blue-gray */
+
+    /* ── Publicidade ───────────────────────────────────────── */
+    --color-ad-bg:        #F5F8EC;   /* fundo esverdeado neutro — distingue ads */
+    --color-ad-border:    #D0DCBA;
+    --color-ad-label:     #7A9470;
+    --color-premium:      #A36C08;
+
+    /* ── Aliases ───────────────────────────────────────────── */
     --color-text-primary:   var(--color-text);
     --color-text-secondary: var(--color-text-2);
 
-    /* Alias de fonte */
+    /* ── Fontes ────────────────────────────────────────────── */
     --font-bebas:  'Bebas Neue', sans-serif;
     --font-serif:  'DM Serif Display', Georgia, serif;
     --font-sans:   'DM Sans', system-ui, sans-serif;
 
-    /* Categorias */
-    --color-cidade:      #2D6A4F;
+    /* ── Categorias ────────────────────────────────────────── */
+    --color-cidade:      #1A6B45;
     --color-politica:    #1B3A5C;
-    --color-esportes:    #E76F51;
-    --color-cultura:     #7B2D8B;
-    --color-economia:    #264653;
-    --color-turismo:     #457B9D;
+    --color-esportes:    #C05A20;
+    --color-cultura:     #6B2D87;
+    --color-economia:    #1A5070;
+    --color-turismo:     #076D8A;
     --color-seguranca:   #6B2737;
-    --color-saude:       #2D9E6E;
+    --color-saude:       #1A7A50;
 
-    /* Shadcn tokens */
-    --background:        0 0% 100%;
-    --foreground:        222 84% 5%;
+    /* ── Shadcn tokens ─────────────────────────────────────── */
+    --background:        210 30% 97%;
+    --foreground:        210 45% 10%;
     --card:              0 0% 100%;
-    --card-foreground:   222 84% 5%;
+    --card-foreground:   210 45% 10%;
     --popover:           0 0% 100%;
-    --popover-foreground: 222 84% 5%;
-    --primary:           4 90% 58%;
+    --popover-foreground: 210 45% 10%;
+    --primary:           197 88% 29%;
     --primary-foreground: 0 0% 100%;
-    --secondary:         210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted:             210 40% 96%;
-    --muted-foreground:  215 16% 47%;
-    --accent:            33 100% 50%;
+    --secondary:         210 25% 93%;
+    --secondary-foreground: 210 40% 18%;
+    --muted:             210 25% 93%;
+    --muted-foreground:  210 20% 44%;
+    --accent:            36 90% 42%;
     --accent-foreground: 0 0% 0%;
-    --destructive:       0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border:            214 32% 91%;
-    --input:             214 32% 91%;
-    --ring:              4 90% 58%;
+    --destructive:       356 62% 44%;
+    --destructive-foreground: 0 0% 100%;
+    --border:            210 25% 82%;
+    --input:             210 25% 82%;
+    --ring:              197 88% 29%;
     --radius:            0.5rem;
   }
 
   .dark {
-    --color-page-bg:     #0D0F12;  /* fundo da página dark */
-    --color-bg:          #1A1D24;  /* cards e seções dark */
-    --color-surface:     #22262F;
-    --color-surface-2:   #2A2E38;
-    --color-border:      #2E3340;
-    --color-text:        #F0F2F5;
-    --color-text-2:      #A8B0C0;
-    --color-text-muted:  #5A6478;
-    --color-ad-bg:       #1E1A14;
-    --color-ad-border:   #2E2518;
-    --color-ad-label:    #5A6478;
+    --color-page-bg:     #0C1520;
+    --color-bg:          #132030;
+    --color-surface:     #1A2E40;
+    --color-surface-2:   #213848;
+    --color-border:      #253D52;
+    --color-text:        #E0EAF2;
+    --color-text-2:      #90AEC4;
+    --color-text-muted:  #4E7490;
+    --color-ad-bg:       #111D28;
+    --color-ad-border:   #1A2E3A;
+    --color-ad-label:    #406880;
 
-    --background:        222 84% 5%;
-    --foreground:        210 40% 98%;
-    --card:              222 84% 5%;
-    --card-foreground:   210 40% 98%;
-    --popover:           222 84% 5%;
-    --popover-foreground: 210 40% 98%;
-    --primary:           4 90% 58%;
+    --background:        210 42% 8%;
+    --foreground:        210 20% 90%;
+    --card:              210 38% 12%;
+    --card-foreground:   210 20% 90%;
+    --popover:           210 38% 12%;
+    --popover-foreground: 210 20% 90%;
+    --primary:           197 70% 44%;
     --primary-foreground: 0 0% 100%;
-    --secondary:         217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted:             217 33% 17%;
-    --muted-foreground:  215 20% 65%;
-    --accent:            33 100% 50%;
+    --secondary:         210 35% 18%;
+    --secondary-foreground: 210 20% 84%;
+    --muted:             210 35% 18%;
+    --muted-foreground:  210 20% 54%;
+    --accent:            36 80% 48%;
     --accent-foreground: 0 0% 0%;
-    --destructive:       0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border:            217 33% 17%;
-    --input:             217 33% 17%;
-    --ring:              4 90% 58%;
+    --destructive:       356 50% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border:            210 30% 22%;
+    --input:             210 30% 22%;
+    --ring:              197 70% 44%;
   }
 }
 
-/* ─── BASE STYLES ─────────────────────────────────────────────── */
+/* ─── BASE STYLES ──────────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border;
@@ -120,6 +129,8 @@
     background-color: var(--color-page-bg);
     color: var(--color-text);
     font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -127,47 +138,59 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'DM Serif Display', Georgia, serif;
     line-height: 1.2;
+    color: var(--color-text);
+  }
+
+  a {
+    color: inherit;
   }
 }
 
-/* ─── LOGO ────────────────────────────────────────────────────── */
+/* ─── LOGO ─────────────────────────────────────────────────────── */
 .logo-bebas {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
-  letter-spacing: 2px;
+  font-size: 30px;
+  letter-spacing: 3px;
   color: var(--color-text);
   line-height: 1;
+  text-decoration: none;
 }
 .logo-bebas span {
   color: var(--color-brand);
 }
 
-/* ─── NAV PILLS ──────────────────────────────────────────────── */
+/* ─── HEADER NAV — clean editorial links (não pills) ──────────── */
 .nav-pill {
   flex-shrink: 0;
-  padding: 4px 14px;
-  border-radius: 20px;
+  padding: 5px 14px;
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
-  transition: all 0.15s;
+  text-decoration: none;
   color: var(--color-text-2);
-}
-.nav-pill:hover {
-  color: var(--color-brand);
-}
-.nav-pill.active {
-  background-color: var(--color-brand);
-  color: white;
+  border-radius: 4px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  position: relative;
 }
 
-/* ─── HERO SECTION — full width ──────────────────────────────── */
+.nav-pill:hover {
+  color: var(--color-brand);
+  background-color: var(--color-brand-light);
+}
+
+.nav-pill.active {
+  color: var(--color-brand);
+  font-weight: 600;
+  background-color: var(--color-brand-light);
+}
+
+/* ─── HERO SECTION — full width ────────────────────────────────── */
 .hero-section {
   position: relative;
   width: 100%;
-  height: clamp(420px, 65vh, 620px);
+  height: clamp(400px, 62vh, 580px);
   overflow: hidden;
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   display: block;
 }
 
@@ -176,10 +199,10 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.05) 0%,
-    rgba(0,0,0,0) 30%,
-    rgba(0,0,0,0.55) 65%,
-    rgba(0,0,0,0.92) 100%
+    rgba(0,0,0,0.02) 0%,
+    rgba(0,0,0,0) 25%,
+    rgba(0,0,0,0.45) 60%,
+    rgba(0,0,0,0.88) 100%
   );
 }
 
@@ -188,7 +211,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 2rem 40px;
+  padding: 2.5rem 40px;
 }
 
 @media (max-width: 768px) {
@@ -199,17 +222,18 @@
 
 .hero-title {
   font-family: 'DM Serif Display', Georgia, serif;
-  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-size: clamp(1.6rem, 3.5vw, 2.75rem);
   color: white;
   line-height: 1.15;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 16px rgba(0,0,0,0.25);
+  max-width: 780px;
 }
 
-/* ─── BREAKING NEWS BANNER ────────────────────────────────────── */
+/* ─── BREAKING NEWS BANNER ──────────────────────────────────────── */
 .breaking-banner {
-  background-color: var(--color-breaking);
+  background: linear-gradient(90deg, #0A2F3E 0%, var(--color-brand) 100%);
   color: white;
-  padding: 9px 0;
+  padding: 8px 0;
   display: flex;
   align-items: center;
   width: 100%;
@@ -218,24 +242,24 @@
 }
 
 .breaking-pulse {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: white;
+  background: #FFD700;
   flex-shrink: 0;
-  animation: pulse-ring 1.5s infinite;
+  animation: pulse-ring 1.8s infinite;
 }
 
 @keyframes pulse-ring {
-  0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
-  70%  { box-shadow: 0 0 0 8px rgba(255,255,255,0); }
-  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(255,215,0,0.7); }
+  70%  { box-shadow: 0 0 0 8px rgba(255,215,0,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,215,0,0); }
 }
 
-/* ─── AD SLOTS ────────────────────────────────────────────────── */
+/* ─── AD SLOTS ──────────────────────────────────────────────────── */
 .ad-slot {
   background-color: var(--color-ad-bg);
-  border: 1px solid var(--color-ad-border);
+  border: 1px dashed var(--color-ad-border);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -245,11 +269,11 @@
 }
 
 .ad-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   color: var(--color-ad-label);
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
   position: absolute;
   top: 4px;
   right: 6px;
@@ -268,30 +292,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 0 2px;
+  padding: 6px 0 4px;
 }
 
 .ad-label-center {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--color-ad-label);
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
   text-align: center;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
-/* ─── ARTICLE CARDS ───────────────────────────────────────────── */
+/* ─── ARTICLE CARDS ─────────────────────────────────────────────── */
 .article-card {
   background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 8px rgba(0,0,0,0.04);
 }
 
 .article-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(7,109,138,0.12), 0 2px 8px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+}
+
+.article-card-featured {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .article-title {
@@ -301,32 +329,33 @@
 }
 
 .article-meta {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--color-text-muted);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  font-weight: 500;
 }
 
 .article-excerpt {
   font-size: 14px;
   color: var(--color-text-2);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
-/* ─── CATEGORY BADGE ──────────────────────────────────────────── */
+/* ─── CATEGORY BADGE ────────────────────────────────────────────── */
 .category-badge {
   display: inline-block;
   padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 11px;
+  border-radius: 4px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   color: white;
 }
 
-/* ─── MAIN GRID ───────────────────────────────────────────────── */
+/* ─── MAIN GRID ─────────────────────────────────────────────────── */
 .main-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -357,7 +386,7 @@
   }
 }
 
-/* ─── CONTENT + SIDEBAR LAYOUT ────────────────────────────────── */
+/* ─── CONTENT + SIDEBAR LAYOUT ──────────────────────────────────── */
 .page-layout {
   display: grid;
   grid-template-columns: 1fr 300px;
@@ -374,26 +403,31 @@
   }
 }
 
-/* ─── SIDEBAR WIDGETS ─────────────────────────────────────────── */
+/* ─── SIDEBAR WIDGETS ────────────────────────────────────────────── */
 .widget {
   background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 18px;
   margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
 .widget-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  letter-spacing: 1px;
-  color: var(--color-text);
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--color-brand);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-brand);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-brand-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* ─── BUSINESS DIRECTORY ──────────────────────────────────────── */
+/* ─── BUSINESS DIRECTORY ─────────────────────────────────────────── */
 .business-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -417,40 +451,43 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 12px 8px;
+  padding: 14px 8px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: var(--color-bg);
   text-align: center;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
   cursor: pointer;
   text-decoration: none;
 }
 
 .business-card:hover {
   border-color: var(--color-brand);
-  box-shadow: 0 2px 8px rgba(255,59,48,0.12);
+  box-shadow: 0 4px 12px rgba(7,109,138,0.15);
+  transform: translateY(-2px);
 }
 
 .business-card-premium {
   border-color: var(--color-premium);
 }
 
-/* ─── SECTION HEADER ──────────────────────────────────────────── */
+/* ─── SECTION HEADER ─────────────────────────────────────────────── */
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .section-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
   letter-spacing: 1.5px;
-  color: var(--color-text);
+  text-transform: uppercase;
+  color: var(--color-brand);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -459,21 +496,21 @@
 .section-title::before {
   content: '';
   display: inline-block;
-  width: 4px;
-  height: 22px;
+  width: 3px;
+  height: 16px;
   background: var(--color-brand);
   border-radius: 2px;
   flex-shrink: 0;
 }
 
-/* ─── ARTICLE PAGE BODY ───────────────────────────────────────── */
+/* ─── ARTICLE PAGE BODY ──────────────────────────────────────────── */
 .article-body {
   font-size: 17px;
-  line-height: 1.75;
+  line-height: 1.8;
   color: var(--color-text-2);
 }
 
-.article-body p { margin-bottom: 1.25em; }
+.article-body p { margin-bottom: 1.4em; }
 
 .article-body h2 {
   font-family: 'DM Serif Display', serif;
@@ -490,16 +527,18 @@
 }
 
 .article-body blockquote {
-  border-left: 4px solid var(--color-brand);
-  padding-left: 1rem;
+  border-left: 3px solid var(--color-brand);
+  padding: 0.5rem 1rem;
   margin: 1.5em 0;
-  color: var(--color-text-muted);
+  background: var(--color-brand-light);
+  border-radius: 0 6px 6px 0;
+  color: var(--color-text-2);
   font-style: italic;
 }
 
 .article-body img {
   max-width: 100%;
-  border-radius: 6px;
+  border-radius: 8px;
   margin: 1.5em 0;
 }
 
@@ -508,15 +547,15 @@
   text-decoration: underline;
 }
 
-/* ─── FOOTER ──────────────────────────────────────────────────── */
+/* ─── FOOTER ─────────────────────────────────────────────────────── */
 .footer {
-  background-color: var(--color-surface);
-  border-top: 3px solid var(--color-brand);
-  padding: 40px 0 20px;
-  margin-top: 48px;
+  background-color: #0C1E2C;
+  color: #8AAEC4;
+  padding: 48px 0 24px;
+  margin-top: 64px;
 }
 
-/* ─── CONTAINER ───────────────────────────────────────────────── */
+/* ─── CONTAINER ──────────────────────────────────────────────────── */
 .container-editorial {
   max-width: 1440px;
   margin: 0 auto;
@@ -531,13 +570,13 @@
   .container-editorial { padding: 0 40px; }
 }
 
-/* ─── FUNDO DA PÁGINA (contraste c/ cards) ────────────────────── */
+/* ─── PAGE BG ────────────────────────────────────────────────────── */
 .page-bg {
   background-color: var(--color-page-bg);
   min-height: 400px;
 }
 
-/* ─── LAYOUT HOME: CONTEÚDO + SIDEBAR ────────────────────────── */
+/* ─── HOME LAYOUT: MAIN + SIDEBAR ───────────────────────────────── */
 .home-layout {
   display: grid;
   grid-template-columns: 1fr 300px;
@@ -554,7 +593,7 @@
   }
 }
 
-/* ─── UTILITIES ───────────────────────────────────────────────── */
+/* ─── UTILITIES ──────────────────────────────────────────────────── */
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -564,12 +603,21 @@
 }
 
 .premium-badge {
-  background: linear-gradient(135deg, var(--color-premium), #E8B84B);
+  background: linear-gradient(135deg, var(--color-accent), #E8B84B);
   color: white;
   font-size: 10px;
   font-weight: 700;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: 4px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+}
+
+/* ─── SECTION DIVIDER ────────────────────────────────────────────── */
+.section-block {
+  background-color: var(--color-bg);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }

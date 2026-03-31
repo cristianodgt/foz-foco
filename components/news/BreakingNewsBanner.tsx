@@ -20,7 +20,7 @@ export async function BreakingNewsBanner() {
     <div className="breaking-banner">
       <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 28px', display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
         <span className="breaking-pulse" />
-        <span style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', fontSize: 12, flexShrink: 0 }}>
+        <span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', fontSize: 10, flexShrink: 0, background: 'rgba(255,215,0,0.2)', padding: '2px 8px', borderRadius: 4, border: '1px solid rgba(255,215,0,0.3)' }}>
           DESTAQUE
         </span>
         <p style={{ flex: 1, fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
