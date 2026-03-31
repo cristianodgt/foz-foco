@@ -101,24 +101,31 @@ export function Header() {
           border: '1px solid var(--color-border)',
           borderBottom: 'none',
           boxShadow: '0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 24px',
           height: 60,
-          gap: 0,
+          padding: 0,
         }}>
+          {/* Container centralizado — alinhado ao conteúdo da página */}
+          <div style={{
+            maxWidth: 1280,
+            margin: '0 auto',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 28px',
+            gap: 0,
+          }}>
           {/* LOGO ─────────────────────────────────────────── */}
-          <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', marginRight: 28 }}>
+          <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', marginRight: 24, display: 'flex', alignItems: 'center' }}>
             {logoUrl ? (
-              <Image src={logoUrl} alt="Foz em Foco" width={120} height={36} className="object-contain" unoptimized />
+              <Image src={logoUrl} alt="Foz em Foco" width={110} height={34} style={{ objectFit: 'contain', maxHeight: 34, width: 'auto' }} unoptimized />
             ) : (
               <span style={{
                 fontFamily: 'var(--font-bebas, "Bebas Neue", sans-serif)',
-                fontSize: 22,
+                fontSize: 21,
                 letterSpacing: 3,
                 color: 'var(--color-text)',
                 lineHeight: 1,
-                display: 'block',
               }}>
                 FOZ <span style={{ color: 'var(--color-brand)' }}>EM</span> FOCO
               </span>
@@ -128,7 +135,7 @@ export function Header() {
           {/* Separador vertical logo / nav */}
           <div style={{ width: 1, height: 18, background: 'var(--color-border)', flexShrink: 0, marginRight: 4 }} className="hdr-divider" />
 
-          {/* NAV — categorias, scrollável, agrupada antes das ações */}
+          {/* NAV — categorias, scrollável */}
           <nav className="hdr-nav hide-scrollbar" style={{
             flex: 1,
             display: 'flex',
@@ -148,11 +155,11 @@ export function Header() {
                   className="hdr-link"
                   style={{
                     flexShrink: 0,
-                    padding: '0 15px',
+                    padding: '0 13px',
                     height: '100%',
                     display: 'flex',
                     alignItems: 'center',
-                    fontSize: 13.5,
+                    fontSize: 13,
                     fontWeight: active ? 600 : 400,
                     color: active ? 'var(--color-brand)' : 'var(--color-text-2)',
                     textDecoration: 'none',
@@ -167,25 +174,25 @@ export function Header() {
             })}
           </nav>
 
-          {/* AÇÕES (dir.) ─────────────────────────────────── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 20 }}>
+          {/* AÇÕES ───────────────────────────────────────── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 16 }}>
             <button onClick={() => setSearchOpen(true)} aria-label="Buscar" className="hdr-icon">
               <Search size={15} />
             </button>
 
             <ThemeToggle />
 
-            {/* CTA pill — estilo AVTL */}
+            {/* CTA pill */}
             <Link
               href="/anunciantes"
               className="hdr-cta"
               style={{
-                fontSize: 13,
+                fontSize: 12.5,
                 fontWeight: 600,
                 color: 'white',
                 background: 'var(--color-brand)',
                 textDecoration: 'none',
-                padding: '8px 20px',
+                padding: '7px 18px',
                 borderRadius: 100,
                 whiteSpace: 'nowrap',
                 letterSpacing: 0.2,
@@ -206,6 +213,7 @@ export function Header() {
             >
               {menuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
+          </div>
           </div>
         </header>
       </div>
