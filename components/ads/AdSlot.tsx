@@ -223,40 +223,49 @@ function RotatingCSSBanner({
   }, [next, slides.length])
 
   return (
-    <div className={`relative overflow-hidden shadow-lg ${dim.box}`}>
+    <div className={`relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,53,95,0.3)] rounded-xl ${dim.box}`}>
+      {/* Edge gradient overlays for depth */}
+      <div className="absolute inset-0 z-[15] pointer-events-none">
+        <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-black/15 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/25 to-transparent" />
+        <div className="absolute top-0 bottom-0 left-0 w-8 bg-gradient-to-r from-black/10 to-transparent" />
+        <div className="absolute top-0 bottom-0 right-0 w-8 bg-gradient-to-l from-black/10 to-transparent" />
+      </div>
+
       {slides.map((slide, i) => {
         const Icon = slide.Icon
         return (
           <Link
             key={i}
             href={slide.href}
-            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-700 ease-in-out ${slide.bg} ${
-              i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            className={`absolute inset-0 flex items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${slide.bg} ${
+              i === current ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'
             }`}
             aria-hidden={i !== current}
             tabIndex={i === current ? 0 : -1}
           >
             {/* Decorative elements */}
             <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#f5ac00]/10 rounded-full blur-3xl" />
-              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#f5ac00]/5 rounded-full blur-2xl" />
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#f5ac00]/30 to-transparent" />
+              <div className="absolute -top-20 -right-20 w-72 h-72 bg-[#f5ac00]/8 rounded-full blur-[80px]" />
+              <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-[#f5ac00]/5 rounded-full blur-[60px]" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/[0.02] rounded-full blur-[100px]" />
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#f5ac00]/40 to-transparent" />
               <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#f5ac00]/20 to-transparent" />
             </div>
 
             <div className="relative flex items-center gap-6 md:gap-10 px-6 md:px-12 max-w-[1200px] w-full">
-              <div className="hidden md:flex w-14 h-14 rounded-2xl bg-[#f5ac00]/15 items-center justify-center flex-shrink-0">
-                <Icon className="w-7 h-7 text-[#f5ac00]" strokeWidth={1.5} />
+              <div className="hidden md:flex w-16 h-16 rounded-2xl bg-[#f5ac00]/15 backdrop-blur-sm border border-[#f5ac00]/20 items-center justify-center flex-shrink-0 shadow-[0_4px_20px_-4px_rgba(245,172,0,0.3)]">
+                <Icon className="w-8 h-8 text-[#f5ac00] drop-shadow-sm" strokeWidth={1.5} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-white font-headline font-bold text-lg md:text-2xl tracking-tight truncate">
+                <h3 className="text-white font-headline font-bold text-lg md:text-3xl tracking-tight truncate drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
                   {slide.headline}
                 </h3>
-                <p className="text-white/70 text-xs md:text-sm font-label mt-0.5 truncate">
+                <p className="text-white/80 text-xs md:text-base font-label mt-1 truncate drop-shadow-sm">
                   {slide.sub}
                 </p>
               </div>
-              <span className="flex-shrink-0 bg-[#f5ac00] text-[#1a1a2e] px-5 py-2.5 rounded-full text-xs md:text-sm font-bold font-label uppercase tracking-wider shadow-lg hover:brightness-110 transition-all">
+              <span className="flex-shrink-0 bg-[#f5ac00] text-[#1a1a2e] px-6 py-3 rounded-full text-xs md:text-sm font-bold font-label uppercase tracking-wider shadow-[0_4px_16px_-2px_rgba(245,172,0,0.5)] hover:shadow-[0_6px_24px_-2px_rgba(245,172,0,0.6)] hover:scale-105 transition-all duration-300">
                 {slide.cta}
               </span>
             </div>
@@ -264,15 +273,15 @@ function RotatingCSSBanner({
         )
       })}
 
-      {/* Dots */}
+      {/* Glassmorphism dots */}
       {slides.length > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 px-3 py-2 rounded-full bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={(e) => { e.preventDefault(); setCurrent(i) }}
-              className={`w-1.5 h-1.5 rounded-full transition-all ${
-                i === current ? 'bg-[#f5ac00] shadow-sm w-4' : 'bg-white/30 hover:bg-white/50'
+              className={`h-2 rounded-full transition-all duration-500 ${
+                i === current ? 'bg-[#f5ac00] w-7 shadow-[0_0_8px_rgba(245,172,0,0.6)]' : 'bg-white/40 hover:bg-white/60 w-2'
               }`}
               aria-label={`Banner ${i + 1}`}
             />
@@ -306,13 +315,21 @@ function RotatingImageBanner({
   }, [next, slides.length])
 
   return (
-    <div className={`relative overflow-hidden ${dim.box}`}>
+    <div className={`relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,53,95,0.3)] rounded-xl ${dim.box}`}>
+      {/* Edge gradient overlays for depth */}
+      <div className="absolute inset-0 z-[15] pointer-events-none">
+        <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-black/10 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
+        <div className="absolute top-0 bottom-0 left-0 w-6 bg-gradient-to-r from-black/8 to-transparent" />
+        <div className="absolute top-0 bottom-0 right-0 w-6 bg-gradient-to-l from-black/8 to-transparent" />
+      </div>
+
       {slides.map((slide, i) => (
         <Link
           key={i}
           href={slide.href}
-          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-            i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          className={`absolute inset-0 transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            i === current ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-[1.03]'
           }`}
           aria-hidden={i !== current}
           tabIndex={i === current ? 0 : -1}
@@ -328,15 +345,15 @@ function RotatingImageBanner({
         </Link>
       ))}
 
-      {/* Dots */}
+      {/* Glassmorphism dots */}
       {slides.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 px-3 py-2 rounded-full bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={(e) => { e.preventDefault(); setCurrent(i) }}
-              className={`h-2 rounded-full transition-all shadow-sm ${
-                i === current ? 'bg-[#f5ac00] w-6' : 'bg-white/40 hover:bg-white/60 w-2'
+              className={`h-2 rounded-full transition-all duration-500 shadow-sm ${
+                i === current ? 'bg-[#f5ac00] w-7 shadow-[0_0_8px_rgba(245,172,0,0.6)]' : 'bg-white/40 hover:bg-white/60 w-2'
               }`}
               aria-label={`Banner ${i + 1}`}
             />
@@ -453,8 +470,10 @@ export function AdSlot({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`relative block overflow-hidden shadow-md transition-shadow hover:shadow-lg ${
-          format === 'leaderboard' ? '' : 'rounded-2xl ring-1 ring-black/5'
+        className={`relative block overflow-hidden transition-all duration-300 ${
+          format === 'leaderboard'
+            ? 'rounded-xl shadow-[0_8px_32px_-8px_rgba(0,53,95,0.3)] hover:shadow-[0_12px_40px_-8px_rgba(0,53,95,0.4)]'
+            : 'rounded-2xl ring-1 ring-black/5 shadow-md hover:shadow-lg'
         } ${dim.box}`}
         aria-label={ad!.title}
       >
