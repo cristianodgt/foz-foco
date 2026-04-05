@@ -75,12 +75,13 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Top leaderboard ad — full-width edge-to-edge */}
-      <AdSlot
-        format="leaderboard"
-        position="GRID_BANNER_TOP"
-        className="bg-on-surface"
-      />
+      {/* Top leaderboard ad — contained like article page */}
+      <div className="max-w-[1200px] mx-auto px-4 pt-6">
+        <AdSlot
+          format="leaderboard"
+          position="GRID_BANNER_TOP"
+        />
+      </div>
 
       {/* Main content 12-col grid */}
       <div className="max-w-[1200px] mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -121,12 +122,13 @@ export default async function HomePage() {
       <JobsSection />
       <PricingSection variant="home" />
 
-      {/* Bottom leaderboard ad — full-width edge-to-edge */}
-      <AdSlot
-        format="leaderboard"
-        position="GRID_BANNER_BOTTOM"
-        className="bg-on-surface"
-      />
+      {/* Bottom leaderboard ad — contained like article page */}
+      <div className="max-w-[1200px] mx-auto px-4 pb-6">
+        <AdSlot
+          format="leaderboard"
+          position="GRID_BANNER_BOTTOM"
+        />
+      </div>
     </>
   )
 }
