@@ -1,11 +1,21 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Clock, User } from 'lucide-react'
-import { CategoryBadge } from './CategoryBadge'
-import { formatRelativeDate } from '@/lib/utils'
 import type { Post } from '@/types'
 
-type Variant = 'featured' | 'standard' | 'compact' | 'horizontal'
+/**
+ * Plan 01-03 simplified ArticleCard.
+ *
+ * Three Stitch-aligned variants:
+ * - `grid`       — 3-col sub-grid card (image + eyebrow + Newsreader title, NO excerpt, NO byline).
+ * - `secondary`  — mobile-b style horizontal (text left, thumb right).
+ * - `compact`    — sidebar Últimas-style (small thumb + title).
+ *
+ * Legacy names (`featured`, `standard`, `horizontal`) are accepted as aliases
+ * so that /[slug] and /categoria/[slug] (swept in plan 01-01) keep rendering
+ * without touching their imports. Rule 3 auto-fix to avoid breaking pages
+ * outside this plan's scope.
+ */
+type Variant = 'grid' | 'secondary' | 'compact' | 'featured' | 'standard' | 'horizontal'
 
 interface ArticleCardProps {
   post: Post
@@ -14,7 +24,9 @@ interface ArticleCardProps {
 }
 
 function getCover(post: Post): string | null {
-  if (post.coverImage && !/\.(mp4|mov|webm)(\?.*)?$/i.test(post.coverImage)) return post.coverImage
+  if (post.coverImage && !/\.(mp4|mov|webm)(\?.*)?$/i.test(post.coverImage)) {
+    return post.coverImage
+  }
   if (Array.isArray(post.media)) {
     const img = post.media.find((m: { type: string; url: string }) => m.type === 'image')
     if (img) return img.url
@@ -22,108 +34,91 @@ function getCover(post: Post): string | null {
   return null
 }
 
-/* ── FEATURED — imagem grande + titulo + excerpt ── */
-function FeaturedCard({ post, priority }: { post: Post; priority?: boolean }) {
+function GridCard({ post, priority }: { post: Post; priority?: boolean }) {
   const cover = getCover(post)
+  const categoryName = post.category?.name || ''
+
   return (
-    <Link href={`/${post.slug}`} className="article-card article-card-featured" style={{ display: 'block', textDecoration: 'none', height: '100%' }}>
-      <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden', background: 'var(--color-surface)' }}>
-        {cover ? (
-          <Image src={cover} alt={post.title} fill className="object-cover" priority={priority} sizes="(max-width: 640px) 100vw, 50vw" />
-        ) : (
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--color-brand) 0%, #0C1E2C 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontFamily: 'var(--font-bebas)', fontSize: 22, letterSpacing: 3, color: 'rgba(255,255,255,0.2)' }}>FOZ EM FOCO</span>
-          </div>
+    <Link href={`/${post.slug}`} className="group block space-y-3">
+      <div className="relative aspect-video overflow-hidden rounded-md bg-surface-container">
+        {cover && (
+          <Image
+            src={cover}
+            alt={post.title}
+            fill
+            priority={priority}
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
         )}
       </div>
-      <div style={{ padding: '16px 18px 18px' }}>
-        <div style={{ marginBottom: 8 }}>
-          <CategoryBadge name={post.category?.name || ''} color={post.category?.color} icon={post.category?.icon} />
-        </div>
-        <h2 className="article-title line-clamp-3" style={{ fontSize: '1.25rem', marginBottom: 10 }}>{post.title}</h2>
-        <p className="article-excerpt line-clamp-2" style={{ marginBottom: 12 }}>{post.summary}</p>
-        <div className="article-meta">
-          <User size={12} /><span>{post.author?.name}</span>
-          <span>·</span>
-          <Clock size={12} /><span>{post.publishedAt ? formatRelativeDate(post.publishedAt) : ''}</span>
-        </div>
+      <p className="text-[10px] font-bold text-primary tracking-widest uppercase font-label">
+        {categoryName}
+      </p>
+      <h3 className="font-headline font-bold text-lg leading-tight text-on-surface group-hover:text-primary transition-colors">
+        {post.title}
+      </h3>
+    </Link>
+  )
+}
+
+function SecondaryCard({ post }: { post: Post }) {
+  const cover = getCover(post)
+  const categoryName = post.category?.name || ''
+
+  return (
+    <Link href={`/${post.slug}`} className="group flex gap-4 items-start">
+      <div className="flex-1 min-w-0">
+        <p className="text-primary text-[10px] font-bold tracking-widest uppercase font-label">
+          {categoryName}
+        </p>
+        <h3 className="mt-1 font-headline text-xl font-bold leading-snug text-on-surface group-hover:text-primary transition-colors">
+          {post.title}
+        </h3>
+      </div>
+      <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-md bg-surface-container">
+        {cover && (
+          <Image
+            src={cover}
+            alt={post.title}
+            fill
+            sizes="96px"
+            className="object-cover"
+          />
+        )}
       </div>
     </Link>
   )
 }
 
-/* ── STANDARD — imagem + titulo + meta ── */
-function StandardCard({ post, priority }: { post: Post; priority?: boolean }) {
-  const cover = getCover(post)
-  return (
-    <Link href={`/${post.slug}`} className="article-card" style={{ display: 'block', textDecoration: 'none' }}>
-      <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden', background: 'var(--color-surface)' }}>
-        {cover ? (
-          <Image src={cover} alt={post.title} fill className="object-cover" priority={priority} sizes="(max-width: 640px) 100vw, 33vw" />
-        ) : (
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, var(--color-surface-2) 0%, var(--color-surface) 100%)' }} />
-        )}
-        <div style={{ position: 'absolute', top: 8, left: 8 }}>
-          <CategoryBadge name={post.category?.name || ''} color={post.category?.color} icon={post.category?.icon} size="sm" />
-        </div>
-      </div>
-      <div style={{ padding: '12px 14px 14px' }}>
-        <h3 className="article-title line-clamp-2" style={{ fontSize: '1rem', marginBottom: 8 }}>{post.title}</h3>
-        <div className="article-meta">
-          <Clock size={11} /><span>{post.publishedAt ? formatRelativeDate(post.publishedAt) : ''}</span>
-        </div>
-      </div>
-    </Link>
-  )
-}
-
-/* ── COMPACT — thumb pequena + titulo inline ── */
 function CompactCard({ post }: { post: Post }) {
   const cover = getCover(post)
+
   return (
-    <Link href={`/${post.slug}`} style={{ display: 'flex', gap: 10, textDecoration: 'none', alignItems: 'flex-start', padding: '10px 0', borderBottom: '1px solid var(--color-border)' }}>
-      <div style={{ position: 'relative', width: 72, height: 52, borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: 'var(--color-surface)' }}>
-        {cover && <Image src={cover} alt={post.title} fill className="object-cover" sizes="72px" />}
+    <Link href={`/${post.slug}`} className="group flex gap-3 items-center py-2">
+      <div className="relative w-16 h-16 shrink-0 overflow-hidden rounded-md bg-surface-container">
+        {cover && (
+          <Image
+            src={cover}
+            alt={post.title}
+            fill
+            sizes="64px"
+            className="object-cover"
+          />
+        )}
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ marginBottom: 4 }}>
-          <CategoryBadge name={post.category?.name || ''} color={post.category?.color} size="sm" />
-        </div>
-        <h4 className="article-title line-clamp-2" style={{ fontSize: '0.875rem' }}>{post.title}</h4>
-        <p className="article-meta" style={{ marginTop: 4 }}>
-          <Clock size={11} /><span>{post.publishedAt ? formatRelativeDate(post.publishedAt) : ''}</span>
-        </p>
-      </div>
+      <h4 className="flex-1 text-sm font-headline font-semibold leading-tight text-on-surface group-hover:text-primary transition-colors line-clamp-3">
+        {post.title}
+      </h4>
     </Link>
   )
 }
 
-/* ── HORIZONTAL — thumb direita + titulo + excerpt esquerda ── */
-function HorizontalCard({ post }: { post: Post }) {
-  const cover = getCover(post)
-  return (
-    <Link href={`/${post.slug}`} className="article-card" style={{ display: 'flex', gap: 0, textDecoration: 'none', overflow: 'hidden' }}>
-      <div style={{ flex: 1, padding: '14px 16px 14px' }}>
-        <div style={{ marginBottom: 6 }}>
-          <CategoryBadge name={post.category?.name || ''} color={post.category?.color} size="sm" />
-        </div>
-        <h3 className="article-title line-clamp-2" style={{ fontSize: '1rem', marginBottom: 6 }}>{post.title}</h3>
-        <p className="article-excerpt line-clamp-2" style={{ fontSize: 13, marginBottom: 8 }}>{post.summary}</p>
-        <div className="article-meta">
-          <Clock size={11} /><span>{post.publishedAt ? formatRelativeDate(post.publishedAt) : ''}</span>
-        </div>
-      </div>
-      <div style={{ position: 'relative', width: 140, flexShrink: 0, background: 'var(--color-surface)' }}>
-        {cover && <Image src={cover} alt={post.title} fill className="object-cover" sizes="140px" />}
-      </div>
-    </Link>
-  )
-}
-
-/* ── EXPORT ── */
-export function ArticleCard({ post, variant = 'standard', priority }: ArticleCardProps) {
-  if (variant === 'featured') return <FeaturedCard post={post} priority={priority} />
+export function ArticleCard({ post, variant = 'grid', priority }: ArticleCardProps) {
+  // Legacy aliases
+  if (variant === 'secondary') return <SecondaryCard post={post} />
   if (variant === 'compact') return <CompactCard post={post} />
-  if (variant === 'horizontal') return <HorizontalCard post={post} />
-  return <StandardCard post={post} priority={priority} />
+  if (variant === 'horizontal') return <SecondaryCard post={post} />
+  // grid | featured | standard all render as the editorial grid card
+  return <GridCard post={post} priority={priority} />
 }

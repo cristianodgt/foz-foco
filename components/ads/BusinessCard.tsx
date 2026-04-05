@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { Phone } from 'lucide-react'
 
 interface BusinessCardProps {
   name: string
@@ -13,64 +12,52 @@ interface BusinessCardProps {
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  ALIMENTACAO: 'Alimentacao',
-  SAUDE: 'Saude',
-  SERVICOS: 'Servicos',
-  EDUCACAO: 'Educacao',
-  COMERCIO: 'Comercio',
+  ALIMENTACAO: 'Alimentação',
+  SAUDE: 'Saúde',
+  SERVICOS: 'Serviços',
+  EDUCACAO: 'Educação',
+  COMERCIO: 'Comércio',
   ESPORTES: 'Esportes',
   AUTOMOTIVO: 'Automotivo',
-  IMOBILIARIO: 'Imoveis',
+  IMOBILIARIO: 'Imóveis',
   OUTRO: 'Outro',
 }
 
-const CATEGORY_EMOJIS: Record<string, string> = {
-  ALIMENTACAO: '🍽️',
-  SAUDE: '🏥',
-  SERVICOS: '🔧',
-  EDUCACAO: '📚',
-  COMERCIO: '🏪',
-  ESPORTES: '⚽',
-  AUTOMOTIVO: '🚗',
-  IMOBILIARIO: '🏠',
-  OUTRO: '💼',
-}
-
-export function BusinessCard({ name, logo, category, phone, whatsapp, website, isPremium }: BusinessCardProps) {
-  const href = whatsapp
-    ? `https://wa.me/55${whatsapp.replace(/\D/g, '')}`
-    : website || (phone ? `tel:${phone}` : '#')
+/**
+ * BusinessCard — Stitch-aligned commercial tile.
+ *
+ * Simplified from the legacy rich card (Phone CTAs, premium badge, emoji fallbacks)
+ * to a clean Guia Comercial tile: logo or initial + name + category label.
+ * Plan 01-03 drops the inline CTAs because the home Guia Comercial row uses
+ * static category tiles, and /anunciantes renders this as a secondary grid.
+ */
+export function BusinessCard({ name, logo, category, whatsapp, website, phone }: BusinessCardProps) {
+  const href =
+    whatsapp
+      ? `https://wa.me/55${whatsapp.replace(/\D/g, '')}`
+      : website || (phone ? `tel:${phone}` : '#')
+  const initial = name.trim().charAt(0).toUpperCase() || '?'
 
   return (
     <a
       href={href}
       target={whatsapp || website ? '_blank' : undefined}
       rel="noopener noreferrer"
-      className={`business-card ${isPremium ? 'business-card-premium' : ''}`}
+      className="group bg-white rounded-md shadow-sm p-4 flex flex-col items-center gap-2 text-on-surface hover:shadow-md transition-shadow"
     >
-      {isPremium && (
-        <span className="premium-badge" style={{ marginBottom: 2 }}>Premium</span>
-      )}
-      <div
-        className="business-logo"
-        style={{
-          background: logo ? 'transparent' : 'var(--color-surface)',
-        }}
-      >
+      <div className="relative w-16 h-16 overflow-hidden rounded-md bg-surface-container flex items-center justify-center">
         {logo ? (
-          <Image src={logo} alt={name} width={48} height={48} className="object-cover rounded-lg" />
+          <Image src={logo} alt={name} fill sizes="64px" className="object-cover" />
         ) : (
-          <span style={{ fontSize: 22 }}>{CATEGORY_EMOJIS[category] || '💼'}</span>
+          <span className="text-2xl font-headline font-black text-primary">{initial}</span>
         )}
       </div>
-      <span className="business-name line-clamp-2">{name}</span>
-      <span className="business-category">{CATEGORY_LABELS[category] || category}</span>
-      {(whatsapp || phone) && (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 10, color: 'var(--color-brand)', marginTop: 2 }}>
-          <Phone size={10} />
-          {whatsapp ? 'WhatsApp' : 'Ligar'}
-        </span>
-      )}
+      <span className="font-bold text-sm text-center line-clamp-2 font-body group-hover:text-primary transition-colors">
+        {name}
+      </span>
+      <span className="text-[10px] uppercase tracking-wider text-outline font-label">
+        {CATEGORY_LABELS[category] || category}
+      </span>
     </a>
   )
 }

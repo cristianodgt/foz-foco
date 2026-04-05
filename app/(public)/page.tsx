@@ -1,20 +1,21 @@
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
-import { HeroSection } from '@/components/news/HeroSection'
-import { MainGrid } from '@/components/sections/MainGrid'
-import { CategorySection } from '@/components/sections/CategorySection'
+import { HeroArticle } from '@/components/news/HeroSection'
+import { ArticleCard } from '@/components/news/ArticleCard'
 import { Sidebar } from '@/components/layout/Sidebar'
-import { AdBannerTop } from '@/components/ads/AdBannerTop'
-import { AdBannerBottom } from '@/components/ads/AdBannerBottom'
-import { AdInlineBanner } from '@/components/ads/AdInlineBanner'
-import { BusinessDirectory } from '@/components/ads/BusinessDirectory'
-import type { Post, Ad } from '@/types'
+import { MaisLidas } from '@/components/widgets/MaisLidas'
+import { GuiaComercialSection } from '@/components/sections/GuiaComercialSection'
+import { EventsScroller } from '@/components/sections/EventsScroller'
+import { JobsSection } from '@/components/sections/JobsSection'
+import { PricingSection } from '@/components/sections/PricingSection'
+import type { Post } from '@/types'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Foz em Foco — Notícias de Foz do Iguaçu',
-  description: 'O portal de notícias de Foz do Iguaçu e região. Informação local, sempre em foco.',
+  description:
+    'O portal de notícias de Foz do Iguaçu e região. Informação local, sempre em foco.',
 }
 
 async function getHomeData() {
@@ -32,7 +33,12 @@ async function getHomeData() {
     }),
     prisma.category.findMany({ where: { active: true }, orderBy: { order: 'asc' }, take: 6 }),
     prisma.ad.findFirst({
-      where: { position: 'GRID_BANNER', active: true, startsAt: { lte: now }, endsAt: { gte: now } },
+      where: {
+        position: 'GRID_BANNER',
+        active: true,
+        startsAt: { lte: now },
+        endsAt: { gte: now },
+      },
     }),
     prisma.post.findMany({
       where: { status: 'PUBLISHED' },
@@ -49,74 +55,97 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { allPosts, categories, sponsoredAd, trendingPosts } = await getHomeData()
+  const { allPosts, trendingPosts } = await getHomeData()
 
   if (!allPosts.length) {
     return (
-      <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--color-text-muted)' }}>
+      <div className="max-w-[1200px] mx-auto px-4 py-20 text-center text-outline font-label">
         <p>Nenhuma notícia publicada ainda.</p>
       </div>
     )
   }
 
-  const hero = allPosts[0] as unknown as Post
-  const mainGridPosts = allPosts.slice(1, 14) as unknown as Post[]
-
-  const postsByCategory = categories.map(cat => ({
-    category: cat,
-    posts: (allPosts as unknown as Post[]).filter(p => p.category?.slug === cat.slug).slice(0, 5),
-  })).filter(c => c.posts.length > 0)
+  const posts = allPosts as unknown as Post[]
+  const trending = trendingPosts as unknown as Post[]
+  const hero = posts[0]
+  const gridPosts = posts.slice(1, 4)
+  const secondaryPosts = posts.slice(4, 7)
+  const latestPosts = posts.slice(7, 12)
 
   return (
     <>
-      {/* Banner topo — full width */}
-      <AdBannerTop />
-
-      {/* Hero — full width, fora do container */}
-      <HeroSection post={hero} />
-
-      {/* Conteúdo principal */}
-      <div className="page-bg">
-        <div className="container-editorial" style={{ paddingTop: 32, paddingBottom: 48 }}>
-
-          {/* Grid principal + Sidebar */}
-          <div className="home-layout">
-            {/* Coluna principal */}
-            <div>
-              <MainGrid posts={mainGridPosts} sponsoredAd={sponsoredAd as Ad | null} />
-
-              {/* Seções por categoria */}
-              {postsByCategory.map((item, i) => (
-                <div key={item.category.id}>
-                  {i === 1 && (
-                    <div style={{ margin: '8px 0' }}>
-                      <AdInlineBanner />
-                    </div>
-                  )}
-                  <CategorySection
-                    title={item.category.name}
-                    slug={item.category.slug}
-                    posts={item.posts}
-                    layout={i % 2 === 0 ? 'grid' : 'featured-list'}
-                    showSponsor={true}
-                  />
-                </div>
-              ))}
-
-              {/* Vitrine de estabelecimentos */}
-              <div style={{ marginTop: 16 }}>
-                <BusinessDirectory />
-              </div>
-            </div>
-
-            {/* Sidebar */}
-            <Sidebar trendingPosts={trendingPosts as unknown as Post[]} />
-          </div>
+      {/* Top leaderboard ad
+          TODO(01-04): replace with <AdSlot format="leaderboard" position="GRID_BANNER_TOP" /> */}
+      <div className="bg-surface py-4 flex justify-center">
+        <div className="w-[728px] max-w-full h-[90px] border-2 border-dashed border-outline-variant bg-surface-container flex items-center justify-center relative rounded-sm">
+          <span className="absolute top-1 left-2 text-[8px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-1 rounded-sm font-label">
+            PUBLICIDADE
+          </span>
+          <span className="text-outline text-xs italic font-label">
+            [ 728×90 — Espaço disponível: (45) 99999-9999 ]
+          </span>
         </div>
       </div>
 
-      {/* Banner rodapé — full width */}
-      <AdBannerBottom />
+      {/* Main content 12-col grid */}
+      <div className="max-w-[1200px] mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Main column — col-span-8 on desktop */}
+        <div className="lg:col-span-8 space-y-10">
+          {hero && <HeroArticle post={hero} />}
+
+          {/* Desktop 3-col sub-grid */}
+          <div className="hidden md:grid grid-cols-3 gap-6">
+            {gridPosts.map(post => (
+              <ArticleCard key={post.id} post={post} variant="grid" />
+            ))}
+          </div>
+
+          {/* Mobile secondary list (thumb-right) */}
+          <div className="space-y-6 md:hidden">
+            {secondaryPosts.map(post => (
+              <ArticleCard key={post.id} post={post} variant="secondary" />
+            ))}
+          </div>
+
+          {/* Inline ad
+              TODO(01-04): replace with <AdSlot format="inline" position="INLINE_BANNER" /> */}
+          <div className="w-full h-[200px] md:h-[250px] bg-surface-container border-2 border-dashed border-outline-variant flex items-center justify-center relative rounded-md">
+            <span className="absolute top-1 left-2 text-[8px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-1 rounded-sm font-label">
+              PUBLICIDADE
+            </span>
+            <span className="text-outline text-xs italic font-label">
+              [ 300×250 inline — Espaço disponível ]
+            </span>
+          </div>
+        </div>
+
+        {/* Sidebar — desktop only (lg:col-span-4 applied inside component) */}
+        <Sidebar trendingPosts={trending} latestPosts={latestPosts} />
+
+        {/* Mobile-only Mais Lidas card, shown after inline ad */}
+        <div className="lg:hidden bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+          <MaisLidas posts={trending.slice(0, 3)} />
+        </div>
+      </div>
+
+      {/* Full-width editorial sections */}
+      <GuiaComercialSection />
+      <EventsScroller />
+      <JobsSection />
+      <PricingSection variant="home" />
+
+      {/* Bottom leaderboard ad
+          TODO(01-04): replace with <AdSlot format="leaderboard" position="GRID_BANNER_BOTTOM" /> */}
+      <div className="bg-surface py-12 flex justify-center">
+        <div className="w-[728px] max-w-full h-[90px] border-2 border-dashed border-outline-variant bg-surface-container flex items-center justify-center relative rounded-sm">
+          <span className="absolute top-1 left-2 text-[8px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-1 rounded-sm font-label">
+            PUBLICIDADE
+          </span>
+          <span className="text-outline text-xs italic font-label">
+            [ 728×90 — Espaço disponível ]
+          </span>
+        </div>
+      </div>
     </>
   )
 }

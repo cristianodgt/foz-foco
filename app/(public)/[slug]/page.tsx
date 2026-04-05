@@ -12,7 +12,6 @@ import { AdBannerTop } from '@/components/ads/AdBannerTop'
 import { AdBannerBottom } from '@/components/ads/AdBannerBottom'
 import { AdSidebarSticky } from '@/components/ads/AdSidebarSticky'
 import { TrendingWidget } from '@/components/widgets/TrendingWidget'
-import { NewsletterWidget } from '@/components/widgets/NewsletterWidget'
 import { ShareButton } from './ShareButton'
 import type { Post } from '@/types'
 
@@ -171,7 +170,6 @@ export default async function PostPage({ params }: PageProps) {
           <aside style={{ position: 'sticky', top: 120 }}>
             <AdSidebarSticky />
             <TrendingWidget posts={trendingPosts as unknown as Post[]} />
-            <NewsletterWidget />
           </aside>
         </div>
 
