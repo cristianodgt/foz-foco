@@ -6,12 +6,11 @@ interface CategoryNavBarProps {
 }
 
 // Mirrors desktop.html Row 4 — sticky bg-primary-container nav with DB-driven
-// category links + amber ANUNCIE AQUI CTA. Hidden on mobile (mobile uses the
-// MobileBottomNav instead).
+// category links. Hidden on mobile (mobile uses MobileBottomNav instead).
 export function CategoryNavBar({ categories }: CategoryNavBarProps) {
   return (
     <nav className="hidden md:block sticky top-0 z-40 bg-primary-container shadow-lg">
-      <div className="max-w-[1200px] mx-auto flex items-center justify-between">
+      <div className="max-w-[1200px] mx-auto">
         <ul className="flex items-stretch">
           <li>
             <Link
@@ -32,12 +31,6 @@ export function CategoryNavBar({ categories }: CategoryNavBarProps) {
             </li>
           ))}
         </ul>
-        <Link
-          href="/anunciantes"
-          className="bg-tertiary-fixed text-on-tertiary-fixed px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-widest m-2 hover:brightness-95 transition-all"
-        >
-          ANUNCIE AQUI
-        </Link>
       </div>
     </nav>
   )

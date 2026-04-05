@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { ArrowUpRight } from 'lucide-react'
 import { CategoryBadge } from './CategoryBadge'
 import { formatRelativeDate } from '@/lib/utils'
 import type { Post } from '@/types'
@@ -18,11 +19,11 @@ function resolveCover(post: Post): string | null {
 }
 
 /**
- * HeroArticle — inline editorial hero card.
+ * HeroArticle — premium editorial hero card.
  *
- * Mirrors Stitch desktop.html Row 5 hero article (first tile of the main column)
- * and mobile-b section 3. Fills its parent width, aspect-[16/9], gradient
- * overlay, Newsreader title, amber "Leia mais →" CTA.
+ * Mirrors Stitch desktop.html Row 5 hero and mobile-b section 3. Soft frame:
+ * rounded-3xl, layered shadow, hairline ring, refined bottom gradient, gentle
+ * image zoom on hover, amber Leia mais pill CTA.
  */
 export function HeroArticle({ post }: HeroArticleProps) {
   const cover = resolveCover(post)
@@ -30,7 +31,7 @@ export function HeroArticle({ post }: HeroArticleProps) {
   return (
     <Link
       href={`/${post.slug}`}
-      className="group relative block aspect-[16/9] overflow-hidden rounded-lg"
+      className="group relative block aspect-[16/9] overflow-hidden rounded-3xl bg-surface-container shadow-[0_10px_40px_-12px_rgba(26,26,46,0.35)] ring-1 ring-on-surface/10 transition-all duration-500 hover:shadow-[0_20px_60px_-12px_rgba(26,26,46,0.5)] hover:ring-on-surface/20"
     >
       {cover ? (
         <Image
@@ -39,37 +40,43 @@ export function HeroArticle({ post }: HeroArticleProps) {
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 66vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
         />
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-container to-on-surface" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-container via-primary to-on-surface" />
       )}
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-on-surface via-on-surface/60 to-transparent" />
+      {/* Top vignette for depth */}
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-on-surface/30 to-transparent" />
+
+      {/* Bottom editorial gradient — refined three-stop */}
+      <div className="absolute inset-0 bg-gradient-to-t from-on-surface via-on-surface/75 via-35% to-transparent to-70%" />
 
       {/* Content */}
-      <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 text-white">
+      <div className="absolute inset-x-0 bottom-0 p-6 md:p-10 text-white">
         <CategoryBadge
           name={post.category?.name || 'Geral'}
           color={post.category?.color}
           icon={post.category?.icon}
         />
-        <h2 className="mt-3 text-2xl md:text-4xl font-headline font-bold leading-tight">
+        <h2 className="mt-4 text-2xl md:text-4xl lg:text-5xl font-headline font-bold leading-[1.1] tracking-tight drop-shadow-sm">
           {post.title}
         </h2>
         {post.summary && (
-          <p className="mt-3 hidden md:block text-base md:text-lg font-light text-surface-container-high line-clamp-2">
+          <p className="mt-3 hidden md:block text-base md:text-lg font-light text-white/85 leading-relaxed line-clamp-2 max-w-3xl">
             {post.summary}
           </p>
         )}
-        <p className="mt-2 text-xs md:text-sm opacity-80 font-label">
-          Por {post.author?.name}
-          {post.publishedAt ? ` • ${formatRelativeDate(post.publishedAt)}` : ''}
-        </p>
-        <span className="mt-4 inline-block font-bold text-tertiary-fixed font-label">
-          Leia mais →
-        </span>
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <p className="text-xs md:text-sm text-white/70 font-label">
+            Por {post.author?.name}
+            {post.publishedAt ? ` • ${formatRelativeDate(post.publishedAt)}` : ''}
+          </p>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-tertiary-fixed px-4 py-2 text-xs md:text-sm font-bold text-on-tertiary-fixed font-label shadow-md transition-transform duration-300 group-hover:translate-x-1">
+            Leia mais
+            <ArrowUpRight className="w-4 h-4" />
+          </span>
+        </div>
       </div>
     </Link>
   )

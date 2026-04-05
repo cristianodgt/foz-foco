@@ -86,17 +86,24 @@ export function AdSlotPlaceholder({
   message,
 }: PlaceholderProps) {
   const dim = DIMENSIONS[format]
-  const label = message ?? `[ ${dim.w}×${dim.h} — Espaço disponível: ${phone} ]`
+  const label = message ?? `Espaço disponível • ${phone}`
   return (
     <div
-      className={`relative border-2 border-dashed border-outline-variant bg-surface-container flex items-center justify-center rounded-sm ${dim.box}`}
+      className={`group relative flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-surface-container via-surface to-surface-container-high shadow-[0_2px_12px_-4px_rgba(26,26,46,0.08)] ring-1 ring-on-surface/5 ${dim.box}`}
     >
-      <span className="absolute top-1 left-2 text-[8px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-1 rounded-sm font-label tracking-widest">
+      {/* Dashed inner frame — softer than a hard outline */}
+      <div className="pointer-events-none absolute inset-2 rounded-xl border border-dashed border-outline-variant/50" />
+      <span className="absolute top-3 left-3 text-[9px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-label tracking-widest shadow-sm">
         PUBLICIDADE
       </span>
-      <span className="text-outline text-xs italic font-label text-center px-4">
-        {label}
-      </span>
+      <div className="text-center px-6">
+        <p className="text-[10px] font-bold text-outline uppercase tracking-widest font-label">
+          {dim.w} × {dim.h}
+        </p>
+        <p className="mt-1 text-xs italic text-outline font-label">
+          {label}
+        </p>
+      </div>
     </div>
   )
 }
@@ -187,7 +194,7 @@ export function AdSlot({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`relative block overflow-hidden rounded-sm ${dim.box}`}
+        className={`relative block overflow-hidden rounded-2xl shadow-md ring-1 ring-black/5 transition-shadow hover:shadow-lg ${dim.box}`}
         aria-label={ad.title}
       >
         <Image

@@ -3,17 +3,15 @@ import Image from 'next/image'
 import type { Post } from '@/types'
 
 /**
- * Plan 01-03 simplified ArticleCard.
+ * Plan 01-03 simplified ArticleCard — premium editorial feel.
  *
  * Three Stitch-aligned variants:
- * - `grid`       — 3-col sub-grid card (image + eyebrow + Newsreader title, NO excerpt, NO byline).
+ * - `grid`       — 3-col sub-grid card (image + eyebrow + Newsreader title).
  * - `secondary`  — mobile-b style horizontal (text left, thumb right).
  * - `compact`    — sidebar Últimas-style (small thumb + title).
  *
- * Legacy names (`featured`, `standard`, `horizontal`) are accepted as aliases
- * so that /[slug] and /categoria/[slug] (swept in plan 01-01) keep rendering
- * without touching their imports. Rule 3 auto-fix to avoid breaking pages
- * outside this plan's scope.
+ * Legacy names (`featured`, `standard`, `horizontal`) kept as aliases so that
+ * /[slug] and /categoria/[slug] continue to render.
  */
 type Variant = 'grid' | 'secondary' | 'compact' | 'featured' | 'standard' | 'horizontal'
 
@@ -39,8 +37,11 @@ function GridCard({ post, priority }: { post: Post; priority?: boolean }) {
   const categoryName = post.category?.name || ''
 
   return (
-    <Link href={`/${post.slug}`} className="group block space-y-3">
-      <div className="relative aspect-video overflow-hidden rounded-md bg-surface-container">
+    <Link
+      href={`/${post.slug}`}
+      className="group block overflow-hidden rounded-2xl bg-surface ring-1 ring-on-surface/5 shadow-[0_2px_12px_-4px_rgba(26,26,46,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-12px_rgba(26,26,46,0.25)] hover:ring-on-surface/10"
+    >
+      <div className="relative aspect-video overflow-hidden bg-surface-container">
         {cover && (
           <Image
             src={cover}
@@ -48,16 +49,18 @@ function GridCard({ post, priority }: { post: Post; priority?: boolean }) {
             fill
             priority={priority}
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
           />
         )}
       </div>
-      <p className="text-[10px] font-bold text-primary tracking-widest uppercase font-label">
-        {categoryName}
-      </p>
-      <h3 className="font-headline font-bold text-lg leading-tight text-on-surface group-hover:text-primary transition-colors">
-        {post.title}
-      </h3>
+      <div className="p-5 space-y-2">
+        <p className="text-[10px] font-bold text-primary tracking-widest uppercase font-label">
+          {categoryName}
+        </p>
+        <h3 className="font-headline font-bold text-lg leading-tight text-on-surface transition-colors group-hover:text-primary">
+          {post.title}
+        </h3>
+      </div>
     </Link>
   )
 }
@@ -67,23 +70,26 @@ function SecondaryCard({ post }: { post: Post }) {
   const categoryName = post.category?.name || ''
 
   return (
-    <Link href={`/${post.slug}`} className="group flex gap-4 items-start">
+    <Link
+      href={`/${post.slug}`}
+      className="group flex gap-4 items-start rounded-2xl p-3 -m-3 transition-colors hover:bg-surface-container/60"
+    >
       <div className="flex-1 min-w-0">
         <p className="text-primary text-[10px] font-bold tracking-widest uppercase font-label">
           {categoryName}
         </p>
-        <h3 className="mt-1 font-headline text-xl font-bold leading-snug text-on-surface group-hover:text-primary transition-colors">
+        <h3 className="mt-1 font-headline text-xl font-bold leading-snug text-on-surface transition-colors group-hover:text-primary">
           {post.title}
         </h3>
       </div>
-      <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-md bg-surface-container">
+      <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-2xl bg-surface-container shadow-sm ring-1 ring-on-surface/5">
         {cover && (
           <Image
             src={cover}
             alt={post.title}
             fill
             sizes="96px"
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         )}
       </div>
@@ -95,8 +101,11 @@ function CompactCard({ post }: { post: Post }) {
   const cover = getCover(post)
 
   return (
-    <Link href={`/${post.slug}`} className="group flex gap-3 items-center py-2">
-      <div className="relative w-16 h-16 shrink-0 overflow-hidden rounded-md bg-surface-container">
+    <Link
+      href={`/${post.slug}`}
+      className="group flex gap-3 items-center rounded-xl p-2 -m-2 transition-colors hover:bg-surface-container/60"
+    >
+      <div className="relative w-16 h-16 shrink-0 overflow-hidden rounded-xl bg-surface-container shadow-sm ring-1 ring-on-surface/5">
         {cover && (
           <Image
             src={cover}
@@ -107,7 +116,7 @@ function CompactCard({ post }: { post: Post }) {
           />
         )}
       </div>
-      <h4 className="flex-1 text-sm font-headline font-semibold leading-tight text-on-surface group-hover:text-primary transition-colors line-clamp-3">
+      <h4 className="flex-1 text-sm font-headline font-semibold leading-tight text-on-surface transition-colors group-hover:text-primary line-clamp-3">
         {post.title}
       </h4>
     </Link>
