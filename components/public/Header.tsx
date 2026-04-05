@@ -182,23 +182,24 @@ export function Header() {
 
             <ThemeToggle />
 
-            {/* CTA pill */}
+            {/* CTA pill — âmbar comercial */}
             <Link
               href="/anunciantes"
               className="hdr-cta"
               style={{
                 fontSize: 12.5,
-                fontWeight: 600,
-                color: 'white',
-                background: 'var(--color-brand)',
+                fontWeight: 700,
+                color: '#1A1A2E',
+                background: 'var(--color-accent)',
                 textDecoration: 'none',
-                padding: '7px 18px',
+                padding: '8px 20px',
                 borderRadius: 100,
                 whiteSpace: 'nowrap',
-                letterSpacing: 0.2,
-                transition: 'background 0.15s, transform 0.1s',
+                letterSpacing: 0.3,
+                transition: 'background 0.15s, transform 0.1s, box-shadow 0.15s',
                 display: 'inline-flex',
                 alignItems: 'center',
+                boxShadow: '0 2px 8px rgba(245,166,35,0.28)',
               }}
             >
               Anuncie aqui
@@ -349,9 +350,11 @@ export function Header() {
               href="/anunciantes"
               onClick={() => setMenuOpen(false)}
               style={{
-                marginTop: 20, fontSize: 13, fontWeight: 600,
-                color: 'white', background: 'var(--color-brand)',
-                textDecoration: 'none', padding: '10px 28px', borderRadius: 100,
+                marginTop: 24, fontSize: 14, fontWeight: 700,
+                color: '#1A1A2E', background: 'var(--color-accent)',
+                textDecoration: 'none', padding: '12px 32px', borderRadius: 100,
+                boxShadow: '0 4px 16px rgba(245,166,35,0.35)',
+                letterSpacing: 0.3,
               }}
             >
               Anuncie aqui
@@ -394,10 +397,11 @@ export function Header() {
           border-bottom-color: var(--color-brand) !important;
         }
 
-        /* CTA pill */
+        /* CTA pill — âmbar comercial */
         .hdr-cta:hover {
-          background: var(--color-brand-dark) !important;
+          background: var(--color-accent-dark) !important;
           transform: translateY(-1px);
+          box-shadow: 0 4px 14px rgba(245,166,35,0.4) !important;
         }
 
         /* Mobile breakpoints */
