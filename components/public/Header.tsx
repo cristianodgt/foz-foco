@@ -4,35 +4,28 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Search, Clock, Sun, Moon } from 'lucide-react'
+import { Menu, X, Search, Clock, Sun, Moon, User } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { formatRelativeDate } from '@/lib/utils'
 import type { Post } from '@/types'
-
-const NAV_LINKS = [
-  { label: 'Início', href: '/' },
-  { label: 'Cidade', href: '/categoria/cidade' },
-  { label: 'Política', href: '/categoria/politica' },
-  { label: 'Esportes', href: '/categoria/esportes' },
-  { label: 'Economia', href: '/categoria/economia' },
-  { label: 'Turismo', href: '/categoria/turismo' },
-  { label: 'Saúde', href: '/categoria/saude' },
-  { label: 'Cultura', href: '/categoria/cultura' },
-  { label: 'Segurança', href: '/categoria/seguranca' },
-]
 
 function useSearch(query: string) {
   const [results, setResults] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
-    if (!query.trim() || query.length < 2) { setResults([]); return }
+    if (!query.trim() || query.length < 2) {
+      setResults([])
+      return
+    }
     const timeout = setTimeout(async () => {
       setIsLoading(true)
       try {
         const res = await fetch(`/api/posts?search=${encodeURIComponent(query)}`)
         const data = await res.json()
         setResults(data.data || [])
-      } finally { setIsLoading(false) }
+      } finally {
+        setIsLoading(false)
+      }
     }, 300)
     return () => clearTimeout(timeout)
   }, [query])
@@ -43,14 +36,14 @@ function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  if (!mounted) return <div style={{ width: 34, height: 34 }} />
+  if (!mounted) return <div className="w-9 h-9" />
   return (
     <button
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       aria-label="Alternar modo"
-      className="hdr-icon"
+      className="w-9 h-9 flex items-center justify-center rounded-full text-primary-container hover:bg-surface-container transition-colors"
     >
-      {resolvedTheme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+      {resolvedTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
     </button>
   )
 }
@@ -66,19 +59,29 @@ export function Header() {
 
   useEffect(() => {
     fetch('/api/admin/settings')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data?.logo) setLogoUrl(data.logo) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.logo) setLogoUrl(data.logo)
+      })
       .catch(() => {})
   }, [])
 
-  useEffect(() => { setMenuOpen(false); setSearchOpen(false) }, [pathname])
+  useEffect(() => {
+    setMenuOpen(false)
+    setSearchOpen(false)
+  }, [pathname])
+
   useEffect(() => {
     if (searchOpen) setTimeout(() => inputRef.current?.focus(), 100)
     else setQuery('')
   }, [searchOpen])
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setSearchOpen(false); setMenuOpen(false) }
+      if (e.key === 'Escape') {
+        setSearchOpen(false)
+        setMenuOpen(false)
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -86,227 +89,143 @@ export function Header() {
 
   return (
     <>
-      {/* ── WRAPPER: cria o "espaço" ao redor do card ──────── */}
-      <div style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        padding: '10px 16px 0',
-        background: 'var(--color-page-bg)',
-      }}>
-        {/* ── CARD FLUTUANTE — inspirado no AVTL ────────────── */}
-        <header style={{
-          background: 'var(--color-bg)',
-          borderRadius: '12px 12px 0 0',
-          border: '1px solid var(--color-border)',
-          borderBottom: 'none',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04)',
-          height: 60,
-          padding: 0,
-        }}>
-          {/* Container centralizado — alinhado ao conteúdo da página */}
-          <div style={{
-            maxWidth: 1280,
-            margin: '0 auto',
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0 28px',
-            gap: 0,
-          }}>
-          {/* LOGO ─────────────────────────────────────────── */}
-          <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', marginRight: 24, display: 'flex', alignItems: 'center' }}>
+      {/* ───────────── DESKTOP HEADER (mirrors desktop.html Row 2) ───────────── */}
+      <header className="hidden md:block bg-white dark:bg-inverse-surface h-20 border-b border-outline-variant">
+        <div className="max-w-[1200px] h-full mx-auto px-4 flex items-center justify-between gap-8">
+          {/* LOGO */}
+          <Link href="/" className="flex flex-col items-start flex-shrink-0">
             {logoUrl ? (
-              <Image src={logoUrl} alt="Foz em Foco" width={110} height={34} style={{ objectFit: 'contain', maxHeight: 34, width: 'auto' }} unoptimized />
+              <Image
+                src={logoUrl}
+                alt="Foz em Foco"
+                width={180}
+                height={48}
+                className="object-contain max-h-12 w-auto"
+                unoptimized
+              />
             ) : (
-              <span style={{
-                fontFamily: 'var(--font-bebas, "Bebas Neue", sans-serif)',
-                fontSize: 21,
-                letterSpacing: 3,
-                color: 'var(--color-text)',
-                lineHeight: 1,
-              }}>
-                FOZ <span style={{ color: 'var(--color-brand)' }}>EM</span> FOCO
-              </span>
+              <>
+                <h1 className="text-3xl font-black text-primary-container font-headline tracking-tighter leading-none">
+                  FOZ EM FOCO
+                </h1>
+                <p className="text-[10px] font-label uppercase tracking-widest text-outline mt-1">
+                  O portal de notícias de Foz do Iguaçu
+                </p>
+              </>
             )}
           </Link>
 
-          {/* Separador vertical logo / nav */}
-          <div style={{ width: 1, height: 18, background: 'var(--color-border)', flexShrink: 0, marginRight: 4 }} className="hdr-divider" />
+          {/* SEARCH BAR */}
+          <div className="flex-1 max-w-md mx-12 relative">
+            <input
+              type="search"
+              placeholder="Buscar no portal..."
+              onFocus={() => setSearchOpen(true)}
+              className="w-full bg-surface-container rounded-full px-6 py-2 text-sm font-body text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-container"
+              readOnly
+            />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-outline pointer-events-none" />
+          </div>
 
-          {/* NAV — categorias, scrollável */}
-          <nav className="hdr-nav hide-scrollbar" style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 0,
-            overflowX: 'auto',
-            height: '100%',
-            flexShrink: 1,
-            minWidth: 0,
-          }}>
-            {NAV_LINKS.map(link => {
-              const active = pathname === link.href
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="hdr-link"
-                  style={{
-                    flexShrink: 0,
-                    padding: '0 13px',
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontSize: 13,
-                    fontWeight: active ? 600 : 400,
-                    color: active ? 'var(--color-brand)' : 'var(--color-text-2)',
-                    textDecoration: 'none',
-                    borderBottom: active ? '2px solid var(--color-brand)' : '2px solid transparent',
-                    whiteSpace: 'nowrap',
-                    transition: 'color 0.15s',
-                  }}
-                >
-                  {link.label}
-                </Link>
-              )
-            })}
-          </nav>
-
-          {/* AÇÕES ───────────────────────────────────────── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 16 }}>
-            <button onClick={() => setSearchOpen(true)} aria-label="Buscar" className="hdr-icon">
-              <Search size={15} />
-            </button>
-
+          {/* RIGHT ACTIONS */}
+          <div className="flex items-center gap-2 flex-shrink-0">
             <ThemeToggle />
-
-            {/* CTA pill — âmbar comercial */}
-            <Link
-              href="/anunciantes"
-              className="hdr-cta"
-              style={{
-                fontSize: 12.5,
-                fontWeight: 700,
-                color: '#1A1A2E',
-                background: 'var(--color-accent)',
-                textDecoration: 'none',
-                padding: '8px 20px',
-                borderRadius: 100,
-                whiteSpace: 'nowrap',
-                letterSpacing: 0.3,
-                transition: 'background 0.15s, transform 0.1s, box-shadow 0.15s',
-                display: 'inline-flex',
-                alignItems: 'center',
-                boxShadow: '0 2px 8px rgba(245,166,35,0.28)',
-              }}
-            >
-              Anuncie aqui
-            </Link>
-
-            {/* Hamburguer — só mobile */}
             <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Menu"
-              className="hdr-icon hdr-mobile"
-              style={{ display: 'none' }}
+              aria-label="Conta"
+              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors"
             >
-              {menuOpen ? <X size={18} /> : <Menu size={18} />}
+              <User className="w-5 h-5 text-primary-container" />
             </button>
           </div>
-          </div>
-        </header>
-      </div>
+        </div>
+      </header>
 
-      {/* ── SEARCH OVERLAY ─────────────────────────────────── */}
+      {/* ───────────── MOBILE HEADER (mirrors mobile-b section 1) ───────────── */}
+      <header className="flex md:hidden sticky top-0 z-40 bg-surface/80 backdrop-blur-md shadow-sm h-16 px-6 items-center justify-between">
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menu"
+          className="w-10 h-10 flex items-center justify-center text-primary-container"
+        >
+          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+
+        <Link href="/" className="flex items-center">
+          <h1 className="font-headline text-2xl font-bold italic text-primary-container">
+            Foz em Foco
+          </h1>
+        </Link>
+
+        <Link
+          href="/anunciantes"
+          className="bg-tertiary-fixed text-on-tertiary-fixed text-xs px-4 py-2 font-bold uppercase tracking-wider rounded-sm hover:brightness-95 transition-all"
+        >
+          Anuncie
+        </Link>
+      </header>
+
+      {/* ───────────── SEARCH OVERLAY (preserved) ───────────── */}
       {searchOpen && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 60,
-          background: 'rgba(8,22,34,0.97)',
-          backdropFilter: 'blur(20px)',
-          display: 'flex', flexDirection: 'column',
-        }}>
-          <div style={{
-            maxWidth: 720, width: '100%', margin: '0 auto',
-            height: 72, display: 'flex', alignItems: 'center',
-            padding: '0 24px', gap: 16,
-            borderBottom: '1px solid rgba(255,255,255,0.07)',
-          }}>
-            <Search size={18} style={{ color: 'var(--color-brand)', flexShrink: 0 }} />
+        <div
+          className="fixed inset-0 z-[60] flex flex-col bg-on-surface/95"
+          style={{ backdropFilter: 'blur(20px)' }}
+        >
+          <div className="max-w-[720px] w-full mx-auto h-[72px] flex items-center px-6 gap-4 border-b border-white/10">
+            <Search className="w-[18px] h-[18px] text-on-primary-container flex-shrink-0" />
             <input
               ref={inputRef}
               type="text"
               value={query}
-              onChange={e => setQuery(e.target.value)}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar notícias..."
-              style={{
-                flex: 1, background: 'transparent',
-                color: 'white', border: 'none', outline: 'none',
-                fontSize: 20, fontFamily: 'var(--font-serif)',
-              }}
+              className="flex-1 bg-transparent text-white border-0 outline-none text-xl font-headline"
             />
             <button
               onClick={() => setSearchOpen(false)}
-              style={{ color: 'rgba(255,255,255,0.35)', background: 'none', border: 'none', cursor: 'pointer' }}
+              aria-label="Fechar busca"
+              className="text-white/40 hover:text-white transition-colors"
             >
-              <X size={22} />
+              <X className="w-[22px] h-[22px]" />
             </button>
           </div>
 
-          <div style={{
-            flex: 1, overflowY: 'auto',
-            maxWidth: 720, width: '100%', margin: '0 auto',
-            padding: '20px 24px',
-          }}>
+          <div className="flex-1 overflow-y-auto max-w-[720px] w-full mx-auto px-6 py-5">
             {isLoading && (
-              <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 60 }}>
-                <div className="spinner" />
+              <div className="flex justify-center pt-16">
+                <div className="w-7 h-7 border-2 border-on-primary-container border-t-transparent rounded-full animate-spin" />
               </div>
             )}
             {!isLoading && query.length >= 2 && results.length === 0 && (
-              <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.2)', paddingTop: 60, fontSize: 15 }}>
+              <p className="text-center text-white/20 pt-16 text-sm">
                 Nenhum resultado para &ldquo;{query}&rdquo;
               </p>
             )}
             {!isLoading && results.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {results.map(post => (
+              <div className="flex flex-col gap-2">
+                {results.map((post) => (
                   <Link
                     key={post.id}
                     href={`/${post.slug}`}
                     onClick={() => setSearchOpen(false)}
-                    style={{
-                      display: 'flex', gap: 14, padding: '12px 14px',
-                      borderRadius: 8,
-                      background: 'rgba(255,255,255,0.04)',
-                      textDecoration: 'none',
-                      border: '1px solid rgba(255,255,255,0.05)',
-                    }}
+                    className="flex gap-3 p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors"
                   >
                     {post.coverImage && (
-                      <div style={{ position: 'relative', width: 76, height: 52, borderRadius: 6, overflow: 'hidden', flexShrink: 0 }}>
+                      <div className="relative w-[76px] h-[52px] rounded overflow-hidden flex-shrink-0">
                         <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
                       </div>
                     )}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{
-                        fontSize: 10, fontWeight: 700, padding: '2px 7px',
-                        borderRadius: 4, color: 'white', display: 'inline-block', marginBottom: 5,
-                        background: post.category?.color || 'var(--color-brand)',
-                      }}>
+                    <div className="flex-1 min-w-0">
+                      <span
+                        className="text-[10px] font-bold px-2 py-0.5 rounded text-white inline-block mb-1"
+                        style={{ background: post.category?.color || '#0f4c81' }}
+                      >
                         {post.category?.name}
                       </span>
-                      <h3 style={{
-                        fontSize: 14, fontWeight: 600, color: 'white', lineHeight: 1.3,
-                        fontFamily: 'var(--font-serif)',
-                        display: '-webkit-box', WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                      }}>
+                      <h3 className="text-sm font-semibold text-white leading-tight font-headline line-clamp-2">
                         {post.title}
                       </h3>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Clock size={11} />
+                      <p className="text-[11px] text-white/30 mt-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
                         {post.publishedAt ? formatRelativeDate(post.publishedAt) : ''}
                       </p>
                     </div>
@@ -318,99 +237,59 @@ export function Header() {
         </div>
       )}
 
-      {/* ── MOBILE MENU ──────────────────────────────────────── */}
+      {/* ───────────── MOBILE MENU ───────────── */}
       {menuOpen && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 40,
-          background: 'rgba(8,22,34,0.98)',
-          backdropFilter: 'blur(20px)',
-          display: 'flex', flexDirection: 'column',
-        }}>
-          <div style={{ height: 70 }} />
-          <nav style={{
-            flex: 1, display: 'flex', flexDirection: 'column',
-            justifyContent: 'center', alignItems: 'center', gap: 4, padding: 32,
-          }}>
-            {NAV_LINKS.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  fontFamily: 'var(--font-bebas, "Bebas Neue", sans-serif)',
-                  fontSize: 34, letterSpacing: 3,
-                  color: pathname === link.href ? 'var(--color-brand)' : 'rgba(224,234,242,0.85)',
-                  textDecoration: 'none', padding: '2px 0',
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
+        <div
+          className="fixed inset-0 z-[55] md:hidden bg-on-surface/95 flex flex-col"
+          style={{ backdropFilter: 'blur(20px)' }}
+        >
+          <div className="h-16" />
+          <nav className="flex-1 flex flex-col items-center justify-center gap-2 p-8">
+            <Link
+              href="/"
+              onClick={() => setMenuOpen(false)}
+              className="font-headline text-3xl font-bold text-white hover:text-on-primary-container"
+            >
+              Início
+            </Link>
+            <Link
+              href="/categoria/cidade"
+              onClick={() => setMenuOpen(false)}
+              className="font-headline text-3xl font-bold text-white/80 hover:text-on-primary-container"
+            >
+              Cidade
+            </Link>
+            <Link
+              href="/categoria/politica"
+              onClick={() => setMenuOpen(false)}
+              className="font-headline text-3xl font-bold text-white/80 hover:text-on-primary-container"
+            >
+              Política
+            </Link>
+            <Link
+              href="/categoria/economia"
+              onClick={() => setMenuOpen(false)}
+              className="font-headline text-3xl font-bold text-white/80 hover:text-on-primary-container"
+            >
+              Economia
+            </Link>
+            <Link
+              href="/categoria/esportes"
+              onClick={() => setMenuOpen(false)}
+              className="font-headline text-3xl font-bold text-white/80 hover:text-on-primary-container"
+            >
+              Esportes
+            </Link>
             <Link
               href="/anunciantes"
               onClick={() => setMenuOpen(false)}
-              style={{
-                marginTop: 24, fontSize: 14, fontWeight: 700,
-                color: '#1A1A2E', background: 'var(--color-accent)',
-                textDecoration: 'none', padding: '12px 32px', borderRadius: 100,
-                boxShadow: '0 4px 16px rgba(245,166,35,0.35)',
-                letterSpacing: 0.3,
-              }}
+              className="mt-6 bg-tertiary-fixed text-on-tertiary-fixed px-8 py-3 rounded-sm text-sm font-bold uppercase tracking-widest"
             >
               Anuncie aqui
             </Link>
           </nav>
         </div>
       )}
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .spinner {
-          width: 26px; height: 26px;
-          border: 2px solid var(--color-brand);
-          border-top-color: transparent;
-          border-radius: 50%;
-          animation: spin 0.7s linear infinite;
-        }
-
-        /* Ícone genérico do header */
-        .hdr-icon {
-          width: 34px; height: 34px;
-          border-radius: 8px;
-          border: 1px solid var(--color-border);
-          background: transparent;
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer;
-          color: var(--color-text-muted);
-          transition: color 0.15s, border-color 0.15s, background 0.15s;
-          flex-shrink: 0;
-        }
-        .hdr-icon:hover {
-          color: var(--color-brand);
-          border-color: var(--color-brand);
-          background: var(--color-brand-light);
-        }
-
-        /* Link de nav */
-        .hdr-link:hover {
-          color: var(--color-brand) !important;
-          border-bottom-color: var(--color-brand) !important;
-        }
-
-        /* CTA pill — âmbar comercial */
-        .hdr-cta:hover {
-          background: var(--color-accent-dark) !important;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 14px rgba(245,166,35,0.4) !important;
-        }
-
-        /* Mobile breakpoints */
-        @media (max-width: 900px) {
-          .hdr-nav { display: none !important; }
-          .hdr-mobile { display: flex !important; }
-          .hdr-cta { display: none !important; }
-        }
-      `}</style>
     </>
   )
 }

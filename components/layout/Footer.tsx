@@ -1,145 +1,153 @@
 import Link from 'next/link'
-import { Instagram, Facebook, Youtube, Mail } from 'lucide-react'
+import { Facebook, Instagram, Youtube } from 'lucide-react'
 
-const categories = [
-  { name: 'Cidade', slug: 'cidade' },
-  { name: 'Política', slug: 'politica' },
-  { name: 'Economia', slug: 'economia' },
-  { name: 'Esportes', slug: 'esportes' },
-  { name: 'Cultura', slug: 'cultura' },
-  { name: 'Eventos', slug: 'eventos' },
-]
-
+// Mirrors desktop.html Row 11 — navy 4-col editorial footer (Brand / Editorial
+// / Institucional / Newsletter) with a bottom bar. No amber gradient CTA card
+// (that lives in the Pricing section, plan 01-03).
 export function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="footer">
-      <div className="container-editorial">
-        {/* CTA Publicidade — âmbar comercial */}
-        <div style={{
-          background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%)',
-          borderRadius: 14,
-          padding: '32px 36px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 20,
-          marginBottom: 56,
-          boxShadow: '0 10px 40px rgba(245,166,35,0.22)',
-        }}>
-          <div>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '2rem', color: '#1A1A2E', letterSpacing: '-0.015em', marginBottom: 6, lineHeight: 1.15 }}>
-              Anuncie no Foz em Foco
-            </h2>
-            <p style={{ color: 'rgba(26,26,46,0.82)', fontSize: '0.92rem', fontWeight: 500 }}>
-              Alcance milhares de moradores de Foz do Iguaçu. Formatos para todos os orçamentos.
-            </p>
-          </div>
-          <Link
-            href="/anunciantes"
-            style={{
-              background: '#1A1A2E',
-              color: '#fff',
-              fontWeight: 700,
-              fontSize: '0.92rem',
-              padding: '14px 32px',
-              borderRadius: 100,
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              letterSpacing: 0.2,
-              boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
-            }}
-          >
-            Quero anunciar →
-          </Link>
-        </div>
-
-        {/* Links */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 40, marginBottom: 40 }} className="footer-grid">
-          {/* Marca */}
-          <div>
-            <div style={{ fontFamily: 'var(--font-bebas)', fontSize: '1.9rem', letterSpacing: '0.1em', color: '#fff', marginBottom: 14 }}>
-              FOZ <span style={{ color: 'var(--color-accent)' }}>EM</span> FOCO
-            </div>
-            <p style={{ fontSize: '0.85rem', lineHeight: 1.7, color: '#9BA3C0', maxWidth: 260 }}>
-              O portal de notícias de Foz do Iguaçu e região. Informação local, sempre em foco.
-            </p>
-            <div style={{ display: 'flex', gap: 14, marginTop: 20 }}>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: '#9BA3C0', transition: 'color 0.15s' }} className="footer-social">
-                <Instagram size={18} />
-              </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: '#9BA3C0' }} className="footer-social">
-                <Facebook size={18} />
-              </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube" style={{ color: '#9BA3C0' }} className="footer-social">
-                <Youtube size={18} />
-              </a>
-              <a href="mailto:contato@fozemfoco.com.br" aria-label="E-mail" style={{ color: '#9BA3C0' }} className="footer-social">
-                <Mail size={18} />
-              </a>
-            </div>
-          </div>
-
-          {/* Editorias */}
-          <div>
-            <h4 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-accent)', marginBottom: 18 }}>
-              Editorias
-            </h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {categories.map(c => (
-                <li key={c.slug}>
-                  <Link href={`/categoria/${c.slug}`} style={{ fontSize: '0.875rem', color: '#C4CAE0', textDecoration: 'none', fontWeight: 500 }}>
-                    {c.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Institucional */}
-          <div>
-            <h4 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--color-accent)', marginBottom: 18 }}>
-              Institucional
-            </h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                { label: 'Sobre nós', href: '/sobre' },
-                { label: 'Anuncie aqui', href: '/anunciantes' },
-                { label: 'Contato', href: '/contato' },
-                { label: 'Política de privacidade', href: '/privacidade' },
-                { label: 'Termos de uso', href: '/termos' },
-              ].map(l => (
-                <li key={l.href}>
-                  <Link href={l.href} style={{ fontSize: '0.875rem', color: '#C4CAE0', textDecoration: 'none', fontWeight: 500 }}>
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+    <footer className="bg-on-surface text-surface py-20 px-4">
+      <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+        {/* Col 1 — Brand */}
+        <div>
+          <h2 className="text-2xl font-black font-headline text-on-primary-container tracking-tighter">
+            FOZ EM FOCO
+          </h2>
+          <p className="text-sm text-outline-variant mt-2">
+            O portal de notícias de Foz do Iguaçu
+          </p>
+          <div className="flex items-center gap-4 mt-5">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="text-outline-variant hover:text-on-primary-container transition-colors"
+            >
+              <Facebook className="w-4 h-4" />
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="text-outline-variant hover:text-on-primary-container transition-colors"
+            >
+              <Instagram className="w-4 h-4" />
+            </a>
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              className="text-outline-variant hover:text-on-primary-container transition-colors"
+            >
+              <Youtube className="w-4 h-4" />
+            </a>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 22, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <p style={{ fontSize: '0.78rem', color: '#7C849E' }}>
-            © {year} Foz em Foco. Todos os direitos reservados.
+        {/* Col 2 — Editorial */}
+        <div>
+          <h3 className="font-bold text-xs uppercase tracking-widest text-on-primary-container mb-4">
+            Editorial
+          </h3>
+          <ul className="space-y-3 text-sm text-outline-variant">
+            <li>
+              <Link href="/categoria/cidade" className="hover:text-on-primary-container transition-colors">
+                Cidades
+              </Link>
+            </li>
+            <li>
+              <Link href="/categoria/politica" className="hover:text-on-primary-container transition-colors">
+                Política
+              </Link>
+            </li>
+            <li>
+              <Link href="/categoria/economia" className="hover:text-on-primary-container transition-colors">
+                Economia
+              </Link>
+            </li>
+            <li>
+              <Link href="/categoria/esportes" className="hover:text-on-primary-container transition-colors">
+                Esporte
+              </Link>
+            </li>
+            <li>
+              <Link href="/categoria/cultura" className="hover:text-on-primary-container transition-colors">
+                Cultura
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Col 3 — Institucional */}
+        <div>
+          <h3 className="font-bold text-xs uppercase tracking-widest text-on-primary-container mb-4">
+            Institucional
+          </h3>
+          <ul className="space-y-3 text-sm text-outline-variant">
+            <li>
+              <Link href="/sobre" className="hover:text-on-primary-container transition-colors">
+                Sobre Nós
+              </Link>
+            </li>
+            <li>
+              <Link href="/expediente" className="hover:text-on-primary-container transition-colors">
+                Expediente
+              </Link>
+            </li>
+            <li>
+              <Link href="/anunciantes" className="hover:text-on-primary-container transition-colors">
+                Anuncie
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacidade" className="hover:text-on-primary-container transition-colors">
+                Privacidade
+              </Link>
+            </li>
+            <li>
+              <Link href="/contato" className="hover:text-on-primary-container transition-colors">
+                Contato
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Col 4 — Newsletter */}
+        <div>
+          <h3 className="font-bold text-xs uppercase tracking-widest text-on-primary-container mb-4">
+            Newsletter
+          </h3>
+          <p className="text-sm text-outline-variant">
+            Receba as principais notícias de Foz direto no seu e-mail.
           </p>
-          <p style={{ fontSize: '0.78rem', color: '#7C849E' }}>
-            Foz do Iguaçu — Paraná — Brasil
-          </p>
+          <form action="#" method="post" className="mt-4">
+            <input
+              type="email"
+              name="email"
+              placeholder="Seu e-mail"
+              required
+              className="bg-white/5 border border-white/10 rounded-md px-3 py-2 text-sm w-full text-surface placeholder:text-outline-variant focus:outline-none focus:ring-2 focus:ring-on-primary-container"
+            />
+            <button
+              type="submit"
+              className="mt-3 bg-on-primary-container text-on-primary-fixed px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest w-full hover:brightness-95 transition-all"
+            >
+              Inscrever-se
+            </button>
+          </form>
         </div>
       </div>
 
-      <style>{`
-        .footer-social { transition: color 0.15s, transform 0.15s; }
-        .footer-social:hover { color: var(--color-accent) !important; transform: translateY(-2px); }
-        @media (max-width: 768px) {
-          .footer-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
-        }
-      `}</style>
+      {/* Bottom bar */}
+      <div className="max-w-[1200px] mx-auto mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-[10px] uppercase tracking-widest text-outline-variant">
+        <span>© {year} Foz em Foco. Todos os direitos reservados.</span>
+        <span>Feito em Foz do Iguaçu</span>
+      </div>
     </footer>
   )
 }

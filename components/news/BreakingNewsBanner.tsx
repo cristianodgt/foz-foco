@@ -17,39 +17,15 @@ export async function BreakingNewsBanner() {
   if (!breakingPost) return null
 
   return (
-    <div style={{ padding: '0 16px', background: 'var(--color-page-bg)' }}>
-      <div className="breaking-banner" style={{ borderRadius: '0 0 12px 12px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 28px', display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
-          <span className="breaking-pulse" />
-          <span style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', fontSize: 10, flexShrink: 0, background: 'rgba(255,215,0,0.2)', padding: '2px 8px', borderRadius: 4, border: '1px solid rgba(255,215,0,0.3)' }}>
-            DESTAQUE
-          </span>
-          <p style={{ flex: 1, fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
-            {breakingPost.title}
-          </p>
-          <Link
-            href={`/${breakingPost.slug}`}
-            style={{
-              flexShrink: 0,
-              fontSize: 11,
-              fontWeight: 700,
-              color: 'var(--color-brand)',
-              textDecoration: 'none',
-              background: 'white',
-              padding: '5px 14px',
-              borderRadius: 100,
-              letterSpacing: 0.3,
-              whiteSpace: 'nowrap',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
-              transition: 'transform 0.1s, box-shadow 0.1s',
-            }}
-          >
-            Ler mais →
-          </Link>
-        </div>
+    <div className="w-full bg-secondary text-on-secondary py-2 px-4">
+      <div className="max-w-[1200px] mx-auto flex items-center gap-3 text-xs font-label font-bold uppercase tracking-widest">
+        <span className="bg-white text-secondary px-2 py-0.5 rounded-full">URGENTE</span>
+        <Link
+          href={`/${breakingPost.slug}`}
+          className="truncate hover:underline flex-1 min-w-0"
+        >
+          {breakingPost.title}
+        </Link>
       </div>
     </div>
   )
