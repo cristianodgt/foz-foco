@@ -33,8 +33,8 @@ interface Dim {
 const DIMENSIONS: Record<AdFormat, Dim> = {
   leaderboard: {
     w: 1200,
-    h: 150,
-    box: 'w-full h-[150px]',
+    h: 250,
+    box: 'w-full h-[200px] md:h-[250px]',
     wrapper: 'w-full overflow-hidden',
     sizes: '100vw',
   },
@@ -136,6 +136,31 @@ const BOTTOM_BANNERS: BannerSlide[] = [
 const LOCAL_SLIDES: Record<string, BannerSlide[]> = {
   GRID_BANNER_TOP: TOP_BANNERS,
   GRID_BANNER_BOTTOM: BOTTOM_BANNERS,
+}
+
+// ──────────────────────────────── Image Banner Slides ────────────────────────────────
+
+interface ImageBannerSlide {
+  src: string
+  alt: string
+  href: string
+}
+
+const TOP_IMAGE_BANNERS: ImageBannerSlide[] = [
+  { src: '/banners/banner-top-1.jpeg', alt: 'Anuncie no Foz em Foco', href: '/anunciantes' },
+  { src: '/banners/banner-top-2.jpeg', alt: 'Guia Comercial Foz do Iguaçu', href: '/anunciantes' },
+  { src: '/banners/banner-top-3.jpeg', alt: 'Alcance milhares de leitores', href: '/anunciantes' },
+]
+
+const BOTTOM_IMAGE_BANNERS: ImageBannerSlide[] = [
+  { src: '/banners/banner-bot-1.jpeg', alt: 'Espaço Publicitário Premium', href: '/anunciantes' },
+  { src: '/banners/banner-bot-2.jpeg', alt: 'Torne-se Anunciante', href: '/anunciantes' },
+  { src: '/banners/banner-bot-3.jpeg', alt: 'Seu Negócio Merece Destaque', href: '/anunciantes' },
+]
+
+const LOCAL_IMAGE_BANNERS: Record<string, ImageBannerSlide[]> = {
+  GRID_BANNER_TOP: TOP_IMAGE_BANNERS,
+  GRID_BANNER_BOTTOM: BOTTOM_IMAGE_BANNERS,
 }
 
 const ROTATION_INTERVAL = 5000
@@ -258,6 +283,70 @@ function RotatingCSSBanner({
   )
 }
 
+/**
+ * RotatingImageBanner — cycles through image-based banner slides with crossfade.
+ */
+function RotatingImageBanner({
+  slides,
+  dim,
+}: {
+  slides: ImageBannerSlide[]
+  dim: Dim
+}) {
+  const [current, setCurrent] = useState(0)
+
+  const next = useCallback(() => {
+    setCurrent(i => (i + 1) % slides.length)
+  }, [slides.length])
+
+  useEffect(() => {
+    if (slides.length <= 1) return
+    const id = setInterval(next, ROTATION_INTERVAL)
+    return () => clearInterval(id)
+  }, [next, slides.length])
+
+  return (
+    <div className={`relative overflow-hidden ${dim.box}`}>
+      {slides.map((slide, i) => (
+        <Link
+          key={i}
+          href={slide.href}
+          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+            i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
+          aria-hidden={i !== current}
+          tabIndex={i === current ? 0 : -1}
+        >
+          <Image
+            src={slide.src}
+            alt={slide.alt}
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority={i === 0}
+          />
+        </Link>
+      ))}
+
+      {/* Dots */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={(e) => { e.preventDefault(); setCurrent(i) }}
+              className={`h-2 rounded-full transition-all shadow-sm ${
+                i === current ? 'bg-[#f5ac00] w-6' : 'bg-white/40 hover:bg-white/60 w-2'
+              }`}
+              aria-label={`Banner ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function AdSlot({
   format,
   position,
@@ -318,8 +407,16 @@ export function AdSlot({
 
   const outerCls = `${dim.wrapper} ${className ?? ''}`.trim()
 
-  // No real ad — try local CSS rotating banners
+  // No real ad — try local image banners first, then CSS fallback
   if (loaded && (!ad || errored)) {
+    const imageBanners = LOCAL_IMAGE_BANNERS[position]
+    if (imageBanners && imageBanners.length > 0) {
+      return (
+        <div className={outerCls}>
+          <RotatingImageBanner slides={imageBanners} dim={dim} />
+        </div>
+      )
+    }
     const slides = LOCAL_SLIDES[position]
     if (slides && slides.length > 0) {
       return (
