@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700;6..72,800&amp;family=Manrope:wght@400;500;600;700&amp;family=Sora:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Newsreader', serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f9f9f9",
+                    "on-primary-fixed-variant": "#07497d",
+                    "outline": "#727780",
+                    "on-primary-container": "#8ebdf9",
+                    "secondary-fixed-dim": "#ffb955",
+                    "surface-container-high": "#e8e8e8",
+                    "tertiary": "#6f0006",
+                    "secondary": "#835500",
+                    "on-secondary-fixed-variant": "#633f00",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#42474f",
+                    "primary-fixed-dim": "#a0c9ff",
+                    "outline-variant": "#c2c7d1",
+                    "primary": "#00355f",
+                    "tertiary-fixed-dim": "#ffb4ab",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#dadada",
+                    "on-secondary-fixed": "#291800",
+                    "secondary-fixed": "#ffddb4",
+                    "on-secondary": "#ffffff",
+                    "background": "#f9f9f9",
+                    "on-surface": "#1a1c1c",
+                    "on-background": "#1a1c1c",
+                    "primary-fixed": "#d2e4ff",
+                    "surface-container-low": "#f3f3f3",
+                    "inverse-surface": "#2f3131",
+                    "on-primary-fixed": "#001c37",
+                    "inverse-primary": "#a0c9ff",
+                    "inverse-on-surface": "#f1f1f1",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#410002",
+                    "surface-variant": "#e2e2e2",
+                    "secondary-container": "#feae2c",
+                    "surface": "#f9f9f9",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#9a000c",
+                    "on-tertiary-container": "#ffa297",
+                    "surface-tint": "#2d6197",
+                    "on-secondary-container": "#6b4500",
+                    "surface-container": "#eeeeee",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#93000b",
+                    "primary-container": "#0f4c81",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-primary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface leading-tight antialiased">
+<!-- 1. HEADER (JSON: TopAppBar) -->
+<header class="bg-[#0F4C81] dark:bg-slate-900 shadow-lg docked full-width top-0 z-50 transition-opacity duration-200">
+<div class="flex items-center justify-between px-4 h-14">
+<h1 class="text-2xl font-bold font-['Newsreader'] text-white tracking-tight">Foz em Foco</h1>
+<button class="text-white hover:bg-white/10 p-2 rounded transition-colors">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+<!-- Sub-header Alert/CTA -->
+<div class="bg-tertiary-container py-2 px-4 flex justify-between items-center">
+<span class="text-[10px] font-bold text-on-tertiary-container uppercase tracking-widest">ANUNCIE AQUI</span>
+<div class="flex items-center gap-1">
+<span class="text-white text-xs font-medium">Divulgue seu negócio</span>
+<span class="material-symbols-outlined text-white text-sm" data-icon="campaign">campaign</span>
+</div>
+</div>
+</header>
+<main class="max-w-md mx-auto">
+<!-- 2. LEADERBOARD AD -->
+<section class="p-4 bg-surface-container-low">
+<div class="relative w-full h-[70px] bg-surface-variant border border-dashed border-outline-variant flex flex-col items-center justify-center">
+<span class="absolute top-1 right-1 text-[9px] font-bold text-secondary px-1 bg-secondary-fixed">PUBLICIDADE</span>
+<p class="text-on-surface-variant text-xs font-medium">Espaço disponível — (45) 99999-9999</p>
+</div>
+</section>
+<!-- 3. CATEGORY TABS (JSON: NavigationDrawer Labels) -->
+<nav class="sticky top-0 bg-white dark:bg-slate-950 z-40 border-b border-surface-container shadow-sm overflow-hidden">
+<div class="flex items-center gap-6 px-4 overflow-x-auto no-scrollbar py-3">
+<!-- Home Active -->
+<a class="text-[#0F4C81] font-bold font-['Sora'] text-sm whitespace-nowrap border-b-2 border-[#0F4C81] pb-1" href="#">Home</a>
+<a class="text-slate-600 dark:text-slate-400 font-medium font-['Sora'] text-sm whitespace-nowrap pb-1" href="#">Notícias</a>
+<a class="text-slate-600 dark:text-slate-400 font-medium font-['Sora'] text-sm whitespace-nowrap pb-1" href="#">Turismo</a>
+<a class="text-slate-600 dark:text-slate-400 font-medium font-['Sora'] text-sm whitespace-nowrap pb-1" href="#">Guia</a>
+<a class="text-slate-600 dark:text-slate-400 font-medium font-['Sora'] text-sm whitespace-nowrap pb-1" href="#">Empregos</a>
+<a class="text-slate-600 dark:text-slate-400 font-medium font-['Sora'] text-sm whitespace-nowrap pb-1" href="#">Imóveis</a>
+</div>
+</nav>
+<!-- 4. HERO NEWS CARD -->
+<section class="mt-4 px-4">
+<div class="relative aspect-[16/9] overflow-hidden group shadow-md bg-slate-200">
+<img alt="Cataratas do Iguaçu" class="w-full h-full object-cover" data-alt="cinematic aerial view of Iguazu Falls with massive volumes of water rushing over cliffs surrounded by dense green rainforest at sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdGjFqsyF45ihfc1_YzuHWLyMJ_sDWCtQ9Kl8TXmRuqqfJExt0SdpnGIfikJeeNCUKHuGvEaDcLSQotMTDZXgBJwV5FdP-_zAMdgU4nf78VypjICULA6Qjer7sojE_H1fiRbrExRxqRMd69FaQj5ZpVJ-XKNrgWQxsfnzAIZcXyfD5eytgaND_wkszAVwGAwgpTyoGXd1mTbj6mkp9VdsCwUteW3JdEons_fLLYHkPiV-fSeEF7vn14V3B2IYOnbF-K3myX59Vk3Q"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-0 p-4 w-full">
+<span class="inline-block px-2 py-0.5 mb-2 text-[10px] font-bold bg-primary text-white uppercase tracking-wider">TURISMO</span>
+<h2 class="text-2xl text-white font-headline font-bold leading-tight drop-shadow-md">Cataratas do Iguaçu batem recorde histórico com 2 milhões de visitantes</h2>
+<div class="mt-2 flex items-center gap-2 text-white/80 text-[10px] font-body">
+<span class="font-bold">Por Redação</span>
+<span>•</span>
+<span>12 Mai, 2024</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. SECONDARY CARDS -->
+<section class="mt-8 px-4 flex flex-col gap-6">
+<!-- Card 1 -->
+<div class="flex gap-4 items-start bg-surface-container-lowest transition-all">
+<div class="w-24 h-24 flex-shrink-0 bg-slate-200 overflow-hidden">
+<img alt="Centro de Foz" class="w-full h-full object-cover" data-alt="vibrant street level view of a historic brazilian city center with colorful buildings and people walking under bright daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBL4GTAqrOGmGfTNKsFerl1QdJFmYEtycZ9rDRyTCSFYbOYqHrZw4KuI0RJ8-uGXM6KaYXu01jNl3lrSvW91_yNu_-Q2uvQMUvIyHb_HhjpdZQZkrRW_PT2oCTevX9MctE9SjDefkl46N5o1f3T8-05yj1OwLFnoAXdYMFHBn1sjHrG1tERG3DeYVuXv2DmsGtUFPFcgTbIynJ4jf3cEESUCLkp0vawKktKrm_zH4zD8DJq4xQobLcGh8wpdK9De954zqF7l-Ej8uw"/>
+</div>
+<div class="flex-1">
+<span class="text-[10px] font-bold text-green-700 uppercase tracking-widest">CIDADE</span>
+<h3 class="text-lg font-headline font-bold text-on-surface mt-1 leading-snug">Prefeitura anuncia obras no centro histórico de Foz</h3>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex gap-4 items-start bg-surface-container-lowest transition-all">
+<div class="w-24 h-24 flex-shrink-0 bg-slate-200 overflow-hidden">
+<img alt="Itaipu Binacional" class="w-full h-full object-cover" data-alt="dramatic wide angle shot of a massive hydroelectric dam with flowing water and structural engineering details at dawn" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOkHApXrKcmY76NKeTwdM_PS7k5j_icJVzJ0xONzDwJx8CWpRptOmmU0oX-ofAdIpwkN5sXZtZXR9zs1u8LAKYUHit9GYMm-w5nxGKv1ZLQVq8buxP25zOmcEEFwlKlfqKEEBOxKlu7qNAthV9t_gZ5j69uzwtkZbtpfUbdIv_KWIaf1M7RckX4rhgG5z4S7QuMPkTYh3Fr5QUEyRyNRNft-QjPvDO-H7luEhXxMMFlLofmMkZTeN-Ha5zkzStSSeZd3KQp7POP3I"/>
+</div>
+<div class="flex-1">
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">ECONOMIA</span>
+<h3 class="text-lg font-headline font-bold text-on-surface mt-1 leading-snug">Itaipu investe R$50 milhões em projetos sociais na região</h3>
+</div>
+</div>
+</section>
+<!-- 6. IN-FEED AD -->
+<section class="mt-8 px-4">
+<div class="bg-surface-container-low border border-secondary-container p-6 flex flex-col items-center text-center">
+<span class="text-[9px] font-bold text-secondary px-2 py-0.5 bg-secondary-fixed mb-4">PUBLICIDADE</span>
+<p class="text-sm font-medium text-on-surface-variant mb-6">Seu anúncio aqui — 300x250<br/>Ligue (45) 99999-9999</p>
+<button class="bg-green-600 text-white px-8 py-2 font-bold uppercase tracking-widest text-xs rounded hover:bg-green-700 transition-colors">
+                    Anuncie
+                </button>
+</div>
+</section>
+<!-- 7. MORE NEWS -->
+<section class="mt-8 px-4 flex flex-col gap-6">
+<div class="flex gap-3 items-center">
+<div class="w-16 h-16 bg-slate-200 flex-shrink-0">
+<img alt="Cultura" class="w-full h-full object-cover" data-alt="abstract swirl of colorful liquid paints in vibrant blues and oranges blending together" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL00D4LmC0gHpA96YZO6fdjlBUng-mNA9r27B7EjIot1cefQto0W9Km3kM41X5ZKU-buZTjQlLJWQgipFmnsRrgrdV9YrBrQ4lth7Wvrn97f43cT0sNUWBVmzMEXXAHKTfWvCaoUTYWTPw7bUjpw8IdaCS50KrMi69A6LSTkw4RJGxFQxR3aZhsiBBqy3je5IKI-6ljJxjLOm-JJb3GfAHg_SUbT30mf-3eCdRW5Q-tEEzYLF8xyoR7I0WpmsSdpHeCTXJm8wo63Q"/>
+</div>
+<h4 class="text-sm font-headline font-semibold text-on-surface leading-tight">Feira do Livro de Foz terá programação gratuita até domingo</h4>
+</div>
+<div class="flex gap-3 items-center">
+<div class="w-16 h-16 bg-slate-200 flex-shrink-0">
+<img alt="Esportes" class="w-full h-full object-cover" data-alt="close up of a professional soccer ball resting on lush green grass under stadium lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJ1A8k9KYJvI7IhyRX85T5LehUyeliXxX2H88gspwYIV5JJSBfwtP9PgILUS0wx7jcOpDWzUFvgBpIQLLGzDPyXzoqx9SvSmLo7aIzihOQBfdGqaSUGTel6PEsFB3AWmsuiV0MgKRvFy1t9WSAh-oIuJ5i3NLDNKcO8uHxrUEw03OnAPA5AqePVmOCSiYMq7rk0gQ_fHuHjP5HfN1TkNtV0zoj-edR_Yk_Mue6HDmd16_yHShXZOEFPcP-799uJ1N9jftO-NDnVsA"/>
+</div>
+<h4 class="text-sm font-headline font-semibold text-on-surface leading-tight">Foz Cataratas encara desafio decisivo pela Liga Nacional de Futsal</h4>
+</div>
+<div class="flex gap-3 items-center">
+<div class="w-16 h-16 bg-slate-200 flex-shrink-0">
+<img alt="Eventos" class="w-full h-full object-cover" data-alt="crowd of people at a sunlit outdoor market with stalls and colorful merchandise in blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-j_Od4X3zz8Y5eKWMgWbwzciL7qoZkSmVqzqs7EGu4etrLOCeIcA6lqwooJf6zqoD-s5Gp4kTANrWxH08DF-an10g30n-ODSmdZ7vyTVmhuviMGn9OdNpZ0EkLD511-L7aluEMS9CZkwgTasipjN0EiCmUTMG9bjekUj7eJrkdrY997yb3e8Xz-2V9YAYSKMaEt01rinytsz0_tYPSa5Mmi9EpyRA8YURHa-cIiwJpViC6-rW-SG7QHQmk6VTmGINC0aqErAiWFk"/>
+</div>
+<h4 class="text-sm font-headline font-semibold text-on-surface leading-tight">Workshop de Gastronomia atrai centenas de turistas no centro</h4>
+</div>
+</section>
+<!-- 8. GUIA COMERCIAL STRIP -->
+<section class="mt-10 py-6 bg-surface-container-low overflow-hidden">
+<div class="px-4 flex justify-between items-center mb-4">
+<h2 class="text-xs font-bold tracking-widest text-primary uppercase">GUIA COMERCIAL</h2>
+<a class="text-xs font-bold text-secondary" href="#">Ver todos →</a>
+</div>
+<div class="flex gap-4 px-4 overflow-x-auto no-scrollbar">
+<div class="flex-shrink-0 flex flex-col items-center">
+<div class="w-20 h-20 bg-white shadow-sm flex items-center justify-center p-2">
+<img alt="Hotel" class="w-full h-full object-contain" data-alt="professional luxury hotel logo sign displayed on a clean modern facade" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3piqEsMLZAH-CfdwCpEHitN_Q0JWUh928EnjF8tJMDPpFFWbdtb84E-LJrIwo7BMUA_yh6k9uneo_jR6XvNuwmVoPqpIVRuD-le81YJynT6OQ9LWRmooBbBH8czxGzlw5tDGcHI0EMJgiEdRd7bT8LMk1_R8bXafhh2tk4VYN4JIenbjgC5ZAYT_umTZHOmIXJCuArMWKKy_qR9aFVuj71im_YZwmqSwgwovpLRzP8fZOkFtnrRlkbuVpFsg6-lapz73G1jyg6Cc"/>
+</div>
+<span class="text-[9px] mt-1 font-medium text-on-surface-variant">Rafain Hotel</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center">
+<div class="w-20 h-20 bg-white shadow-sm flex items-center justify-center p-2">
+<img alt="Loja" class="w-full h-full object-contain" data-alt="elegant retail store logo in gold lettering on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjpK_ovz_b913uU2ppRCnGUe0nB-NnDQJCFrYnNtTZxAHc9sq-Rxeloo4npokRCUvxuKqEFPxX68bwby-a_hj9OZuP-B8eIuQ3Mx2q6Gl0zyEYv1-iZd-9Ly-UNbgSYIHpFneGrHg2vmvjShD0dEvTS_yiQFDHTvI-lwHmAUfwuEb76aattNnLNbBA7Q2GJITPKUkCakD39h0OP69mgbmfv8liSg5f1WKZynEZV-9o3WVKaBxnhHa96kwbN2ALF9TZKrANUo09H4o"/>
+</div>
+<span class="text-[9px] mt-1 font-medium text-on-surface-variant">La Petisquera</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center">
+<div class="w-20 h-20 bg-white shadow-sm flex items-center justify-center p-2">
+<img alt="Shopping" class="w-full h-full object-contain" data-alt="modern minimalist mall branding with clean typography on glass surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaF2hpvxlYNTuusjtugofvVszcAiXc6O486RPzfmj7lis1vVTiJXdPxM9ZFe8k5OVEOBWoGTqF7ESEyT4EpEPRFLb_-s5ge3BuHiep_mH3f3KkGoOrd84kLnDwqxOgicJJ8o74I9EszxVLJMZaM79yQrbLINOo3bddh_17h9mY2r5ij3hbYIt0Dl5QYqeB3q-huB0gdJ1JvbznMn8Lc8JDqSSTNA0ZhxHYizgtbe_8tmvla6LthWZO6EK3Q4ic3w1d2zYh7Ff1OOM"/>
+</div>
+<span class="text-[9px] mt-1 font-medium text-on-surface-variant">JL Shopping</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center">
+<div class="w-20 h-20 bg-green-100 flex flex-col items-center justify-center text-center p-2 cursor-pointer border border-green-200">
+<span class="material-symbols-outlined text-green-700 text-lg" data-icon="add_circle">add_circle</span>
+<span class="text-[8px] font-bold text-green-700 leading-tight">Cadastre-se</span>
+</div>
+<span class="text-[9px] mt-1 font-medium text-on-surface-variant">Sua Loja</span>
+</div>
+</div>
+</section>
+<!-- 9. EMPREGOS STRIP -->
+<section class="mt-10 px-4">
+<h2 class="text-xs font-bold tracking-widest text-primary uppercase mb-4">VAGAS DE EMPREGO</h2>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-white border border-surface-container">
+<div>
+<h4 class="text-sm font-bold text-on-surface leading-tight">Recepcionista Bilíngue</h4>
+<p class="text-[10px] text-on-surface-variant">Hotel Cataratas Resort</p>
+</div>
+<button class="bg-primary text-white px-3 py-1 text-[10px] font-bold uppercase tracking-tighter">Candidatar-se</button>
+</div>
+<div class="flex items-center justify-between p-3 bg-white border border-surface-container">
+<div>
+<h4 class="text-sm font-bold text-on-surface leading-tight">Vendedor(a) Externo</h4>
+<p class="text-[10px] text-on-surface-variant">Distribuidora Foz</p>
+</div>
+<button class="bg-primary text-white px-3 py-1 text-[10px] font-bold uppercase tracking-tighter">Candidatar-se</button>
+</div>
+<div class="flex items-center justify-between p-3 bg-white border border-surface-container">
+<div>
+<h4 class="text-sm font-bold text-on-surface leading-tight">Auxiliar de Cozinha</h4>
+<p class="text-[10px] text-on-surface-variant">Restaurante Sabor Local</p>
+</div>
+<button class="bg-primary text-white px-3 py-1 text-[10px] font-bold uppercase tracking-tighter">Candidatar-se</button>
+</div>
+</div>
+</section>
+<!-- 10. ANUNCIE CTA -->
+<section class="mt-10 bg-primary-container p-8 text-center text-white">
+<h2 class="text-3xl font-headline font-bold mb-2">Anuncie no Foz em Foco</h2>
+<p class="font-body text-sm text-on-primary-container mb-6 italic">Sua marca vista por milhares de pessoas todos os dias.</p>
+<div class="flex flex-wrap justify-center gap-3 mb-8">
+<div class="bg-white/10 px-3 py-2 rounded">
+<span class="block text-[10px] uppercase font-bold text-on-primary-container">Início</span>
+<span class="text-lg font-bold">R$299</span>
+</div>
+<div class="bg-white/20 px-3 py-2 rounded scale-110">
+<span class="block text-[10px] uppercase font-bold text-white">Popular</span>
+<span class="text-lg font-bold">R$699</span>
+</div>
+<div class="bg-white/10 px-3 py-2 rounded">
+<span class="block text-[10px] uppercase font-bold text-on-primary-container">Premium</span>
+<span class="text-lg font-bold">R$1.499</span>
+</div>
+</div>
+<button class="w-full bg-white text-primary flex items-center justify-center gap-2 py-3 rounded-lg font-bold shadow-xl">
+<span class="material-symbols-outlined fill" data-icon="chat" style="font-variation-settings: 'FILL' 1;">chat</span>
+                Falar no WhatsApp
+            </button>
+</section>
+<!-- 11. FOOTER BANNER -->
+<section class="mt-6 px-4 pb-6">
+<div class="relative w-full h-[70px] bg-surface-variant flex flex-col items-center justify-center">
+<span class="absolute top-1 right-1 text-[9px] font-bold text-secondary px-1 bg-secondary-fixed">PUBLICIDADE — Footer Banner</span>
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest font-bold">Anuncie seu banner aqui</p>
+</div>
+</section>
+<!-- 12. FOOTER -->
+<footer class="bg-[#1A1A2E] pt-12 pb-8 px-6">
+<div class="flex flex-col items-center text-center">
+<h3 class="font-['Newsreader'] text-white text-2xl font-bold mb-4">Foz em Foco</h3>
+<div class="flex gap-4 mb-8">
+<span class="material-symbols-outlined text-white hover:text-secondary-container transition-colors" data-icon="facebook">social_leaderboard</span>
+<span class="material-symbols-outlined text-white hover:text-secondary-container transition-colors" data-icon="camera_alt">camera_alt</span>
+<span class="material-symbols-outlined text-white hover:text-secondary-container transition-colors" data-icon="share">share</span>
+</div>
+<div class="grid grid-cols-2 gap-x-12 gap-y-3 mb-8 text-sm">
+<a class="text-slate-400 hover:text-white transition-colors" href="#">Privacidade</a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#">Termos</a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#">Contato</a>
+<a class="text-slate-400 hover:text-white transition-colors" href="#">Equipe</a>
+</div>
+<p class="text-slate-500 text-[10px] uppercase tracking-widest">© 2026 Foz em Foco. Todos os direitos reservados.</p>
+</div>
+</footer>
+</main>
+<!-- Bottom Navigation for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] border-t border-surface-container-high z-[60] flex justify-around items-center h-16">
+<a class="flex flex-col items-center gap-1 text-[#0F4C81]" href="#">
+<span class="material-symbols-outlined fill" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[9px] font-bold uppercase">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined" data-icon="newspaper">newspaper</span>
+<span class="text-[9px] font-bold uppercase">Notícias</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="text-[9px] font-bold uppercase">Guia</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[9px] font-bold uppercase">Conta</span>
+</a>
+</nav>
+<!-- Padding for bottom nav -->
+<div class="h-16 md:hidden"></div>
+</body></html>
