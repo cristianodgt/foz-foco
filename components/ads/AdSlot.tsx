@@ -35,7 +35,7 @@ const DIMENSIONS: Record<AdFormat, Dim> = {
     w: 1200,
     h: 150,
     box: 'w-full h-[150px]',
-    wrapper: 'w-full',
+    wrapper: 'w-full overflow-hidden',
     sizes: '100vw',
   },
   rectangle: {
@@ -198,7 +198,7 @@ function RotatingCSSBanner({
   }, [next, slides.length])
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/10 ${dim.box}`}>
+    <div className={`relative overflow-hidden shadow-lg ${dim.box}`}>
       {slides.map((slide, i) => {
         const Icon = slide.Icon
         return (
@@ -356,7 +356,9 @@ export function AdSlot({
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={handleClick}
-        className={`relative block overflow-hidden rounded-2xl shadow-md ring-1 ring-black/5 transition-shadow hover:shadow-lg ${dim.box}`}
+        className={`relative block overflow-hidden shadow-md transition-shadow hover:shadow-lg ${
+          format === 'leaderboard' ? '' : 'rounded-2xl ring-1 ring-black/5'
+        } ${dim.box}`}
         aria-label={ad!.title}
       >
         <Image

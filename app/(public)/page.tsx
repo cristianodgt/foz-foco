@@ -75,11 +75,11 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Top leaderboard ad */}
+      {/* Top leaderboard ad — full-width edge-to-edge */}
       <AdSlot
         format="leaderboard"
         position="GRID_BANNER_TOP"
-        className="bg-surface py-4"
+        className="bg-on-surface"
       />
 
       {/* Main content 12-col grid */}
@@ -121,11 +121,11 @@ export default async function HomePage() {
       <JobsSection />
       <PricingSection variant="home" />
 
-      {/* Bottom leaderboard ad */}
+      {/* Bottom leaderboard ad — full-width edge-to-edge */}
       <AdSlot
         format="leaderboard"
         position="GRID_BANNER_BOTTOM"
-        className="bg-surface py-12"
+        className="bg-on-surface"
       />
     </>
   )
