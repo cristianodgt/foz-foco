@@ -8,6 +8,7 @@ import { GuiaComercialSection } from '@/components/sections/GuiaComercialSection
 import { EventsScroller } from '@/components/sections/EventsScroller'
 import { JobsSection } from '@/components/sections/JobsSection'
 import { PricingSection } from '@/components/sections/PricingSection'
+import { AdSlot } from '@/components/ads/AdSlot'
 import type { Post } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -74,18 +75,12 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Top leaderboard ad
-          TODO(01-04): replace with <AdSlot format="leaderboard" position="GRID_BANNER_TOP" /> */}
-      <div className="bg-surface py-4 flex justify-center">
-        <div className="w-[728px] max-w-full h-[90px] border-2 border-dashed border-outline-variant bg-surface-container flex items-center justify-center relative rounded-sm">
-          <span className="absolute top-1 left-2 text-[8px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-1 rounded-sm font-label">
-            PUBLICIDADE
-          </span>
-          <span className="text-outline text-xs italic font-label">
-            [ 728×90 — Espaço disponível: (45) 99999-9999 ]
-          </span>
-        </div>
-      </div>
+      {/* Top leaderboard ad */}
+      <AdSlot
+        format="leaderboard"
+        position="GRID_BANNER_TOP"
+        className="bg-surface py-4"
+      />
 
       {/* Main content 12-col grid */}
       <div className="max-w-[1200px] mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -107,16 +102,8 @@ export default async function HomePage() {
             ))}
           </div>
 
-          {/* Inline ad
-              TODO(01-04): replace with <AdSlot format="inline" position="INLINE_BANNER" /> */}
-          <div className="w-full h-[200px] md:h-[250px] bg-surface-container border-2 border-dashed border-outline-variant flex items-center justify-center relative rounded-md">
-            <span className="absolute top-1 left-2 text-[8px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-1 rounded-sm font-label">
-              PUBLICIDADE
-            </span>
-            <span className="text-outline text-xs italic font-label">
-              [ 300×250 inline — Espaço disponível ]
-            </span>
-          </div>
+          {/* Inline ad */}
+          <AdSlot format="inline" position="INLINE_BANNER" />
         </div>
 
         {/* Sidebar — desktop only (lg:col-span-4 applied inside component) */}
@@ -134,18 +121,12 @@ export default async function HomePage() {
       <JobsSection />
       <PricingSection variant="home" />
 
-      {/* Bottom leaderboard ad
-          TODO(01-04): replace with <AdSlot format="leaderboard" position="GRID_BANNER_BOTTOM" /> */}
-      <div className="bg-surface py-12 flex justify-center">
-        <div className="w-[728px] max-w-full h-[90px] border-2 border-dashed border-outline-variant bg-surface-container flex items-center justify-center relative rounded-sm">
-          <span className="absolute top-1 left-2 text-[8px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-1 rounded-sm font-label">
-            PUBLICIDADE
-          </span>
-          <span className="text-outline text-xs italic font-label">
-            [ 728×90 — Espaço disponível ]
-          </span>
-        </div>
-      </div>
+      {/* Bottom leaderboard ad */}
+      <AdSlot
+        format="leaderboard"
+        position="GRID_BANNER_BOTTOM"
+        className="bg-surface py-12"
+      />
     </>
   )
 }
