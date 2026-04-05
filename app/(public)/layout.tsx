@@ -2,7 +2,6 @@ import { prisma } from '@/lib/prisma'
 import { TopStrip } from '@/components/layout/TopStrip'
 import { Header } from '@/components/public/Header'
 import { CategoryNavBar } from '@/components/layout/CategoryNavBar'
-import { BreakingNewsBanner } from '@/components/news/BreakingNewsBanner'
 import { Footer } from '@/components/layout/Footer'
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
 
@@ -26,7 +25,6 @@ export default async function PublicLayout({ children }: { children: React.React
       <TopStrip />
       <Header />
       <CategoryNavBar categories={categories} />
-      <BreakingNewsBanner />
       <main className="flex-1 pb-24 md:pb-0">{children}</main>
       <Footer />
       <MobileBottomNav />

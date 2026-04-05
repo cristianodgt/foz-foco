@@ -34,11 +34,11 @@ interface Dim {
 
 const DIMENSIONS: Record<AdFormat, Dim> = {
   leaderboard: {
-    w: 728,
-    h: 90,
-    box: 'w-[728px] max-w-full h-[90px]',
-    wrapper: 'flex justify-center',
-    sizes: '(max-width: 728px) 100vw, 728px',
+    w: 1200,
+    h: 150,
+    box: 'w-full h-[150px]',
+    wrapper: 'w-full',
+    sizes: '100vw',
   },
   rectangle: {
     w: 300,
