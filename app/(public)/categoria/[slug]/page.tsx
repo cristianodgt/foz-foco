@@ -60,14 +60,14 @@ export default async function CategoryPage({ params }: PageProps) {
   ])
 
   return (
-    <div className="container-editorial" style={{ paddingTop: 24, paddingBottom: 48 }}>
+    <div className="max-w-[1200px] mx-auto px-4" style={{ paddingTop: 24, paddingBottom: 48 }}>
       <AdBannerTop />
 
       {/* Category header */}
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
           {category.icon && <span style={{ fontSize: '1.5rem' }}>{category.icon}</span>}
-          <h1 style={{ fontFamily: 'var(--font-bebas)', fontSize: '2.5rem', letterSpacing: '0.05em', color: category.color || 'var(--color-brand)' }}>
+          <h1 className="font-headline font-bold text-3xl md:text-4xl" style={{ color: category.color || undefined }}>
             {category.name}
           </h1>
         </div>

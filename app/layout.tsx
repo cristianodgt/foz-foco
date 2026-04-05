@@ -1,27 +1,21 @@
 import type { Metadata } from 'next'
-import { Bebas_Neue, DM_Sans, DM_Serif_Display } from 'next/font/google'
+import { Newsreader, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 
-const bebasNeue = Bebas_Neue({
-  weight: '400',
+const newsreader = Newsreader({
   subsets: ['latin'],
-  variable: '--font-bebas',
-  display: 'swap',
-})
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-dm-sans',
-  display: 'swap',
-})
-
-const dmSerif = DM_Serif_Display({
-  weight: '400',
+  variable: '--font-headline',
+  weight: ['400', '600', '700', '800'],
   style: ['normal', 'italic'],
+  display: 'swap',
+})
+
+const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  variable: '--font-dm-serif',
+  variable: '--font-body',
+  weight: ['300', '400', '500', '600', '700', '800'],
   display: 'swap',
 })
 
@@ -49,9 +43,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${bebasNeue.variable} ${dmSans.variable} ${dmSerif.variable}`}
+      className={`${newsreader.variable} ${jakarta.variable}`}
     >
-      <body style={{ fontFamily: 'var(--font-dm-sans), system-ui, sans-serif' }}>
+      <body className="font-body antialiased bg-surface text-on-surface">
         <ThemeProvider>
           {children}
           <Toaster />

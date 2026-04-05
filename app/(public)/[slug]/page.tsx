@@ -102,7 +102,7 @@ export default async function PostPage({ params }: PageProps) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <div className="container-editorial" style={{ paddingTop: 24, paddingBottom: 48 }}>
+      <div className="max-w-[1200px] mx-auto px-4" style={{ paddingTop: 24, paddingBottom: 48 }}>
         <AdBannerTop />
 
         {/* Breadcrumb */}
@@ -153,7 +153,7 @@ export default async function PostPage({ params }: PageProps) {
             )}
 
             {/* Content */}
-            <div className="prose-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+            <div className="article-body" dangerouslySetInnerHTML={{ __html: post.content }} />
 
             {/* Tags */}
             {post.tags.length > 0 && (
@@ -178,7 +178,7 @@ export default async function PostPage({ params }: PageProps) {
         {/* Related posts */}
         {relatedPosts.length > 0 && (
           <div style={{ marginTop: 56 }}>
-            <h2 className="section-title" style={{ marginBottom: 24 }}>Veja também</h2>
+            <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-surface" style={{ marginBottom: 24 }}>Veja também</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="related-grid">
               {relatedPosts.map(p => (
                 <ArticleCard key={p.id} post={p as unknown as Post} variant="standard" />
@@ -200,13 +200,6 @@ export default async function PostPage({ params }: PageProps) {
         @media (max-width: 640px) {
           .related-grid { grid-template-columns: 1fr !important; }
         }
-        .prose-content { color: var(--color-text-primary); font-size: 1rem; line-height: 1.8; }
-        .prose-content h2 { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; margin: 32px 0 16px; color: var(--color-text-primary); }
-        .prose-content h3 { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 600; margin: 24px 0 12px; }
-        .prose-content p { margin-bottom: 20px; }
-        .prose-content a { color: var(--color-brand); }
-        .prose-content img { width: 100%; border-radius: 8px; margin: 24px 0; }
-        .prose-content blockquote { border-left: 3px solid var(--color-brand); padding-left: 20px; margin: 24px 0; font-style: italic; color: var(--color-text-secondary); }
       `}</style>
     </>
   )

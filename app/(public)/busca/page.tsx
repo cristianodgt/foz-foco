@@ -41,10 +41,10 @@ export default function SearchPage() {
   const { results, isLoading } = useSearch(query)
 
   return (
-    <div className="container-editorial" style={{ paddingTop: 32, paddingBottom: 64 }}>
+    <div className="max-w-[1200px] mx-auto px-4" style={{ paddingTop: 32, paddingBottom: 64 }}>
       {/* Search input */}
       <div style={{ maxWidth: 640, marginBottom: 40 }}>
-        <h1 style={{ fontFamily: 'var(--font-bebas)', fontSize: '2rem', letterSpacing: '0.05em', color: 'var(--color-text-primary)', marginBottom: 16 }}>
+        <h1 className="font-headline font-bold text-3xl md:text-4xl text-on-surface" style={{ marginBottom: 16 }}>
           Buscar notícias
         </h1>
         <div style={{ position: 'relative' }}>
@@ -86,8 +86,7 @@ export default function SearchPage() {
               <Link
                 key={post.id}
                 href={`/${post.slug}`}
-                style={{ display: 'flex', gap: 16, padding: '16px', borderRadius: 10, border: '1px solid var(--color-border)', background: 'var(--color-bg)', textDecoration: 'none', transition: 'box-shadow 0.15s' }}
-                className="article-card"
+                className="group flex gap-4 items-start p-4 rounded-lg border border-outline-variant bg-surface-container-lowest hover:shadow-md transition-shadow no-underline"
               >
                 {post.coverImage && !/\.(mp4|mov|webm)(\?.*)?$/i.test(post.coverImage) && (
                   <div style={{ position: 'relative', width: 120, height: 80, borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
