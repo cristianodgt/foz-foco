@@ -75,8 +75,8 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Top leaderboard ad — contained like article page */}
-      <div className="max-w-[1200px] mx-auto px-4 pt-6">
+      {/* Top leaderboard ad */}
+      <div className="max-w-[1200px] mx-auto px-4 py-6">
         <AdSlot
           format="leaderboard"
           position="GRID_BANNER_TOP"
@@ -122,8 +122,8 @@ export default async function HomePage() {
       <JobsSection />
       <PricingSection variant="home" />
 
-      {/* Bottom leaderboard ad — contained like article page */}
-      <div className="max-w-[1200px] mx-auto px-4 pb-6">
+      {/* Bottom leaderboard ad */}
+      <div className="max-w-[1200px] mx-auto px-4 py-6">
         <AdSlot
           format="leaderboard"
           position="GRID_BANNER_BOTTOM"

@@ -68,7 +68,7 @@ export function PricingSection({ variant = 'home' }: PricingSectionProps) {
       : 'Três planos para cada tamanho de negócio'
 
   return (
-    <section className="py-24 bg-gradient-to-br from-primary via-primary-container to-on-surface text-white">
+    <section className="py-16 bg-gradient-to-br from-primary via-primary-container to-on-surface text-white">
       <div className="max-w-[1200px] mx-auto px-4">
         <div className="text-center">
           <h2 className="text-3xl md:text-4xl font-headline font-bold">{headline}</h2>
