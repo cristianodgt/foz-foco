@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Megaphone, MapPin, TrendingUp, Sparkles, BarChart3, Users } from 'lucide-react'
 import type { Ad, AdPosition } from '@/types'
 import type { LucideIcon } from 'lucide-react'
@@ -233,8 +234,20 @@ export function AdSlotPlaceholder({
   )
 }
 
+const slideVariants = {
+  enter: { opacity: 0, scale: 0.96, y: 24 },
+  visible: {
+    opacity: 1, scale: 1, y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: {
+    opacity: 0, y: -32,
+    transition: { duration: 0.45, ease: [0.4, 0, 1, 1] },
+  },
+}
+
 /**
- * RotatingCSSBanner — cycles through CSS-rendered banner slides with crossfade.
+ * RotatingCSSBanner — premium auto-rotating banner with Framer Motion.
  */
 function RotatingCSSBanner({
   slides,
@@ -255,57 +268,74 @@ function RotatingCSSBanner({
     return () => clearInterval(id)
   }, [next, slides.length])
 
+  const slide = slides[current]
+  const Icon = slide.Icon
+
   return (
-    <div className={`relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,53,95,0.3)] rounded-xl ${dim.box}`}>
-      {/* Edge gradient overlays for depth */}
-      <div className="absolute inset-0 z-[15] pointer-events-none">
-        <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-black/15 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/25 to-transparent" />
-        <div className="absolute top-0 bottom-0 left-0 w-8 bg-gradient-to-r from-black/10 to-transparent" />
-        <div className="absolute top-0 bottom-0 right-0 w-8 bg-gradient-to-l from-black/10 to-transparent" />
-      </div>
+    <div
+      className={`relative overflow-hidden rounded-xl shadow-[0_8px_40px_-8px_rgba(0,53,95,0.4)] ${dim.box}`}
+      style={{ perspective: '1200px' }}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          variants={slideVariants}
+          initial="enter"
+          animate="visible"
+          exit="exit"
+          className={`absolute inset-0 flex items-center ${slide.bg}`}
+        >
+          {/* Ambient glow blobs */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#f5ac00]/10 rounded-full blur-[90px]" />
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-[#f5ac00]/6 rounded-full blur-[70px]" />
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#f5ac00]/50 to-transparent" />
+            <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#f5ac00]/25 to-transparent" />
+          </div>
 
-      {slides.map((slide, i) => {
-        const Icon = slide.Icon
-        return (
           <Link
-            key={i}
             href={slide.href}
-            className={`absolute inset-0 flex items-center justify-center overflow-hidden transition-opacity duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${slide.bg} ${
-              i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-            aria-hidden={i !== current}
-            tabIndex={i === current ? 0 : -1}
+            className="relative flex items-center gap-6 md:gap-10 px-6 md:px-12 w-full max-w-[1200px]"
           >
-            {/* Decorative elements */}
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-72 h-72 bg-[#f5ac00]/8 rounded-full blur-[80px]" />
-              <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-[#f5ac00]/5 rounded-full blur-[60px]" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/[0.02] rounded-full blur-[100px]" />
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#f5ac00]/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#f5ac00]/20 to-transparent" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.7, rotate: -8 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="hidden md:flex w-14 h-14 rounded-2xl bg-[#f5ac00]/15 backdrop-blur-sm border border-[#f5ac00]/25 items-center justify-center flex-shrink-0 shadow-[0_4px_24px_-4px_rgba(245,172,0,0.35)]"
+            >
+              <Icon className="w-7 h-7 text-[#f5ac00]" strokeWidth={1.5} />
+            </motion.div>
+
+            <div className="flex-1 min-w-0">
+              <motion.h3
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="text-white font-headline font-bold text-xl md:text-3xl tracking-tight truncate drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]"
+              >
+                {slide.headline}
+              </motion.h3>
+              <motion.p
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="text-white/75 text-sm md:text-base font-label mt-1 truncate"
+              >
+                {slide.sub}
+              </motion.p>
             </div>
 
-            <div className="relative flex items-center gap-6 md:gap-10 px-6 md:px-12 max-w-[1200px] w-full">
-              <div className="hidden md:flex w-16 h-16 rounded-2xl bg-[#f5ac00]/15 backdrop-blur-sm border border-[#f5ac00]/20 items-center justify-center flex-shrink-0 shadow-[0_4px_20px_-4px_rgba(245,172,0,0.3)]">
-                <Icon className="w-8 h-8 text-[#f5ac00] drop-shadow-sm" strokeWidth={1.5} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-white font-headline font-bold text-lg md:text-3xl tracking-tight truncate drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                  {slide.headline}
-                </h3>
-                <p className="text-white/80 text-xs md:text-base font-label mt-1 truncate drop-shadow-sm">
-                  {slide.sub}
-                </p>
-              </div>
-              <span className="flex-shrink-0 bg-[#f5ac00] text-[#1a1a2e] px-6 py-3 rounded-full text-xs md:text-sm font-bold font-label uppercase tracking-wider shadow-[0_4px_16px_-2px_rgba(245,172,0,0.5)] hover:shadow-[0_6px_24px_-2px_rgba(245,172,0,0.6)] hover:scale-105 transition-all duration-300">
-                {slide.cta}
-              </span>
-            </div>
+            <motion.span
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.25, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="flex-shrink-0 bg-[#f5ac00] text-[#1a1a2e] px-5 py-2.5 rounded-full text-xs md:text-sm font-bold font-label uppercase tracking-wider shadow-[0_4px_20px_-2px_rgba(245,172,0,0.55)] hover:shadow-[0_6px_28px_-2px_rgba(245,172,0,0.7)] hover:scale-105 transition-all duration-300"
+            >
+              {slide.cta}
+            </motion.span>
           </Link>
-        )
-      })}
-
+        </motion.div>
+      </AnimatePresence>
     </div>
   )
 }
