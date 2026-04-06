@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, MapPin, ArrowUpRight } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 interface PlaceholderEvent {
   day: string
@@ -45,15 +45,37 @@ export function EventsScroller() {
   }
 
   return (
-    <section className="py-12 md:py-20 bg-white dark:bg-inverse-surface/5 overflow-hidden">
+    <section className="py-10 bg-white dark:bg-inverse-surface/5 overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-4">
-        {/* Header */}
-        <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-surface mb-12 md:mb-16">
-          Agenda de Eventos
-        </h2>
+        {/* Header + dots inline */}
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-surface">
+            Agenda de Eventos
+          </h2>
+          {/* Dot indicators inline with header */}
+          <div className="flex gap-1.5">
+            {EVENTS.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'bg-primary w-5' : 'bg-on-surface/20 w-1.5'}`}
+                aria-label={`Evento ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
 
-        {/* Card fan */}
-        <div className="relative flex items-center justify-center" style={{ height: 400 }}>
+        {/* Card fan — arrows overlaid left/right */}
+        <div className="relative flex items-center justify-center" style={{ height: 380 }}>
+          {/* Left arrow */}
+          <button
+            onClick={prev}
+            className="absolute left-0 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm ring-1 ring-on-surface/10 text-on-surface/50 hover:text-primary hover:ring-primary hover:scale-110 transition-all duration-200"
+            aria-label="Anterior"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
           {EVENTS.map((ev, i) => {
             const { x, y, scale, opacity, zIndex } = getCardStyle(i)
             return (
@@ -67,7 +89,7 @@ export function EventsScroller() {
                 {/* Card */}
                 <div className="relative overflow-hidden rounded-2xl shadow-[0_8px_40px_-10px_rgba(26,26,46,0.3)] ring-1 ring-on-surface/10 bg-surface-container cursor-pointer transition-shadow duration-300 group-hover:shadow-[0_20px_60px_-12px_rgba(26,26,46,0.45)]">
                   {/* Image */}
-                  <div className="relative w-full" style={{ height: 340 }}>
+                  <div className="relative w-full" style={{ height: 320 }}>
                     <Image
                       src={ev.image}
                       alt={ev.title}
@@ -104,36 +126,15 @@ export function EventsScroller() {
               </motion.div>
             )
           })}
-        </div>
 
-        {/* Nav arrows — bottom right */}
-        <div className="flex justify-end gap-2 mt-6">
-          <button
-            onClick={prev}
-            className="p-2 rounded-full border border-on-surface/15 bg-white dark:bg-inverse-surface/10 shadow-sm hover:scale-110 hover:border-primary hover:text-primary transition-all duration-200"
-            aria-label="Anterior"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
+          {/* Right arrow */}
           <button
             onClick={next}
-            className="p-2 rounded-full border border-on-surface/15 bg-white dark:bg-inverse-surface/10 shadow-sm hover:scale-110 hover:border-primary hover:text-primary transition-all duration-200"
+            className="absolute right-0 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-sm ring-1 ring-on-surface/10 text-on-surface/50 hover:text-primary hover:ring-primary hover:scale-110 transition-all duration-200"
             aria-label="Próximo"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
           </button>
-        </div>
-
-        {/* Dot indicators */}
-        <div className="flex justify-center gap-1.5 mt-4">
-          {EVENTS.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrent(i)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'bg-primary w-5' : 'bg-on-surface/20 w-1.5'}`}
-              aria-label={`Evento ${i + 1}`}
-            />
-          ))}
         </div>
       </div>
     </section>
