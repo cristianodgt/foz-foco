@@ -408,6 +408,7 @@ export function AdSlot({
 }: AdSlotProps) {
   const [ad, setAd] = useState<Ad | null>(null)
   const [errored, setErrored] = useState(false)
+  const [imgErrored, setImgErrored] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const impressionSent = useRef(false)
   const dim = DIMENSIONS[format]
@@ -459,8 +460,8 @@ export function AdSlot({
 
   const outerCls = `${dim.wrapper} overflow-hidden ${className ?? ''}`.trim()
 
-  // No real ad — try local image banners first, then CSS fallback
-  if (loaded && (!ad || errored)) {
+  // No real ad (or image load error) — try local image banners first, then CSS fallback
+  if (loaded && (!ad || errored || imgErrored)) {
     const imageBanners = LOCAL_IMAGE_BANNERS[position]
     if (imageBanners && imageBanners.length > 0) {
       return (
@@ -518,6 +519,7 @@ export function AdSlot({
           fill
           className="object-cover max-w-full max-h-full"
           sizes={dim.sizes}
+          onError={() => setImgErrored(true)}
         />
       </a>
     </div>
