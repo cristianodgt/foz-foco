@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   description: 'O portal de noticias da triplice fronteira. Fique por dentro de tudo que acontece em Foz do Iguacu.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/apple-icon.png',
+    icon: '/Favicon.png',
+    shortcut: '/Favicon.png',
+    apple: '/Favicon.png',
   },
   openGraph: {
     siteName: 'Foz em Foco',
