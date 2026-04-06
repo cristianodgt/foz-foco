@@ -172,6 +172,19 @@ const LOCAL_SLIDES: Record<string, BannerSlide[]> = {
   POST_DETAIL: FEED_BANNERS,
 }
 
+const LOCAL_IMAGE_BANNERS: Record<string, { src: string; alt: string; href: string }[]> = {
+  GRID_BANNER_TOP: [
+    { src: '/banners/banner-top-1.jpeg', alt: 'Anuncie no Foz em Foco', href: '/anunciantes' },
+    { src: '/banners/banner-top-2.jpeg', alt: 'Guia Comercial Foz do Iguaçu', href: '/anunciantes' },
+    { src: '/banners/banner-top-3.jpeg', alt: 'Alcance milhares de leitores', href: '/anunciantes' },
+  ],
+  GRID_BANNER_BOTTOM: [
+    { src: '/banners/banner-bot-1.jpeg', alt: 'Espaço Publicitário Premium', href: '/anunciantes' },
+    { src: '/banners/banner-bot-2.jpeg', alt: 'Torne-se Anunciante', href: '/anunciantes' },
+    { src: '/banners/banner-bot-3.jpeg', alt: 'Seu Negócio Merece Destaque', href: '/anunciantes' },
+  ],
+}
+
 const ROTATION_INTERVAL = 3000
 
 // ──────────────────────────────── Components ────────────────────────────────
@@ -315,6 +328,50 @@ function RotatingCSSBanner({
   )
 }
 
+function RotatingImageBanner({
+  slides,
+  dim,
+}: {
+  slides: { src: string; alt: string; href: string }[]
+  dim: Dim
+}) {
+  const [current, setCurrent] = useState(0)
+  const next = useCallback(() => setCurrent(i => (i + 1) % slides.length), [slides.length])
+  useEffect(() => {
+    if (slides.length <= 1) return
+    const id = setInterval(next, ROTATION_INTERVAL)
+    return () => clearInterval(id)
+  }, [next, slides.length])
+
+  return (
+    <div
+      className={`relative overflow-hidden rounded-xl shadow-[0_8px_40px_-8px_rgba(0,53,95,0.35)] ${dim.box}`}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: 'easeInOut' }}
+          className="absolute inset-0"
+        >
+          <Link href={slides[current].href} className="block w-full h-full">
+            <Image
+              src={slides[current].src}
+              alt={slides[current].alt}
+              fill
+              className="object-cover"
+              sizes={dim.sizes}
+              priority
+            />
+          </Link>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
+
 export function AdSlot({
   format,
   position,
@@ -376,8 +433,16 @@ export function AdSlot({
 
   const outerCls = `${dim.wrapper} overflow-hidden ${className ?? ''}`.trim()
 
-  // No real ad (or image load error) — CSS banner fallback, then placeholder
+  // No real ad (or image load error) — image banners first, then CSS fallback
   if (loaded && (!ad || errored || imgErrored)) {
+    const imageBanners = LOCAL_IMAGE_BANNERS[position]
+    if (imageBanners?.length) {
+      return (
+        <div className={outerCls}>
+          <RotatingImageBanner slides={imageBanners} dim={dim} />
+        </div>
+      )
+    }
     const slides = LOCAL_SLIDES[position]
     if (slides && slides.length > 0) {
       return (
