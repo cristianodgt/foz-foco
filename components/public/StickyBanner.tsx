@@ -1,93 +1,87 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { X } from 'lucide-react'
 import type { Ad } from '@/types'
 
+const LOCAL_SLIDES = [
+  { src: '/banners/banner-bot-1.jpeg', alt: 'Anuncie no Foz em Foco', href: '/anunciantes' },
+  { src: '/banners/banner-bot-2.jpeg', alt: 'Seu negócio em destaque', href: '/anunciantes' },
+  { src: '/banners/banner-bot-3.jpeg', alt: 'Portal de notícias de Foz', href: '/anunciantes' },
+]
+
+const ROTATION_MS = 4000
+
 export function StickyBanner() {
   const [ad, setAd] = useState<Ad | null>(null)
   const [dismissed, setDismissed] = useState(false)
+  const [current, setCurrent] = useState(0)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (sessionStorage.getItem('sidebar-ad-dismissed') === '1') {
+    setMounted(true)
+    if (sessionStorage.getItem('sticky-banner-dismissed') === '1') {
       setDismissed(true)
       return
     }
-    fetch('/api/ads?position=SIDEBAR')
+    fetch('/api/ads?position=GRID_BANNER_BOTTOM')
       .then(r => r.ok ? r.json() : [])
-      .then((data: Ad[]) => { if (data[0]) setAd(data[0]) })
+      .then((data: Ad | Ad[]) => {
+        const arr = Array.isArray(data) ? data : [data]
+        if (arr[0]?.imageUrl) setAd(arr[0])
+      })
       .catch(() => {})
   }, [])
 
+  const next = useCallback(() => setCurrent(i => (i + 1) % LOCAL_SLIDES.length), [])
+
+  useEffect(() => {
+    if (ad || dismissed) return
+    const id = setInterval(next, ROTATION_MS)
+    return () => clearInterval(id)
+  }, [ad, dismissed, next])
+
   function handleDismiss() {
     setDismissed(true)
-    sessionStorage.setItem('sidebar-ad-dismissed', '1')
+    sessionStorage.setItem('sticky-banner-dismissed', '1')
   }
 
-  if (!ad || dismissed) return null
+  if (!mounted || dismissed) return null
+
+  const slide = LOCAL_SLIDES[current]
+  const href = ad ? ad.targetUrl : slide.href
+  const imgSrc = ad ? ad.imageUrl : slide.src
+  const imgAlt = ad ? ad.title : slide.alt
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 45,
-        display: 'flex',
-        justifyContent: 'center',
-      }}
-    >
-      <div style={{ position: 'relative', width: '100%', maxWidth: '640px', height: '60px' }}>
+    <div className="fixed bottom-0 left-0 right-0 z-50 shadow-[0_-4px_24px_-4px_rgba(0,0,0,0.3)]">
+      <div className="relative w-full h-[90px] md:h-[120px] bg-on-surface">
         <a
-          href={ad.targetUrl}
+          href={href}
           target="_blank"
           rel="noopener noreferrer sponsored"
-          style={{ display: 'block', width: '100%', height: '100%' }}
+          className="block w-full h-full"
         >
           <Image
-            src={ad.imageUrl}
-            alt={ad.title}
+            src={imgSrc}
+            alt={imgAlt}
             fill
             className="object-cover"
-            sizes="(max-width: 640px) 100vw, 640px"
+            sizes="100vw"
+            priority
           />
-          <span
-            style={{
-              position: 'absolute',
-              bottom: 4,
-              left: 6,
-              fontSize: 10,
-              background: 'rgba(0,0,0,0.5)',
-              color: 'rgba(255,255,255,0.7)',
-              padding: '1px 5px',
-              borderRadius: 4,
-            }}
-          >
-            Patrocinado
+          <span className="absolute bottom-2 left-3 text-[9px] font-bold bg-black/50 text-white/80 px-2 py-0.5 rounded-full font-label tracking-widest">
+            PUBLICIDADE
           </span>
         </a>
+
         <button
           onClick={handleDismiss}
           aria-label="Fechar anúncio"
-          style={{
-            position: 'absolute',
-            top: 4,
-            right: 4,
-            background: 'rgba(0,0,0,0.6)',
-            border: 'none',
-            borderRadius: '50%',
-            width: 22,
-            height: 22,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'white',
-          }}
+          className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
         >
-          <X size={12} />
+          <X size={14} />
         </button>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { Header } from '@/components/public/Header'
 import { CategoryNavBar } from '@/components/layout/CategoryNavBar'
 import { Footer } from '@/components/layout/Footer'
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
+import { StickyBanner } from '@/components/public/StickyBanner'
 
 async function getCategories() {
   try {
@@ -28,6 +29,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <main className="flex-1 pb-24 md:pb-0">{children}</main>
       <Footer />
       <MobileBottomNav />
+      <StickyBanner />
     </div>
   )
 }
