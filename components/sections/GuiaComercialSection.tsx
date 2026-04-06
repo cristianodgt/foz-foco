@@ -33,7 +33,7 @@ const TILES: Tile[] = [
 
 export function GuiaComercialSection() {
   return (
-    <section className="bg-gradient-to-b from-surface-container/60 to-surface py-12 md:py-16">
+    <section className="bg-gradient-to-b from-surface-container/60 to-surface py-8 md:py-10">
       <div className="max-w-[1200px] mx-auto">
         <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-surface px-4 mb-8">
           Guia Comercial

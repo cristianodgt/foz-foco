@@ -45,7 +45,7 @@ export function EventsScroller() {
   }
 
   return (
-    <section className="py-6 bg-white dark:bg-inverse-surface/5 overflow-hidden">
+    <section className="py-8 bg-white dark:bg-inverse-surface/5 overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-4">
         {/* Header */}
         <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-surface mb-6">

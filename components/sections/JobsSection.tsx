@@ -23,7 +23,7 @@ const JOBS: PlaceholderJob[] = [
  */
 export function JobsSection() {
   return (
-    <section className="py-16 bg-surface-container-low">
+    <section className="py-10 bg-surface-container-low">
       <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-4 space-y-6">
           <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary">

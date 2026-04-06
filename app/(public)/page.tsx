@@ -77,7 +77,7 @@ export default async function HomePage() {
   return (
     <>
       {/* Top leaderboard ad */}
-      <div className="max-w-[1200px] mx-auto px-4 py-6">
+      <div className="max-w-[1200px] mx-auto px-4 pt-6 pb-4">
         <AdSlot
           format="leaderboard"
           position="GRID_BANNER_TOP"
@@ -85,7 +85,7 @@ export default async function HomePage() {
       </div>
 
       {/* Main content 12-col grid */}
-      <div className="max-w-[1200px] mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="max-w-[1200px] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Main column — col-span-8 on desktop */}
         <div className="lg:col-span-8 space-y-10">
           {hero && <HeroArticle post={hero} />}
@@ -133,7 +133,7 @@ export default async function HomePage() {
       <PricingSection variant="home" />
 
       {/* Bottom leaderboard ad */}
-      <div className="max-w-[1200px] mx-auto px-4 py-6">
+      <div className="max-w-[1200px] mx-auto px-4 pt-4 pb-8">
         <AdSlot
           format="leaderboard"
           position="GRID_BANNER_BOTTOM"
