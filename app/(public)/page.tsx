@@ -57,7 +57,7 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { allPosts, trendingPosts } = await getHomeData()
+  const { allPosts, trendingPosts } = await getHomeData().catch(() => ({ allPosts: [], trendingPosts: [], categories: [], sponsoredAd: null }))
 
   if (!allPosts.length) {
     return (
