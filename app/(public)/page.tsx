@@ -96,12 +96,23 @@ export default async function HomePage() {
           {/* Inline ad */}
           <AdSlot format="inline" position="FEED_BETWEEN" />
 
-          {/* Compact 9-article grid */}
+          {/* 9-article editorial grid */}
           {compactPosts.length > 0 && (
-            <div className="grid grid-cols-3 gap-3">
-              {compactPosts.map(post => (
-                <ArticleCard key={post.id} post={post} variant="compact" />
-              ))}
+            <div className="space-y-6">
+              <div className="grid grid-cols-3 gap-4">
+                {compactPosts.map(post => (
+                  <ArticleCard key={post.id} post={post} variant="grid" />
+                ))}
+              </div>
+              <div className="flex justify-center pt-2">
+                <a
+                  href="/noticias"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3 text-sm font-bold text-on-primary font-label shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                >
+                  Ver mais notícias
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
             </div>
           )}
         </div>
