@@ -54,33 +54,35 @@ export function StickyBanner() {
   const imgAlt = ad ? ad.title : slide.alt
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 shadow-[0_-4px_24px_-4px_rgba(0,0,0,0.35)]">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-        className="block w-full"
-        style={{ lineHeight: 0 }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imgSrc}
-          alt={imgAlt}
-          style={{ width: '100%', height: '90px', objectFit: 'cover', display: 'block' }}
-        />
-      </a>
+    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-transparent pointer-events-none">
+      <div className="relative w-full max-w-[1200px] pointer-events-auto shadow-[0_-4px_24px_-4px_rgba(0,0,0,0.35)]">
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className="block w-full"
+          style={{ lineHeight: 0 }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imgSrc}
+            alt={imgAlt}
+            style={{ width: '100%', height: '90px', objectFit: 'cover', display: 'block' }}
+          />
+        </a>
 
-      <span className="absolute bottom-2 left-3 text-[9px] font-bold bg-black/50 text-white/80 px-2 py-0.5 rounded-full font-label tracking-widest pointer-events-none">
-        PUBLICIDADE
-      </span>
+        <span className="absolute bottom-2 left-3 text-[9px] font-bold bg-black/50 text-white/80 px-2 py-0.5 rounded-full font-label tracking-widest pointer-events-none">
+          PUBLICIDADE
+        </span>
 
-      <button
-        onClick={handleDismiss}
-        aria-label="Fechar anúncio"
-        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
-      >
-        <X size={14} />
-      </button>
+        <button
+          onClick={handleDismiss}
+          aria-label="Fechar anúncio"
+          className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
+        >
+          <X size={14} />
+        </button>
+      </div>
     </div>
   )
 }
