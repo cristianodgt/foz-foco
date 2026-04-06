@@ -107,7 +107,7 @@ export default async function HomePage() {
               <div className="flex justify-center pt-2">
                 <a
                   href="/noticias"
-                  className="inline-flex w-full max-w-96 mx-auto items-center justify-center gap-2 rounded-md bg-primary h-10 px-4 text-sm font-medium text-on-primary shadow-xs shadow-black/5 transition-[color,box-shadow] duration-200 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                  className="inline-flex w-full max-w-96 mx-auto items-center justify-center gap-2 rounded-lg bg-primary h-10 px-4 text-sm font-medium text-on-primary shadow-xs shadow-black/5 transition-[color,box-shadow] duration-200 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 >
                   Ver mais notícias
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
