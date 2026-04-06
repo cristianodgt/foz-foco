@@ -109,27 +109,27 @@ const TOP_BANNERS: BannerSlide[] = [
 
 const BOTTOM_BANNERS: BannerSlide[] = [
   {
-    bg: 'bg-gradient-to-r from-[#1a1a2e] via-[#00355f] to-[#1a1a2e]',
-    Icon: Sparkles,
-    headline: 'Espaço Publicitário Premium',
-    sub: 'Visibilidade garantida para sua marca',
-    cta: 'Anuncie conosco',
-    href: '/anunciantes',
-  },
-  {
-    bg: 'bg-gradient-to-r from-[#00355f] via-[#1a1a2e] to-[#00355f]',
+    bg: 'bg-gradient-to-r from-[#00355f] via-[#0a3d6b] to-[#00355f]',
     Icon: BarChart3,
-    headline: 'Torne-se Anunciante',
-    sub: 'Planos a partir de R$ 299/mês • ROI comprovado',
+    headline: '+12.000 leitores/dia — seu anúncio aqui',
+    sub: 'Planos a partir de R$ 299/mês • Resultados reais em Foz do Iguaçu',
     cta: 'Ver planos',
     href: '/anunciantes',
   },
   {
-    bg: 'bg-gradient-to-r from-[#0f4c81] via-[#1a1a2e] to-[#0f4c81]',
+    bg: 'bg-gradient-to-r from-[#1a1a2e] via-[#00355f] to-[#1a1a2e]',
+    Icon: Sparkles,
+    headline: 'Espaço premium no maior portal da fronteira',
+    sub: 'Banner topo • Sidebar • Feed • Post — formatos para toda estratégia',
+    cta: 'Anuncie já',
+    href: '/anunciantes',
+  },
+  {
+    bg: 'bg-gradient-to-r from-[#0f4c81] via-[#00355f] to-[#0f4c81]',
     Icon: Users,
-    headline: 'Seu Negócio Merece Destaque',
-    sub: 'O maior portal de notícias de Foz do Iguaçu',
-    cta: 'Comece agora',
+    headline: 'Alcance quem decide em Foz do Iguaçu',
+    sub: 'Turistas • Empresários • Consumidores locais — tudo em um só portal',
+    cta: 'Começar agora',
     href: '/anunciantes',
   },
 ]
@@ -170,31 +170,6 @@ const LOCAL_SLIDES: Record<string, BannerSlide[]> = {
     },
   ],
   POST_DETAIL: FEED_BANNERS,
-}
-
-// ──────────────────────────────── Image Banner Slides ────────────────────────────────
-
-interface ImageBannerSlide {
-  src: string
-  alt: string
-  href: string
-}
-
-const TOP_IMAGE_BANNERS: ImageBannerSlide[] = [
-  { src: '/banners/banner-top-1.jpeg', alt: 'Anuncie no Foz em Foco', href: '/anunciantes' },
-  { src: '/banners/banner-top-2.jpeg', alt: 'Guia Comercial Foz do Iguaçu', href: '/anunciantes' },
-  { src: '/banners/banner-top-3.jpeg', alt: 'Alcance milhares de leitores', href: '/anunciantes' },
-]
-
-const BOTTOM_IMAGE_BANNERS: ImageBannerSlide[] = [
-  { src: '/banners/banner-bot-1.jpeg', alt: 'Espaço Publicitário Premium', href: '/anunciantes' },
-  { src: '/banners/banner-bot-2.jpeg', alt: 'Torne-se Anunciante', href: '/anunciantes' },
-  { src: '/banners/banner-bot-3.jpeg', alt: 'Seu Negócio Merece Destaque', href: '/anunciantes' },
-]
-
-const LOCAL_IMAGE_BANNERS: Record<string, ImageBannerSlide[]> = {
-  GRID_BANNER_TOP: TOP_IMAGE_BANNERS,
-  GRID_BANNER_BOTTOM: BOTTOM_IMAGE_BANNERS,
 }
 
 const ROTATION_INTERVAL = 3000
@@ -340,65 +315,6 @@ function RotatingCSSBanner({
   )
 }
 
-/**
- * RotatingImageBanner — cycles through image-based banner slides with crossfade.
- */
-function RotatingImageBanner({
-  slides,
-  dim,
-}: {
-  slides: ImageBannerSlide[]
-  dim: Dim
-}) {
-  const [current, setCurrent] = useState(0)
-
-  const next = useCallback(() => {
-    setCurrent(i => (i + 1) % slides.length)
-  }, [slides.length])
-
-  useEffect(() => {
-    if (slides.length <= 1) return
-    const id = setInterval(next, ROTATION_INTERVAL)
-    return () => clearInterval(id)
-  }, [next, slides.length])
-
-  return (
-    <div className={`relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,53,95,0.3)] rounded-xl ${dim.box}`}>
-      {/* Edge gradient overlays for depth */}
-      <div className="absolute inset-0 z-[15] pointer-events-none">
-        <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-black/10 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
-        <div className="absolute top-0 bottom-0 left-0 w-6 bg-gradient-to-r from-black/8 to-transparent" />
-        <div className="absolute top-0 bottom-0 right-0 w-6 bg-gradient-to-l from-black/8 to-transparent" />
-      </div>
-
-      {slides.map((slide, i) => (
-        <Link
-          key={i}
-          href={slide.href}
-          className={`absolute inset-0 overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-            i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
-          }`}
-          aria-hidden={i !== current}
-          tabIndex={i === current ? 0 : -1}
-        >
-          <Image
-            src={slide.src}
-            alt={slide.alt}
-            fill
-            className={`object-cover transition-transform duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-              i === current ? 'scale-100' : 'scale-[1.03]'
-            }`}
-            sizes={dim.sizes}
-            priority={i === 0}
-          />
-        </Link>
-      ))}
-
-    </div>
-  )
-}
-
 export function AdSlot({
   format,
   position,
@@ -460,16 +376,8 @@ export function AdSlot({
 
   const outerCls = `${dim.wrapper} overflow-hidden ${className ?? ''}`.trim()
 
-  // No real ad (or image load error) — try local image banners first, then CSS fallback
+  // No real ad (or image load error) — CSS banner fallback, then placeholder
   if (loaded && (!ad || errored || imgErrored)) {
-    const imageBanners = LOCAL_IMAGE_BANNERS[position]
-    if (imageBanners && imageBanners.length > 0) {
-      return (
-        <div className={outerCls}>
-          <RotatingImageBanner slides={imageBanners} dim={dim} />
-        </div>
-      )
-    }
     const slides = LOCAL_SLIDES[position]
     if (slides && slides.length > 0) {
       return (

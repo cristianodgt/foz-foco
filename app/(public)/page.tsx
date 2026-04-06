@@ -9,6 +9,7 @@ import { EventsScroller } from '@/components/sections/EventsScroller'
 import { JobsSection } from '@/components/sections/JobsSection'
 import { PricingSection } from '@/components/sections/PricingSection'
 import { AdSlot } from '@/components/ads/AdSlot'
+import { NewsCarousel } from '@/components/news/NewsCarousel'
 import type { Post } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -69,9 +70,8 @@ export default async function HomePage() {
   const posts = allPosts as unknown as Post[]
   const trending = trendingPosts as unknown as Post[]
   const hero = posts[0]
-  const gridPosts = posts.slice(1, 4)
-  const secondaryPosts = posts.slice(4, 7)
-  const latestPosts = posts.slice(7, 12)
+  const carouselPosts = posts.slice(1, 13)
+  const latestPosts = posts.slice(13, 18)
 
   return (
     <>
@@ -89,19 +89,8 @@ export default async function HomePage() {
         <div className="lg:col-span-8 space-y-10">
           {hero && <HeroArticle post={hero} />}
 
-          {/* Desktop 3-col sub-grid */}
-          <div className="hidden md:grid grid-cols-3 gap-6">
-            {gridPosts.map(post => (
-              <ArticleCard key={post.id} post={post} variant="grid" />
-            ))}
-          </div>
-
-          {/* Mobile secondary list (thumb-right) */}
-          <div className="space-y-6 md:hidden">
-            {secondaryPosts.map(post => (
-              <ArticleCard key={post.id} post={post} variant="secondary" />
-            ))}
-          </div>
+          {/* Auto-rotating news carousel — 3-col desktop, 1-col mobile */}
+          <NewsCarousel posts={carouselPosts} perPage={3} interval={5000} />
 
           {/* Inline ad */}
           <AdSlot format="inline" position="FEED_BETWEEN" />
