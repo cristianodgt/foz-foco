@@ -25,16 +25,16 @@ export function UltimasList({ posts }: UltimasListProps) {
   if (!posts.length) return null
 
   return (
-    <section className="space-y-4">
-      <h3 className="border-b-4 border-secondary inline-block pr-8 pb-2 text-xl font-headline font-bold uppercase tracking-tight text-on-surface">
+    <section className="space-y-2">
+      <h3 className="border-b-4 border-secondary inline-block pr-8 pb-1.5 text-xl font-headline font-bold uppercase tracking-tight text-on-surface">
         Últimas
       </h3>
-      <ul className="divide-y divide-outline-variant/30 pt-2">
+      <ul className="divide-y divide-outline-variant/30">
         {posts.map(post => {
           const date = toDate(post.publishedAt)
           const time = date ? format(date, 'HH:mm', { locale: ptBR }) : ''
           return (
-            <li key={post.id} className="py-3">
+            <li key={post.id} className="py-2">
               <Link
                 href={`/${post.slug}`}
                 className="text-sm font-medium font-body text-on-surface hover:text-primary transition-colors block"
