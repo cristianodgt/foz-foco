@@ -31,7 +31,7 @@ async function getHomeData() {
         tags: true,
       },
       orderBy: { publishedAt: 'desc' },
-      take: 40,
+      take: 60,
     }),
     prisma.category.findMany({ where: { active: true }, orderBy: { order: 'asc' }, take: 6 }),
     prisma.ad.findFirst({
@@ -71,7 +71,8 @@ export default async function HomePage() {
   const trending = trendingPosts as unknown as Post[]
   const hero = posts[0]
   const carouselPosts = posts.slice(1, 13)
-  const latestPosts = posts.slice(13, 18)
+  const compactPosts = posts.slice(13, 22)
+  const latestPosts = posts.slice(22, 27)
 
   return (
     <>
@@ -94,6 +95,15 @@ export default async function HomePage() {
 
           {/* Inline ad */}
           <AdSlot format="inline" position="FEED_BETWEEN" />
+
+          {/* Compact 9-article grid */}
+          {compactPosts.length > 0 && (
+            <div className="grid grid-cols-3 gap-3">
+              {compactPosts.map(post => (
+                <ArticleCard key={post.id} post={post} variant="compact" />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Sidebar — desktop only (lg:col-span-4 applied inside component) */}
