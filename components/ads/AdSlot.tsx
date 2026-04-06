@@ -196,7 +196,7 @@ const LOCAL_IMAGE_BANNERS: Record<string, ImageBannerSlide[]> = {
   GRID_BANNER_BOTTOM: BOTTOM_IMAGE_BANNERS,
 }
 
-const ROTATION_INTERVAL = 5000
+const ROTATION_INTERVAL = 3000
 
 // ──────────────────────────────── Components ────────────────────────────────
 
@@ -306,21 +306,6 @@ function RotatingCSSBanner({
         )
       })}
 
-      {/* Glassmorphism dots */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 px-3 py-2 rounded-full bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.preventDefault(); setCurrent(i) }}
-              className={`h-2 rounded-full transition-all duration-500 ${
-                i === current ? 'bg-[#f5ac00] w-7 shadow-[0_0_8px_rgba(245,172,0,0.6)]' : 'bg-white/40 hover:bg-white/60 w-2'
-              }`}
-              aria-label={`Banner ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   )
 }
@@ -380,21 +365,6 @@ function RotatingImageBanner({
         </Link>
       ))}
 
-      {/* Glassmorphism dots */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 px-3 py-2 rounded-full bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.preventDefault(); setCurrent(i) }}
-              className={`h-2 rounded-full transition-all duration-500 shadow-sm ${
-                i === current ? 'bg-[#f5ac00] w-7 shadow-[0_0_8px_rgba(245,172,0,0.6)]' : 'bg-white/40 hover:bg-white/60 w-2'
-              }`}
-              aria-label={`Banner ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   )
 }
