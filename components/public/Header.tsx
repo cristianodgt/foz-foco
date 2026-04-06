@@ -53,7 +53,7 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  const [logoUrl, setLogoUrl] = useState<string | null>('/logo.png')
   const inputRef = useRef<HTMLInputElement>(null)
   const { results, isLoading } = useSearch(query)
 
@@ -151,9 +151,14 @@ export function Header() {
         </button>
 
         <Link href="/" className="flex items-center">
-          <h1 className="font-headline text-2xl font-bold italic text-primary-container">
-            Foz em Foco
-          </h1>
+          <Image
+            src="/logo.png"
+            alt="Foz em Foco"
+            width={120}
+            height={32}
+            className="object-contain max-h-8 w-auto"
+            unoptimized
+          />
         </Link>
 
         <Link
