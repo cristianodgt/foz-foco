@@ -133,9 +133,42 @@ const BOTTOM_BANNERS: BannerSlide[] = [
   },
 ]
 
+const FEED_BANNERS: BannerSlide[] = [
+  {
+    bg: 'bg-gradient-to-r from-[#00355f] via-[#0f4c81] to-[#00355f]',
+    Icon: Megaphone,
+    headline: 'Anuncie no Foz em Foco',
+    sub: 'Alcance milhares de leitores locais todos os dias',
+    cta: 'Ver planos',
+    href: '/anunciantes',
+  },
+  {
+    bg: 'bg-gradient-to-r from-[#1a1a2e] via-[#0f4c81] to-[#1a1a2e]',
+    Icon: TrendingUp,
+    headline: 'Seu negócio em destaque',
+    sub: 'Publicidade digital com resultado real em Foz do Iguaçu',
+    cta: 'Saiba mais',
+    href: '/anunciantes',
+  },
+]
+
 const LOCAL_SLIDES: Record<string, BannerSlide[]> = {
   GRID_BANNER_TOP: TOP_BANNERS,
   GRID_BANNER_BOTTOM: BOTTOM_BANNERS,
+  FEED_BETWEEN: FEED_BANNERS,
+  FEED_TOP: FEED_BANNERS,
+  GRID_BANNER: FEED_BANNERS,
+  SIDEBAR: [
+    {
+      bg: 'bg-gradient-to-b from-[#00355f] to-[#1a1a2e]',
+      Icon: Sparkles,
+      headline: 'Anuncie Aqui',
+      sub: 'Espaço publicitário disponível',
+      cta: 'Contato',
+      href: '/anunciantes',
+    },
+  ],
+  POST_DETAIL: FEED_BANNERS,
 }
 
 // ──────────────────────────────── Image Banner Slides ────────────────────────────────

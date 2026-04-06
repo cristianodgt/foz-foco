@@ -104,7 +104,7 @@ export default async function HomePage() {
           </div>
 
           {/* Inline ad */}
-          <AdSlot format="inline" position="INLINE_BANNER" />
+          <AdSlot format="inline" position="FEED_BETWEEN" />
         </div>
 
         {/* Sidebar — desktop only (lg:col-span-4 applied inside component) */}

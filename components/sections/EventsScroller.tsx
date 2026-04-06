@@ -14,7 +14,6 @@ const EVENTS: PlaceholderEvent[] = [
   { day: '15', month: 'MAR', title: 'Festival de Cataratas', venue: 'Parque Nacional do Iguaçu' },
   { day: '22', month: 'MAR', title: 'Feira Gastronômica', venue: 'Gramadão da Vila A' },
   { day: '05', month: 'ABR', title: 'Corrida das Três Fronteiras', venue: 'Orla do Lago Itaipu' },
-  { day: '18', month: 'ABR', title: 'Show na Praça', venue: 'Praça da Paz' },
 ]
 
 /**
@@ -30,11 +29,11 @@ export function EventsScroller() {
         <h2 className="text-3xl md:text-4xl font-headline font-bold mb-10 px-4 text-on-surface">
           Agenda de Eventos
         </h2>
-        <div className="flex gap-6 overflow-x-auto pb-8 px-4 scrollbar-hide snap-x snap-mandatory">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 px-4">
           {EVENTS.map(ev => (
             <div
               key={ev.title}
-              className="group flex-none w-[280px] md:w-[300px] snap-start"
+              className="group"
             >
               <div className="relative h-[360px] md:h-[400px] rounded-2xl bg-gradient-to-br from-primary-container via-primary/80 to-on-surface overflow-hidden shadow-[0_4px_20px_-6px_rgba(26,26,46,0.2)] ring-1 ring-on-surface/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_16px_40px_-8px_rgba(26,26,46,0.35)] group-hover:ring-on-surface/20">
                 {/* Subtle inner shimmer */}
