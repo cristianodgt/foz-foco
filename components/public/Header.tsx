@@ -61,7 +61,7 @@ export function Header() {
     fetch('/api/admin/settings')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data?.logo) setLogoUrl(data.logo)
+        if (data?.logo && !data.logo.includes('.svg')) setLogoUrl(data.logo)
       })
       .catch(() => {})
   }, [])
@@ -98,9 +98,9 @@ export function Header() {
               <Image
                 src={logoUrl}
                 alt="Foz em Foco"
-                width={180}
-                height={48}
-                className="object-contain max-h-12 w-auto"
+                width={240}
+                height={60}
+                className="object-contain h-14 w-auto"
                 unoptimized
               />
             ) : (
