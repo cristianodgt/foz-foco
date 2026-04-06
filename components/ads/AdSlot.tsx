@@ -33,10 +33,10 @@ interface Dim {
 const DIMENSIONS: Record<AdFormat, Dim> = {
   leaderboard: {
     w: 1200,
-    h: 350,
-    box: 'w-full h-[250px] md:h-[350px]',
+    h: 180,
+    box: 'w-full h-[140px] md:h-[180px]',
     wrapper: 'w-full overflow-hidden',
-    sizes: '100vw',
+    sizes: '(max-width: 1200px) 100vw, 1200px',
   },
   rectangle: {
     w: 300,
