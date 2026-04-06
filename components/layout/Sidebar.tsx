@@ -37,7 +37,7 @@ export function Sidebar({ trendingPosts = [], latestPosts = [] }: SidebarProps) 
       <AdSlot format="rectangle" position="SIDEBAR" index={1} />
 
       {/* Block 4 — Últimas */}
-      <UltimasList posts={latestPosts.slice(0, 5)} />
+      <UltimasList posts={latestPosts.slice(0, 12)} />
     </aside>
   )
 }

@@ -72,7 +72,7 @@ export default async function HomePage() {
   const hero = posts[0]
   const carouselPosts = posts.slice(1, 13)
   const compactPosts = posts.slice(13, 22)
-  const latestPosts = posts.slice(22, 27)
+  const latestPosts = posts.slice(22, 37)
 
   return (
     <>
