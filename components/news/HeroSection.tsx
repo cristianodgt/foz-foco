@@ -53,20 +53,10 @@ export function HeroArticle({ post }: HeroArticleProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-on-surface via-on-surface/75 via-35% to-transparent to-70%" />
 
       {/* Content */}
-      <div className="absolute inset-x-0 bottom-0 p-6 md:p-10 text-white">
-        <CategoryBadge
-          name={post.category?.name || 'Geral'}
-          color={post.category?.color}
-          icon={post.category?.icon}
-        />
-        <h2 className="mt-4 text-2xl md:text-4xl lg:text-5xl font-headline font-bold leading-[1.1] tracking-tight drop-shadow-sm">
+      <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 text-white">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-headline font-bold leading-snug tracking-tight drop-shadow-sm line-clamp-3 max-w-2xl">
           {post.title}
         </h2>
-        {post.summary && (
-          <p className="mt-3 hidden md:block text-base md:text-lg font-light text-white/85 leading-relaxed line-clamp-2 max-w-3xl">
-            {post.summary}
-          </p>
-        )}
         <div className="mt-4 flex items-center justify-between gap-4">
           <p className="text-xs md:text-sm text-white/70 font-label">
             Por {post.author?.name}
