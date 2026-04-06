@@ -238,8 +238,8 @@ function RotatingCSSBanner({
           <Link
             key={i}
             href={slide.href}
-            className={`absolute inset-0 flex items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${slide.bg} ${
-              i === current ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'
+            className={`absolute inset-0 flex items-center justify-center overflow-hidden transition-opacity duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${slide.bg} ${
+              i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
             }`}
             aria-hidden={i !== current}
             tabIndex={i === current ? 0 : -1}
@@ -328,8 +328,8 @@ function RotatingImageBanner({
         <Link
           key={i}
           href={slide.href}
-          className={`absolute inset-0 transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-            i === current ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-[1.03]'
+          className={`absolute inset-0 overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
           aria-hidden={i !== current}
           tabIndex={i === current ? 0 : -1}
@@ -338,8 +338,10 @@ function RotatingImageBanner({
             src={slide.src}
             alt={slide.alt}
             fill
-            className="object-cover"
-            sizes="100vw"
+            className={`object-cover transition-transform duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              i === current ? 'scale-100' : 'scale-[1.03]'
+            }`}
+            sizes={dim.sizes}
             priority={i === 0}
           />
         </Link>
@@ -422,7 +424,7 @@ export function AdSlot({
     }
   }
 
-  const outerCls = `${dim.wrapper} ${className ?? ''}`.trim()
+  const outerCls = `${dim.wrapper} overflow-hidden ${className ?? ''}`.trim()
 
   // No real ad — try local image banners first, then CSS fallback
   if (loaded && (!ad || errored)) {
@@ -481,7 +483,7 @@ export function AdSlot({
           src={ad!.imageUrl}
           alt={ad!.title}
           fill
-          className="object-cover"
+          className="object-cover max-w-full max-h-full"
           sizes={dim.sizes}
         />
       </a>
