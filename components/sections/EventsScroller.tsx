@@ -19,8 +19,8 @@ const EVENTS: PlaceholderEvent[] = [
   { day: '05', month: 'ABR', title: 'Corrida das Três Fronteiras', venue: 'Orla do Lago Itaipu', image: '/seed/events/event-3.jpeg' },
 ]
 
-const CARD_W = 280
-const CARD_OFFSET = 310
+const CARD_W = 360
+const CARD_OFFSET = 380
 
 export function EventsScroller() {
   const [current, setCurrent] = useState(0)
@@ -45,28 +45,15 @@ export function EventsScroller() {
   }
 
   return (
-    <section className="py-10 bg-white dark:bg-inverse-surface/5 overflow-hidden">
+    <section className="py-6 bg-white dark:bg-inverse-surface/5 overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-4">
-        {/* Header + dots inline */}
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-surface">
-            Agenda de Eventos
-          </h2>
-          {/* Dot indicators inline with header */}
-          <div className="flex gap-1.5">
-            {EVENTS.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'bg-primary w-5' : 'bg-on-surface/20 w-1.5'}`}
-                aria-label={`Evento ${i + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+        {/* Header */}
+        <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-surface mb-6">
+          Agenda de Eventos
+        </h2>
 
         {/* Card fan — arrows overlaid left/right */}
-        <div className="relative flex items-center justify-center" style={{ height: 380 }}>
+        <div className="relative flex items-center justify-center" style={{ height: 440 }}>
           {/* Left arrow */}
           <button
             onClick={prev}
@@ -89,7 +76,7 @@ export function EventsScroller() {
                 {/* Card */}
                 <div className="relative overflow-hidden rounded-2xl shadow-[0_8px_40px_-10px_rgba(26,26,46,0.3)] ring-1 ring-on-surface/10 bg-surface-container cursor-pointer transition-shadow duration-300 group-hover:shadow-[0_20px_60px_-12px_rgba(26,26,46,0.45)]">
                   {/* Image */}
-                  <div className="relative w-full" style={{ height: 320 }}>
+                  <div className="relative w-full" style={{ height: 400 }}>
                     <Image
                       src={ev.image}
                       alt={ev.title}
