@@ -93,26 +93,13 @@ export function Header() {
       <header className="hidden md:block bg-white dark:bg-inverse-surface h-20 border-b border-outline-variant">
         <div className="max-w-[1200px] h-full mx-auto px-4 flex items-center justify-between gap-8">
           {/* LOGO */}
-          <Link href="/" className="flex flex-col items-start flex-shrink-0">
-            {logoUrl ? (
-              <Image
-                src={logoUrl}
-                alt="Foz em Foco"
-                width={240}
-                height={60}
-                className="object-contain h-14 w-auto"
-                unoptimized
-              />
-            ) : (
-              <>
-                <h1 className="text-3xl font-black text-primary-container font-headline tracking-tighter leading-none">
-                  FOZ EM FOCO
-                </h1>
-                <p className="text-[10px] font-label uppercase tracking-widest text-outline mt-1">
-                  O portal de notícias de Foz do Iguaçu
-                </p>
-              </>
-            )}
+          <Link href="/" className="flex-shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="Foz em Foco"
+              style={{ height: '48px', width: 'auto', display: 'block' }}
+            />
           </Link>
 
           {/* SEARCH BAR */}
@@ -151,13 +138,11 @@ export function Header() {
         </button>
 
         <Link href="/" className="flex items-center">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/logo.png"
             alt="Foz em Foco"
-            width={120}
-            height={32}
-            className="object-contain max-h-8 w-auto"
-            unoptimized
+            style={{ height: '36px', width: 'auto', display: 'block' }}
           />
         </Link>
 
